@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Conda / Virtual Environments
+.conda/
+env/
+venv/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# ML Model Checkpoints and Large Data
+checkpoints/
+*.pth
+*.ckpt
+*.model
+*.h5
+data/
+!data/README.md  # Optional: track a readme inside data but ignore the content
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE specific (VS Code / PyCharm)
+.vscode/
+.idea/
