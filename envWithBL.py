@@ -75,8 +75,8 @@ class NTNMECEnv:
     Action space per agent:  {0=local, 1=UAV_0, ..., N=UAV_{N-1}}
     Observation per agent:
         [ue_pos(2) | uav_pos(2N) | task_size(1) | local_wait(1) |
-            tran_wait(1) | edge_queue_per_uav(N)]
-        Total obs dim = 5 + 3*N  (11 for N=2)
+         tran_wait(1) | edge_queue_per_uav(N) | active_queues_per_uav(N)]
+    Total obs dim = 5 + 4*N  (13 for N=2)
     """
 
     def __init__(self, config: Optional[EnvConfig] = None):
@@ -85,9 +85,10 @@ class NTNMECEnv:
 
         self.n_agents  = cfg.M
         self.n_actions = cfg.N + 1          # local + N UAVs
-        # obs: ue_pos(2) + uav_pos(2N) + task(1) + local_wait(1) + tran_wait(1) + edge_q(N)
-        # = 5 + 3*N   (active_q removed — GNN provides that signal instead)
-        self.obs_dim   = 5 + 3 * cfg.N
+        # obs: ue_pos(2) + uav_pos(2N) + task(1) + local_wait(1)
+        #    + tran_wait(1) + edge_q(N) + active_q(N)
+        # = 5 + 4*N
+        self.obs_dim   = 5 + 4 * cfg.N
 
         # Fixed UAV horizontal positions (evenly spaced along x-axis, y=W/2)
         self.uav_pos = np.array([
@@ -281,6 +282,7 @@ class NTNMECEnv:
         """
         cfg = self.cfg
         obs_list = []
+        active_q = np.sum(self.l_edge > self.t, axis=1).astype(np.float32) / cfg.M
 
         for m in range(cfg.M):
             # (1) UE position — normalised
@@ -311,13 +313,10 @@ class NTNMECEnv:
                 dtype=np.float32
             )
 
-            # NOTE: global congestion signal (fraction of UEs queued per UAV)
-            # intentionally excluded from raw obs.  IL agents are blind to it.
-            # GNN-IL agents recover equivalent coordination signal through
-            # message passing — that is the contribution this code evaluates.
+            # (7) Active queues per UAV B_n(i), normalised by number of UEs
 
             obs = np.concatenate([ue_xy, uav_xy, task_feat,
-                                   local_wait, tran_wait, edge_q])
+                                   local_wait, tran_wait, edge_q, active_q])
             obs_list.append(obs)
 
         return obs_list
@@ -331,8 +330,7 @@ class NTNMECEnv:
         UE  node features : raw obs vector  (obs_dim,)  — local info only
         UAV node features : [norm_x, norm_y, congestion_level]  (3,)
             congestion = fraction of UEs with active queue at this UAV.
-            This is the key signal IL agents lack; the GNN propagates it
-            back to UE nodes via Layer-2 (UAV → UE) message passing.
+            This signal is also included in raw UE observations as B_n(i).
 
         Edge weight : normalised channel gain h_{m,n}
         """
