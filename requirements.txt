@@ -1,0 +1,19 @@
+# NTN-MEC MARL offloading study — pinned to the verified rlProject env.
+# Python 3.10.  Pure PyTorch (no PyTorch Geometric — GNN message passing is
+# hand-rolled with bmm + softmax), numpy, and matplotlib for figures.
+#
+# Lab-server setup (CUDA 12.1):
+#   conda create -n rlproject python=3.10 -y
+#   conda activate rlproject
+#   pip install -r requirements.txt
+#
+# torch 2.5.1 here is the cu121 build. The extra-index line below makes
+# `pip install -r` pull the matching CUDA wheel. If the server has a
+# different CUDA toolkit, swap cu121 → cu118 / cu124 to match `nvidia-smi`,
+# or drop the line entirely for a CPU-only install.
+
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+torch==2.5.1
+numpy==2.2.6
+matplotlib==3.10.8
