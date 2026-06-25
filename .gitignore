@@ -15,6 +15,9 @@ ENV/
 
 # ML Model Checkpoints and Large Data
 checkpoints/
+# Experiment run outputs (transferred outside git, same as checkpoints/)
+probe_runs/
+parallel_logs/
 *.pth
 *.ckpt
 *.model

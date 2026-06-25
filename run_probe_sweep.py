@@ -40,6 +40,7 @@ _BASE = dict(
     eval_episodes=20, lr=1e-3, gamma=0.9,
     batch_size=32, buffer_cap=5_000, target_update=20, eps_decay=0.995,
     probe_every=5, probe_snapshots=512, probe_seed=12345,
+    snapshot_every=25, probe_dataset_size=2000,
     log_every=100,
 )
 

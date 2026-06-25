@@ -79,7 +79,7 @@ def scaling_jobs(ues, uavs, seeds, episodes, ckpt_root):
                     "argv": [sys.executable, "train.py",
                              "--n_ues", str(M), "--n_uavs", str(N),
                              "--seed", str(S),
-                             "--episodes", str(episodes), "--log_every", "500",
+                             "--episodes", str(episodes), "--log_every", "25",
                              "--save_dir", std],
                     "done": os.path.join(std, "il_results.json"),
                 })
@@ -88,7 +88,7 @@ def scaling_jobs(ues, uavs, seeds, episodes, ckpt_root):
                     "argv": [sys.executable, "trainGnn.py",
                              "--n_ues", str(M), "--n_uavs", str(N),
                              "--seed", str(S),
-                             "--episodes", str(episodes), "--log_every", "500",
+                             "--episodes", str(episodes), "--log_every", "25",
                              "--save_dir", gnn],
                     "done": os.path.join(gnn, "gnn_il_results.json"),
                 })
@@ -97,21 +97,60 @@ def scaling_jobs(ues, uavs, seeds, episodes, ckpt_root):
 
 # ─── Scheduler ─────────────────────────────────────────────────────────────
 
+def _fmt_dur(sec):
+    sec = int(sec)
+    h, rem = divmod(sec, 3600)
+    m, s = divmod(rem, 60)
+    return f"{h}h{m:02d}m" if h else f"{m}m{s:02d}s"
+
+
+def _write_status(path, total, skipped, finished, failed, running, t0, eta):
+    """Overwrite a single-glance status file the user can `watch cat`/`tail`."""
+    done = skipped + finished
+    lines = [
+        f"updated : {time.strftime('%Y-%m-%d %H:%M:%S')}",
+        f"progress: {done}/{total} resolved  "
+        f"({finished} ran, {skipped} skipped, {len(failed)} failed)",
+        f"elapsed : {_fmt_dur(time.time() - t0)}",
+        f"eta     : {('~' + _fmt_dur(eta)) if eta is not None else '—'} remaining",
+        f"running : {', '.join(j['name'] for _, _, j, _, _ in running) or '(none)'}",
+    ]
+    if failed:
+        lines.append(f"FAILED  : {', '.join(failed)}")
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 def run_pool(jobs, slots, log_dir, force):
     """
     Run `jobs` across `slots` (each slot is a GPU id, or "" for CPU). At most
     len(slots) jobs run at once; each running job owns one slot and is launched
     with CUDA_VISIBLE_DEVICES set to that slot's GPU id.
+
+    Logging: child stdout/stderr stream UNBUFFERED to per-job log files
+    (PYTHONUNBUFFERED=1) so `tail -f log_dir/<job>.log` shows live progress.
+    A rolling ETA and a STATUS.txt give overall completion + time remaining.
     """
     os.makedirs(log_dir, exist_ok=True)
+    status_path = os.path.join(log_dir, "STATUS.txt")
 
     pending = list(jobs)
     free    = list(slots)
-    running = []   # (popen, slot, job, logfile)
+    running = []   # (popen, slot, job, logfile, start_time)
     failed  = []
 
     total = len(pending)
     started = finished = skipped = 0
+    durations = []                  # wall time of each completed run, for ETA
+    t0 = time.time()
+    C = max(1, len(slots))
+
+    def eta():
+        if not durations:
+            return None
+        avg = sum(durations) / len(durations)
+        remaining = total - skipped - finished      # pending + running runs
+        return remaining * avg / C
 
     while pending or running:
         # Fill free slots
@@ -119,11 +158,14 @@ def run_pool(jobs, slots, log_dir, force):
             job = pending.pop(0)
             if not force and job.get("done") and os.path.exists(job["done"]):
                 skipped += 1
-                print(f"[skip] {job['name']} (exists: {job['done']})")
+                print(f"[skip] {job['name']} (exists: {job['done']})", flush=True)
+                _write_status(status_path, total, skipped, finished, failed,
+                              running, t0, eta())
                 continue
             slot = free.pop(0)
             env  = dict(os.environ)
             env["CUDA_VISIBLE_DEVICES"] = slot
+            env["PYTHONUNBUFFERED"] = "1"     # live, unbuffered child log files
             # CPU slot ("") → make sure the script doesn't try CUDA
             argv = list(job["argv"])
             if slot == "" and "--cpu" not in argv:
@@ -131,33 +173,43 @@ def run_pool(jobs, slots, log_dir, force):
             log = open(os.path.join(log_dir, job["name"] + ".log"), "w")
             p = subprocess.Popen(argv, env=env, stdout=log,
                                   stderr=subprocess.STDOUT)
-            running.append((p, slot, job, log))
+            running.append((p, slot, job, log, time.time()))
             started += 1
             gpu = slot if slot != "" else "cpu"
             print(f"[start {started}/{total}] {job['name']}  GPU={gpu}  "
-                  f"({len(running)} running)")
+                  f"({len(running)} running)", flush=True)
+            _write_status(status_path, total, skipped, finished, failed,
+                          running, t0, eta())
 
         # Reap finished
         still = []
-        for p, slot, job, log in running:
+        for p, slot, job, log, st in running:
             rc = p.poll()
             if rc is None:
-                still.append((p, slot, job, log))
+                still.append((p, slot, job, log, st))
                 continue
             log.close()
             free.append(slot)
             finished += 1
+            durations.append(time.time() - st)
             tag = "ok" if rc == 0 else f"FAIL rc={rc}"
             if rc != 0:
                 failed.append(job["name"])
-            print(f"[done {finished}] {job['name']}  [{tag}]  "
-                  f"log: {os.path.join(log_dir, job['name'] + '.log')}")
+            e = eta()
+            print(f"[done {skipped+finished}/{total}] {job['name']}  [{tag}]  "
+                  f"({_fmt_dur(time.time()-st)})  "
+                  f"elapsed {_fmt_dur(time.time()-t0)}  "
+                  f"eta {('~'+_fmt_dur(e)) if e is not None else '—'}", flush=True)
+            _write_status(status_path, total, skipped, finished, failed,
+                          still, t0, e)
         running = still
 
         if running and not (pending and free):
             time.sleep(1.0)
 
-    print(f"\nLaunched {started}, skipped {skipped}, failed {len(failed)}.")
+    _write_status(status_path, total, skipped, finished, failed, [], t0, 0)
+    print(f"\nLaunched {started}, skipped {skipped}, failed {len(failed)}  "
+          f"in {_fmt_dur(time.time()-t0)}.", flush=True)
     if failed:
         print("FAILED jobs (check their logs):", ", ".join(failed))
     return failed

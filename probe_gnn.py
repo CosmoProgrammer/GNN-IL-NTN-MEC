@@ -70,11 +70,11 @@ def _fit_r2(X_tr, Y_tr, X_te, Y_te):
     ss_res = ((Y_te - pred) ** 2).sum(axis=0)
     ss_tot = ((Y_te - Y_te.mean(axis=0)) ** 2).sum(axis=0)
 
+    per_dim = np.full(Y_te.shape[1], np.nan)        # R² per output (per-UAV)
     valid = ss_tot > 1e-8
-    if not valid.any():
-        return float("nan")
-    r2 = 1.0 - ss_res[valid] / ss_tot[valid]
-    return float(np.mean(r2))
+    per_dim[valid] = 1.0 - ss_res[valid] / ss_tot[valid]
+    mean = float(np.nanmean(per_dim)) if valid.any() else float("nan")
+    return mean, [float(x) for x in per_dim]
 
 
 def evaluate_probe(
@@ -132,12 +132,38 @@ def evaluate_probe(
     row_is_test = np.repeat(test_snap, M)
 
     tr, te = ~row_is_test, row_is_test
+    r2g_mean, r2g_per_uav = _fit_r2(X_gnn[tr], Y[tr], X_gnn[te], Y[te])
+    r2r_mean, _           = _fit_r2(X_raw[tr], Y[tr], X_raw[te], Y[te])
     return {
-        "r2_gnn":      _fit_r2(X_gnn[tr], Y[tr], X_gnn[te], Y[te]),
-        "r2_rawobs":   _fit_r2(X_raw[tr], Y[tr], X_raw[te], Y[te]),
-        "target_std":  float(cong.std()),
-        "n_snapshots": int(S),
+        "r2_gnn":         r2g_mean,
+        "r2_gnn_per_uav": r2g_per_uav,    # length-N list, NaN where Bₙ ≈ const
+        "r2_rawobs":      r2r_mean,
+        "target_std":     float(cong.std()),
+        "n_snapshots":    int(S),
     }
+
+
+# ─── Off-line re-probing support ───────────────────────────────────────────
+
+def dump_probe_dataset(agent, path, max_snapshots, rng):
+    """
+    Save a FIXED set of buffer snapshots (ue_obs, uav_feats, edge_w) to .npz.
+
+    Combined with the per-episode encoder snapshots, this lets ANY future probe
+    methodology (nonlinear, per-UAV, held-out, different target) be recomputed
+    offline across the whole training trajectory — no training re-run needed.
+    Bₙ is recoverable as uav_feats[:, :, 2].
+    """
+    buf = agent.buffer.buf
+    if len(buf) == 0:
+        return
+    idx = rng.permutation(len(buf))[:max_snapshots]
+    np.savez_compressed(
+        path,
+        ue_obs    = np.stack([buf[i][0] for i in idx]).astype(np.float32),
+        uav_feats = np.stack([buf[i][1] for i in idx]).astype(np.float32),
+        edge_w    = np.stack([buf[i][2] for i in idx]).astype(np.float32),
+    )
 
 
 # ─── Training run with per-episode probe logging ───────────────────────────
@@ -174,6 +200,12 @@ def train_with_probe(args) -> dict:
     # Private RNG for probe subsampling — NEVER the global RNG training uses.
     probe_rng = np.random.default_rng(args.probe_seed)
 
+    # Encoder snapshots over training → enables offline re-probing later.
+    snap_dir = os.path.join(args.save_dir, "snapshots") if args.save_dir else None
+    if snap_dir and args.snapshot_every > 0:
+        os.makedirs(snap_dir, exist_ok=True)
+    snapshot_eps = []
+
     history = []
     best_cost = float("inf")
 
@@ -204,11 +236,18 @@ def train_with_probe(args) -> dict:
         }
         if probe is not None:
             record.update({
-                "probe_r2_gnn":    probe["r2_gnn"],
-                "probe_r2_rawobs": probe["r2_rawobs"],
-                "probe_bn_std":    probe["target_std"],
+                "probe_r2_gnn":        probe["r2_gnn"],
+                "probe_r2_gnn_per_uav": probe["r2_gnn_per_uav"],
+                "probe_r2_rawobs":     probe["r2_rawobs"],
+                "probe_bn_std":        probe["target_std"],
             })
         history.append(record)
+
+        # Snapshot the encoder+policy for offline re-probing of the trajectory.
+        if snap_dir and args.snapshot_every > 0 and (
+                ep % args.snapshot_every == 0 or ep == args.episodes):
+            agent.save(os.path.join(snap_dir, f"ep{ep}.pt"))
+            snapshot_eps.append(ep)
 
         if stats["avg_cost"] < best_cost:
             best_cost = stats["avg_cost"]
@@ -242,13 +281,24 @@ def train_with_probe(args) -> dict:
         "eval_std":    eval_std,
         "best_train":  best_cost,
         "final_probe": final_probe,
+        "snapshot_eps": snapshot_eps,
     }
 
     if args.save_dir:
         os.makedirs(args.save_dir, exist_ok=True)
+        # Final weights — self-contained for offline behaviour/embedding analysis
+        # (offload/local/drop rates, t-SNE, etc. are all recomputable from these).
+        agent.save(os.path.join(args.save_dir, "gnn_il_probe_final.pt"))
+        # Fixed probe dataset → re-probe any snapshot offline on a consistent set.
+        dump_probe_dataset(
+            agent, os.path.join(args.save_dir, "probe_dataset.npz"),
+            max_snapshots=args.probe_dataset_size, rng=probe_rng,
+        )
         with open(os.path.join(args.save_dir, "gnn_il_probe_results.json"), "w") as f:
             json.dump(results, f, indent=2)
-        print(f"Saved to {args.save_dir}/gnn_il_probe_results.json")
+        print(f"Saved to {args.save_dir}/  "
+              f"(results.json, {len(snapshot_eps)} snapshots, probe_dataset.npz, "
+              f"final.pt)")
 
     return results
 
@@ -285,6 +335,11 @@ def get_args():
                    help="max buffer snapshots per probe fit")
     p.add_argument("--probe_seed",      type=int, default=12345,
                    help="private RNG seed for probe subsampling (RNG-isolated)")
+    p.add_argument("--snapshot_every",  type=int, default=25,
+                   help="save encoder+policy weights every K episodes "
+                        "(0=off); enables offline re-probing of the trajectory")
+    p.add_argument("--probe_dataset_size", type=int, default=2000,
+                   help="snapshots saved to probe_dataset.npz for offline probes")
 
     p.add_argument("--seed",      type=int,  default=42)
     p.add_argument("--log_every", type=int,  default=25)
