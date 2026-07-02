@@ -39,6 +39,7 @@ _BASE = dict(
     gnn_hidden=64, gnn_out=32, dqn_hidden=128,
     eval_episodes=20, lr=1e-3, gamma=0.9,
     batch_size=32, buffer_cap=5_000, target_update=20, eps_decay=0.995,
+    eps_end=0.05, init_encoder="",
     probe_every=5, probe_snapshots=512, probe_seed=12345,
     snapshot_every=25, probe_dataset_size=2000,
     log_every=100,
@@ -83,30 +84,41 @@ def aggregate(out_dir, seeds, cost_threshold, phi_threshold):
             continue
         with open(rpath) as f:
             res = json.load(f)
-        phi = res["final_probe"]["r2_gnn"]
+        fp = res["final_probe"]
+        # φ = ΔBₙ probe LIFT over the Bₙ mean-reversion baseline. The static
+        # Bₙ probe sits near ceiling even for a random encoder (Bₙ is a raw
+        # input on the UAV nodes) and raw ΔBₙ R² inherits a mean-reversion
+        # floor the same way — the lift is the passthrough-proof signal.
+        # Falls back gracefully for result files predating these probes.
+        r2gd = fp.get("r2_gnn_delta")
+        base = fp.get("r2_congbase_delta", 0.0)
+        phi  = (r2gd - base) if r2gd is not None else fp["r2_gnn"]
         rows.append({
-            "seed":      seed,
-            "eval_mean": res["eval_mean"],
-            "status":    "CONVERGED" if res["eval_mean"] <= cost_threshold else "COLLAPSED",
-            "phi_final": phi,
-            "phi_raw":   res["final_probe"]["r2_rawobs"],
+            "seed":       seed,
+            "eval_mean":  res["eval_mean"],
+            "status":     "CONVERGED" if res["eval_mean"] <= cost_threshold else "COLLAPSED",
+            "phi_final":  phi,
+            "phi_gnn_d":  r2gd if r2gd is not None else float("nan"),
+            "phi_base_d": base,
+            "r2_static":  fp["r2_gnn"],
             # NaN φ (all-quiet congestion regime) counts as not-ignited.
-            "encoder":   "IGNITED" if (phi == phi and phi >= phi_threshold) else "STALLED",
+            "encoder":    "IGNITED" if (phi == phi and phi >= phi_threshold) else "STALLED",
         })
 
     if not rows:
         print("\nNo results to aggregate yet.")
         return rows
 
-    print("\n" + "=" * 64)
-    print(f" RESULT  (φ = final probe R² of  h_ue → Bₙ)")
-    print("=" * 64)
+    print("\n" + "=" * 78)
+    print(" RESULT  (φ = ΔBₙ-probe LIFT: R²[h_ue→ΔBₙ] − R²[Bₙ→ΔBₙ] baseline)")
+    print("=" * 78)
     print(f"{'seed':>5}  {'eval_mean':>9}  {'status':>10}  "
-          f"{'φ(gnn)':>7}  {'φ(raw)':>7}  {'encoder':>8}")
-    print("-" * 64)
+          f"{'φ(lift)':>8}  {'R2Δgnn':>7}  {'R2Δbase':>8}  {'R2stat':>7}  {'encoder':>8}")
+    print("-" * 78)
     for r in rows:
         print(f"{r['seed']:>5}  {r['eval_mean']:>9.4f}  {r['status']:>10}  "
-              f"{r['phi_final']:>7.3f}  {r['phi_raw']:>7.3f}  {r['encoder']:>8}")
+              f"{r['phi_final']:>8.3f}  {r['phi_gnn_d']:>7.3f}  "
+              f"{r['phi_base_d']:>8.3f}  {r['r2_static']:>7.3f}  {r['encoder']:>8}")
 
     cells = {("CONVERGED", "IGNITED"): [], ("CONVERGED", "STALLED"): [],
              ("COLLAPSED", "IGNITED"): [], ("COLLAPSED", "STALLED"): []}
@@ -152,8 +164,11 @@ def main():
     ap.add_argument("--cost_threshold", type=float, default=0.9,
                     help="eval_mean below this = CONVERGED (between the ~0.6 "
                          "converged and ~1.37 collapsed modes from the log)")
-    ap.add_argument("--phi_threshold", type=float, default=0.5,
-                    help="final R2_gnn above this = encoder IGNITED")
+    ap.add_argument("--phi_threshold", type=float, default=0.05,
+                    help="final ΔBₙ-probe lift (r2_gnn_delta − "
+                         "r2_congbase_delta) above this = encoder IGNITED. "
+                         "NOTE: a convenience readout only — the real analysis "
+                         "is the per-episode φ trajectories in each history")
     ap.add_argument("--aggregate_only", action="store_true",
                     help="skip training; just rebuild the table from disk")
     ap.add_argument("--force", action="store_true",

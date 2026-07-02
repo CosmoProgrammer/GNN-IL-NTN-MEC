@@ -16,6 +16,15 @@ High probe R²  =  congestion is linearly decodable from the UE embedding
                   =  the encoder "ignited" (φ high).
 Low / stalled R² = embedding carries no congestion info (φ ≈ 0, collapsed).
 
+TWO targets are probed:
+  * Bₙ(t)  — static echo. CAUTION: Bₙ is an input feature on the UAV nodes,
+    so even a RANDOM encoder passes it through linearly → this probe can sit
+    near ceiling from episode 1 (verified in smoke tests). Logged for
+    completeness, NOT the discriminator.
+  * ΔBₙ = Bₙ(t+1) − Bₙ(t) — predictive. Requires the embedding to encode the
+    joint offloading dynamics (who is about to queue where): random
+    passthrough cannot do this. This is the φ used for ignition calls.
+
 Why this wrapper does NOT perturb training
 -------------------------------------------
 The probe is fit entirely OFF-LINE from snapshots already sitting in the
@@ -95,6 +104,10 @@ def evaluate_probe(
                    floor — the GNN's lift over this is the signal)
       target_std : std of Bₙ over the sample  (regime diagnostic; ~0 ⇒ R² NaN)
       n_snapshots: snapshots used
+      h_eff_rank : effective rank of h_ue (entropy of sq. singular values) —
+                   distinguishes "never ignited" (our story) from degenerate
+                   feature-rank collapse (the plasticity-loss story)
+      h_dormant_frac : fraction of embedding dims with ~zero variance
     """
     buf = agent.buffer.buf
     if len(buf) < 16:
@@ -106,6 +119,7 @@ def evaluate_probe(
     ue_obs    = np.stack([buf[i][0] for i in idx])     # (S, M, obs_dim)
     uav_feats = np.stack([buf[i][1] for i in idx])     # (S, N, 3)
     edge_w    = np.stack([buf[i][2] for i in idx])     # (S, M, N)
+    nxt_uav   = np.stack([buf[i][6] for i in idx])     # (S, N, 3) next slot
 
     S, M, obs_dim = ue_obs.shape
     N = uav_feats.shape[1]
@@ -118,12 +132,25 @@ def evaluate_probe(
             torch.tensor(edge_w,    dtype=torch.float32, device=agent.device),
         ).cpu().numpy()                                  # (S, M, gnn_out)
 
-    # Target: Bₙ congestion vector, identical for every UE in a snapshot
+    # Static target: Bₙ congestion vector, identical for every UE in a snapshot
     cong = uav_feats[:, :, 2]                            # (S, N)
     Y    = np.repeat(cong, M, axis=0)                    # (S*M, N)
 
+    # Predictive target: next-slot congestion CHANGE (passthrough-proof φ)
+    d_cong  = nxt_uav[:, :, 2] - cong                    # (S, N)
+    Y_delta = np.repeat(d_cong, M, axis=0)               # (S*M, N)
+
     X_gnn = h_ue.reshape(S * M, -1)                      # (S*M, gnn_out)
     X_raw = ue_obs.reshape(S * M, obs_dim)               # (S*M, obs_dim) control
+
+    # Representation-health metrics (rebuttal ammunition: a stalled encoder in
+    # our story has healthy rank but no Bₙ content; plasticity/capacity loss
+    # predicts degenerate rank / dormant units instead).
+    Xc = X_gnn - X_gnn.mean(axis=0, keepdims=True)
+    sv = np.linalg.svd(Xc, compute_uv=False)
+    p_sv = sv ** 2 / max(float((sv ** 2).sum()), 1e-12)
+    h_eff_rank = float(np.exp(-np.sum(p_sv * np.log(p_sv + 1e-12))))
+    h_dormant  = float((X_gnn.std(axis=0) < 1e-5).mean())
 
     # Snapshot-level split so a snapshot's UEs never straddle train/test
     n_test_snap = max(1, int(test_frac * S))
@@ -134,12 +161,29 @@ def evaluate_probe(
     tr, te = ~row_is_test, row_is_test
     r2g_mean, r2g_per_uav = _fit_r2(X_gnn[tr], Y[tr], X_gnn[te], Y[te])
     r2r_mean, _           = _fit_r2(X_raw[tr], Y[tr], X_raw[te], Y[te])
+    r2gd_mean, r2gd_per   = _fit_r2(X_gnn[tr], Y_delta[tr], X_gnn[te], Y_delta[te])
+    r2rd_mean, _          = _fit_r2(X_raw[tr], Y_delta[tr], X_raw[te], Y_delta[te])
+
+    # Mean-reversion baseline: predict ΔBₙ from Bₙ(t) alone. ΔBₙ is negatively
+    # correlated with Bₙ (queues drain), and Bₙ passes through even a random
+    # encoder — so the encoder's LIFT over this baseline, not raw ΔBₙ R², is
+    # the genuine "learned the joint dynamics" signal.
+    X_cong = np.repeat(cong, M, axis=0)                  # (S*M, N)
+    r2cd_mean, _ = _fit_r2(X_cong[tr], Y_delta[tr], X_cong[te], Y_delta[te])
     return {
         "r2_gnn":         r2g_mean,
         "r2_gnn_per_uav": r2g_per_uav,    # length-N list, NaN where Bₙ ≈ const
         "r2_rawobs":      r2r_mean,
+        "r2_gnn_delta":   r2gd_mean,
+        "r2_gnn_delta_per_uav": r2gd_per,
+        "r2_rawobs_delta": r2rd_mean,     # control: own-queue features only
+        "r2_congbase_delta": r2cd_mean,   # control: Bₙ mean-reversion floor
+        # φ = r2_gnn_delta − r2_congbase_delta  (the ignition discriminator)
         "target_std":     float(cong.std()),
+        "delta_std":      float(d_cong.std()),
         "n_snapshots":    int(S),
+        "h_eff_rank":     h_eff_rank,
+        "h_dormant_frac": h_dormant,
     }
 
 
@@ -160,9 +204,13 @@ def dump_probe_dataset(agent, path, max_snapshots, rng):
     idx = rng.permutation(len(buf))[:max_snapshots]
     np.savez_compressed(
         path,
-        ue_obs    = np.stack([buf[i][0] for i in idx]).astype(np.float32),
-        uav_feats = np.stack([buf[i][1] for i in idx]).astype(np.float32),
-        edge_w    = np.stack([buf[i][2] for i in idx]).astype(np.float32),
+        ue_obs        = np.stack([buf[i][0] for i in idx]).astype(np.float32),
+        uav_feats     = np.stack([buf[i][1] for i in idx]).astype(np.float32),
+        edge_w        = np.stack([buf[i][2] for i in idx]).astype(np.float32),
+        actions       = np.stack([buf[i][3] for i in idx]).astype(np.int64),
+        rewards       = np.stack([buf[i][4] for i in idx]).astype(np.float32),
+        next_uav_feats= np.stack([buf[i][6] for i in idx]).astype(np.float32),
+        task_mask     = np.stack([buf[i][9] for i in idx]),
     )
 
 
@@ -194,8 +242,21 @@ def train_with_probe(args) -> dict:
         buffer_cap    = args.buffer_cap,
         target_update = args.target_update,
         eps_decay     = args.eps_decay,
+        eps_end       = getattr(args, "eps_end", 0.05),
         device        = device,
     )
+
+    # Race-model fix #2 (warm start) / #3 (curriculum): initialise the ENCODER
+    # from a trained donor checkpoint. GNN weights are M-agnostic, so a donor
+    # trained at a different M (e.g. M=30 → M=20) is the curriculum transfer.
+    # The policy net stays randomly initialised — the intervention is purely
+    # "start above the ignition threshold φ_c", nothing else.
+    init_encoder = getattr(args, "init_encoder", "")
+    if init_encoder:
+        ckpt = torch.load(init_encoder, map_location=agent.device)
+        agent.gnn.load_state_dict(ckpt["gnn"])
+        print(f"Warm-started encoder from {init_encoder} "
+              f"(policy net remains randomly initialised)")
 
     # Private RNG for probe subsampling — NEVER the global RNG training uses.
     probe_rng = np.random.default_rng(args.probe_seed)
@@ -212,8 +273,8 @@ def train_with_probe(args) -> dict:
     print(f"\nGNN-IL + Bₙ probe — {args.n_ues} UEs, {args.n_uavs} UAVs, "
           f"{args.episodes} episodes, seed {args.seed}")
     print(f"{'Ep':>5}  {'AvgCost':>9}  {'Loss':>9}  {'Eps':>6}  "
-          f"{'R2_gnn':>7}  {'R2_raw':>7}  {'Bstd':>6}")
-    print("-" * 62)
+          f"{'R2_gnn':>7}  {'R2_raw':>7}  {'R2Δgnn':>7}  {'R2Δraw':>7}  {'Bstd':>6}")
+    print("-" * 80)
 
     for ep in range(1, args.episodes + 1):
         stats = run_episode(env, agent, train=True)   # identical to trainGnn
@@ -239,7 +300,13 @@ def train_with_probe(args) -> dict:
                 "probe_r2_gnn":        probe["r2_gnn"],
                 "probe_r2_gnn_per_uav": probe["r2_gnn_per_uav"],
                 "probe_r2_rawobs":     probe["r2_rawobs"],
+                "probe_r2_gnn_delta":  probe["r2_gnn_delta"],
+                "probe_r2_raw_delta":  probe["r2_rawobs_delta"],
+                "probe_r2_congbase_delta": probe["r2_congbase_delta"],
                 "probe_bn_std":        probe["target_std"],
+                "probe_dbn_std":       probe["delta_std"],
+                "probe_h_eff_rank":    probe["h_eff_rank"],
+                "probe_h_dormant":     probe["h_dormant_frac"],
             })
         history.append(record)
 
@@ -253,12 +320,15 @@ def train_with_probe(args) -> dict:
             best_cost = stats["avg_cost"]
 
         if ep % args.log_every == 0 or ep == args.episodes:
-            r2g = record.get("probe_r2_gnn", float("nan"))
-            r2r = record.get("probe_r2_rawobs", float("nan"))
-            bst = record.get("probe_bn_std", float("nan"))
+            r2g  = record.get("probe_r2_gnn", float("nan"))
+            r2r  = record.get("probe_r2_rawobs", float("nan"))
+            r2gd = record.get("probe_r2_gnn_delta", float("nan"))
+            r2rd = record.get("probe_r2_raw_delta", float("nan"))
+            bst  = record.get("probe_bn_std", float("nan"))
             print(f"{ep:>5}  {stats['avg_cost']:>9.4f}  "
                   f"{stats['total_loss']:>9.4f}  {stats['eps']:>6.3f}  "
-                  f"{r2g:>7.3f}  {r2r:>7.3f}  {bst:>6.3f}")
+                  f"{r2g:>7.3f}  {r2r:>7.3f}  {r2gd:>7.3f}  {r2rd:>7.3f}  "
+                  f"{bst:>6.3f}")
 
     # Final greedy eval — identical protocol to trainGnn (classifies the seed)
     eval_costs = [run_episode(env, agent, train=False)["avg_cost"]
@@ -271,7 +341,9 @@ def train_with_probe(args) -> dict:
                                  rng=probe_rng)
     print(f"\nEval ({args.eval_episodes} eps): mean={eval_mean:.4f} "
           f"std={eval_std:.4f}  |  final R2_gnn="
-          f"{final_probe['r2_gnn']:.3f}  R2_raw={final_probe['r2_rawobs']:.3f}")
+          f"{final_probe['r2_gnn']:.3f}  R2_raw={final_probe['r2_rawobs']:.3f}"
+          f"  R2Δgnn={final_probe['r2_gnn_delta']:.3f}"
+          f"  R2Δraw={final_probe['r2_rawobs_delta']:.3f}")
 
     results = {
         "method":      "GNN-IL+probe",
@@ -327,6 +399,13 @@ def get_args():
     p.add_argument("--buffer_cap",    type=int,   default=5_000)
     p.add_argument("--target_update", type=int,   default=20)
     p.add_argument("--eps_decay",     type=float, default=0.995)
+    p.add_argument("--eps_end",       type=float, default=0.05,
+                   help="exploration floor (race-model fix #1b: raise it to "
+                        "sustain late exploration)")
+    p.add_argument("--init_encoder",  type=str,   default="",
+                   help="path to a .pt checkpoint whose 'gnn' weights warm-"
+                        "start the encoder (race-model fix #2; donor from a "
+                        "different M = curriculum test #3)")
 
     # Probe-specific
     p.add_argument("--probe_every",     type=int, default=5,
@@ -353,5 +432,6 @@ if __name__ == "__main__":
     args    = get_args()
     results = train_with_probe(args)
     print(f"\nGNN-IL+probe — eval {results['eval_mean']:.4f} ± "
-          f"{results['eval_std']:.4f}  |  final φ (R2_gnn) "
-          f"{results['final_probe']['r2_gnn']:.3f}")
+          f"{results['eval_std']:.4f}  |  final φ (R2Δgnn) "
+          f"{results['final_probe']['r2_gnn_delta']:.3f}  "
+          f"(static R2_gnn {results['final_probe']['r2_gnn']:.3f})")

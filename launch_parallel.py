@@ -15,19 +15,37 @@ skipped (resumable), and each job streams to its own log file.
 
 Plans
 -----
-  probe    : GNN-IL + Bₙ probe, per seed at one M  → probe_runs/ue{M}/seed{S}/
-  scaling  : canonical IL + GNN-IL, per (M, seed)  → checkpoints/ue{M}/seed{S}/
-  both     : scaling then probe
+  probe     : GNN-IL + Bₙ probe            → probe_runs/ue{M}/n{N}/seed{S}/
+  scaling   : canonical IL + GNN-IL        → checkpoints/ue{M}/n{N}/seed{S}/
+  race      : probe with modified ε schedules (the race model's CAUSAL test)
+                                           → probe_runs/ue{M}/n{N}/eps{D}[_floor{E}]/seed{S}/
+  warmstart : probe at M=20 with the encoder warm-started from the SAME seed's
+              trained M=30 donor (fix #2 + curriculum #3 in one; jobs wait
+              for their donor checkpoint) → probe_runs/ue20/n{N}/warmstart/seed{S}/
+  both      : scaling then probe
+  overnight : everything the race model needs, priority-ordered so an early
+              stop still leaves the make-or-break results on disk:
+                1. probe M=20 (the 2×2 contingency)      5 jobs
+                2. probe M=30 (reliability + donors)     5 jobs
+                3. race grid  M=20 × {.999, .9975, .99, floor .3}
+                              M=30 × {.99, .98}         30 jobs
+                4. warmstart  M=30 → M=20                5 jobs
+                5. probe M ∈ {5,10,40} (φ-vs-M curve)   15 jobs
+              (ignores --ues; honours --seeds/--uavs/--episodes)
 
 Examples
 --------
-  # the make-or-break probe sweep, 5 seeds split across 2 GPUs:
+  # THE overnight run (~60 jobs, resumable — rerun the same command to resume):
+  conda run -n rlProject python launch_parallel.py --plan overnight \
+      --gpus 0,1 --procs_per_gpu 4
+
+  # just the make-or-break probe sweep, 5 seeds split across 2 GPUs:
   conda run -n rlProject python launch_parallel.py --plan probe \
       --ues 20 --seeds 42 52 62 72 82 --gpus 0,1 --procs_per_gpu 2
 
-  # re-run the whole IL + GNN-IL scaling grid on the server (one hardware):
-  conda run -n rlProject python launch_parallel.py --plan scaling \
-      --ues 5 10 20 30 40 --seeds 42 52 62 72 82 --gpus 0,1 --procs_per_gpu 2
+  # custom exploration-schedule cells:
+  conda run -n rlProject python launch_parallel.py --plan race \
+      --ues 20 --eps_decays 0.999 0.99 --eps_ends 0.3 --gpus 0,1
 
   # M/N mechanism test — vary N, watch whether collapse tracks load M/N:
   conda run -n rlProject python launch_parallel.py --plan scaling \
@@ -35,7 +53,7 @@ Examples
 
 Output layout (N is always encoded in the path):
   checkpoints/ue{M}/n{N}/seed{S}/{standard,gnn}/...
-  probe_runs/ue{M}/n{N}/seed{S}/gnn_il_probe_results.json
+  probe_runs/ue{M}/n{N}/[eps{D}[_floor{E}]/|warmstart/]seed{S}/gnn_il_probe_results.json
 """
 
 import argparse
@@ -52,7 +70,8 @@ def probe_jobs(ues, uavs, seeds, episodes, out_root):
     for M in ues:
         for N in uavs:
             for S in seeds:
-                sd = os.path.join(out_root, f"ue{M}", f"n{N}", f"seed{S}")
+                cell = os.path.join(out_root, f"ue{M}", f"n{N}")
+                sd   = os.path.join(cell, f"seed{S}")
                 jobs.append({
                     "name":  f"probe_M{M}_N{N}_s{S}",
                     "argv":  [sys.executable, "probe_gnn.py",
@@ -61,7 +80,73 @@ def probe_jobs(ues, uavs, seeds, episodes, out_root):
                               "--episodes", str(episodes), "--save_dir", sd],
                     # skip if the result JSON already exists
                     "done":  os.path.join(sd, "gnn_il_probe_results.json"),
+                    "cell":  cell,     # contingency table is aggregated per cell
                 })
+    return jobs
+
+
+def race_jobs(schedules, uavs, seeds, episodes, out_root):
+    """
+    Exploration-schedule interventions — the race model's CAUSAL test.
+
+    `schedules` is a list of (M, eps_decay, eps_end) cells. Each cell re-runs
+    the probe with a modified ε schedule and everything else identical:
+      * slower decay / higher floor → larger exploration budget ∫ε dt →
+        predicted to IGNITE the encoder and eliminate collapse (e.g. M=20);
+      * faster decay → smaller budget → predicted to INDUCE collapse where the
+        standard schedule converges (e.g. M=30) — the sharpest falsifiable
+        prediction: the bimodal boundary should MOVE with the budget.
+    """
+    jobs = []
+    for (M, dec, end) in schedules:
+        tag = f"eps{dec:g}" + (f"_floor{end:g}" if end != 0.05 else "")
+        for N in uavs:
+            for S in seeds:
+                cell = os.path.join(out_root, f"ue{M}", f"n{N}", tag)
+                sd   = os.path.join(cell, f"seed{S}")
+                jobs.append({
+                    "name":  f"race_M{M}_N{N}_{tag}_s{S}",
+                    "argv":  [sys.executable, "probe_gnn.py",
+                              "--n_ues", str(M), "--n_uavs", str(N),
+                              "--seed", str(S), "--episodes", str(episodes),
+                              "--eps_decay", str(dec), "--eps_end", str(end),
+                              "--save_dir", sd],
+                    "done":  os.path.join(sd, "gnn_il_probe_results.json"),
+                    "cell":  cell,
+                })
+    return jobs
+
+
+def warmstart_jobs(uavs, seeds, episodes, out_root, target_m=20, donor_m=30):
+    """
+    Race-model fix #2 (warm start) + #3 (curriculum) in one experiment: train
+    at target_m with the encoder initialised from the SAME seed's trained
+    donor_m encoder (GNN weights are M-agnostic). Prediction: warm-started
+    seeds start above the ignition threshold φ_c, so convergence becomes
+    initialisation-independent wherever the donor ignited. A collapsed donor
+    is informative too (does collapse transfer?).
+
+    Each job "requires" its donor checkpoint: the scheduler defers it until
+    the donor probe run (priority 2 in the overnight plan) has finished.
+    """
+    jobs = []
+    for N in uavs:
+        for S in seeds:
+            donor = os.path.join(out_root, f"ue{donor_m}", f"n{N}",
+                                 f"seed{S}", "gnn_il_probe_final.pt")
+            cell  = os.path.join(out_root, f"ue{target_m}", f"n{N}", "warmstart")
+            sd    = os.path.join(cell, f"seed{S}")
+            jobs.append({
+                "name":     f"warm_M{target_m}from{donor_m}_N{N}_s{S}",
+                "argv":     [sys.executable, "probe_gnn.py",
+                             "--n_ues", str(target_m), "--n_uavs", str(N),
+                             "--seed", str(S), "--episodes", str(episodes),
+                             "--init_encoder", donor,
+                             "--save_dir", sd],
+                "done":     os.path.join(sd, "gnn_il_probe_results.json"),
+                "requires": donor,
+                "cell":     cell,
+            })
     return jobs
 
 
@@ -153,14 +238,22 @@ def run_pool(jobs, slots, log_dir, force):
         return remaining * avg / C
 
     while pending or running:
-        # Fill free slots
-        while pending and free:
+        # Fill free slots. Jobs whose "requires" file is missing (e.g. a
+        # warm-start donor checkpoint still training) are deferred to the back
+        # of the queue; `attempts` bounds one pass so we can't spin forever.
+        attempts = len(pending)
+        while pending and free and attempts > 0:
+            attempts -= 1
             job = pending.pop(0)
             if not force and job.get("done") and os.path.exists(job["done"]):
                 skipped += 1
                 print(f"[skip] {job['name']} (exists: {job['done']})", flush=True)
                 _write_status(status_path, total, skipped, finished, failed,
                               running, t0, eta())
+                continue
+            req = job.get("requires")
+            if req and not os.path.exists(req):
+                pending.append(job)         # producer not done yet — try later
                 continue
             slot = free.pop(0)
             env  = dict(os.environ)
@@ -204,6 +297,20 @@ def run_pool(jobs, slots, log_dir, force):
                           still, t0, e)
         running = still
 
+        # Deadlock: nothing is running and EVERY remaining job is blocked on a
+        # "requires" file that no running job can produce any more (its
+        # producer failed or was never scheduled). Drop them.
+        if pending and not running:
+            blocked = [j for j in pending if j.get("requires")
+                       and not os.path.exists(j["requires"])]
+            if len(blocked) == len(pending):
+                for job in pending:
+                    failed.append(job["name"])
+                    print(f"[drop] {job['name']} — requires "
+                          f"{job.get('requires')} which nothing running can "
+                          f"produce (producer failed?)", flush=True)
+                pending.clear()
+
         if running and not (pending and free):
             time.sleep(1.0)
 
@@ -219,7 +326,8 @@ def run_pool(jobs, slots, log_dir, force):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--plan", choices=["probe", "scaling", "both"],
+    ap.add_argument("--plan", choices=["probe", "scaling", "race", "warmstart",
+                                       "both", "overnight"],
                     default="probe")
     ap.add_argument("--ues",   type=int, nargs="+", default=[20])
     ap.add_argument("--uavs",  type=int, nargs="+", default=[2],
@@ -227,6 +335,10 @@ def main():
     ap.add_argument("--seeds", type=int, nargs="+",
                     default=[42, 52, 62, 72, 82])
     ap.add_argument("--episodes", type=int, default=500)
+    ap.add_argument("--eps_decays", type=float, nargs="+", default=[],
+                    help="race plan: ε-decay variants to run (floor stays 0.05)")
+    ap.add_argument("--eps_ends", type=float, nargs="+", default=[],
+                    help="race plan: ε-floor variants to run (decay stays 0.995)")
 
     ap.add_argument("--gpus", type=str, default="0,1",
                     help="comma-separated GPU ids, or 'cpu' for CPU-only")
@@ -258,20 +370,52 @@ def main():
         # probe lives in the M=20 regime by default; honour whatever --ues says
         jobs += probe_jobs(cli.ues, cli.uavs, cli.seeds, cli.episodes,
                            cli.probe_root)
+    if cli.plan == "race":
+        scheds = ([(M, d, 0.05)  for M in cli.ues for d in cli.eps_decays] +
+                  [(M, 0.995, e) for M in cli.ues for e in cli.eps_ends])
+        if not scheds:
+            ap.error("--plan race needs --eps_decays and/or --eps_ends")
+        jobs += race_jobs(scheds, cli.uavs, cli.seeds, cli.episodes,
+                          cli.probe_root)
+    if cli.plan == "warmstart":
+        jobs += warmstart_jobs(cli.uavs, cli.seeds, cli.episodes,
+                               cli.probe_root)
+    if cli.plan == "overnight":
+        # Priority-ordered (FIFO scheduler): if the night runs short, the
+        # make-or-break results are already on disk. Resumable via re-run.
+        jobs += probe_jobs([20], cli.uavs, cli.seeds, cli.episodes,
+                           cli.probe_root)              # 1. the 2×2 contingency
+        jobs += probe_jobs([30], cli.uavs, cli.seeds, cli.episodes,
+                           cli.probe_root)              # 2. donors + reliability
+        scheds = [(20, 0.999,  0.05),   # budget ∫ε ≈ 393 ep-units (vs 184 std)
+                  (20, 0.9975, 0.05),   # ≈ 285
+                  (20, 0.99,   0.05),   # ≈  99  → predicted MORE collapse
+                  (20, 0.995,  0.30),   # ≈ 218, late-shaped: floor-vs-seed test
+                  (30, 0.99,   0.05),   # ≈  99  → predicted to INDUCE collapse
+                  (30, 0.98,   0.05)]   # ≈  65  → stronger induction
+        jobs += race_jobs(scheds, cli.uavs, cli.seeds, cli.episodes,
+                          cli.probe_root)               # 3. causal test
+        jobs += warmstart_jobs(cli.uavs, cli.seeds, cli.episodes,
+                               cli.probe_root)          # 4. fix #2/#3
+        jobs += probe_jobs([5, 10, 40], cli.uavs, cli.seeds, cli.episodes,
+                           cli.probe_root)              # 5. φ-vs-M curve
 
     failed = run_pool(jobs, slots, cli.log_dir, cli.force)
 
-    # Auto-aggregate the probe contingency table per (M, N) cell
-    if cli.plan in ("probe", "both"):
+    # Auto-aggregate the probe contingency table for every probe-style cell
+    cells = []
+    for j in jobs:
+        c = j.get("cell")
+        if c and c not in cells:
+            cells.append(c)
+    if cells:
         import run_probe_sweep
-        for M in cli.ues:
-            for N in cli.uavs:
-                out_dir = os.path.join(cli.probe_root, f"ue{M}", f"n{N}")
-                print("\n" + "#" * 64)
-                print(f"# PROBE CONTINGENCY  (M={M}, N={N}, load≈{M/N:.1f})")
-                print("#" * 64)
-                run_probe_sweep.aggregate(out_dir, cli.seeds,
-                                          cost_threshold=0.9, phi_threshold=0.5)
+        for c in cells:
+            print("\n" + "#" * 64)
+            print(f"# PROBE CONTINGENCY  ({c})")
+            print("#" * 64)
+            run_probe_sweep.aggregate(c, cli.seeds,
+                                      cost_threshold=0.9, phi_threshold=0.05)
 
     sys.exit(1 if failed else 0)
 
