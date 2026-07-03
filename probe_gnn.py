@@ -43,14 +43,42 @@ Consequences:
 The actual rollout / learning is delegated to trainGnn.run_episode, so the
 dynamics are literally the original code, imported, not reimplemented.
 
+Late-collapse diagnostics (session 3, --diag_every > 0)
+--------------------------------------------------------
+The Jul-3 overnight sweep falsified the ignition/race reading (RESEARCH_LOG
+S18): collapse is largely a LATE divergence of an already-good policy. This
+wrapper therefore also carries an anatomy suite ("which quantity blows up
+first?") plus intervention arms ("which knob prevents it?"):
+
+  Measurements every --diag_every episodes (all RNG-GUARDED — global python/
+  numpy/torch RNG states are saved, reseeded to a fixed diag seed, restored —
+  so the training trajectory stays bit-identical to trainGnn.py, and every
+  eval is CRN-paired across runs, seeds, and arms):
+    * greedy CRN eval on a canonical eval env (the TRUE policy curve,
+      decoupled from exploration noise) + per-UAV congestion occupancy;
+    * mean/max |Q| + greedy action distribution/entropy on a FIXED
+      random-policy state batch (identical across all runs);
+    * per-sample |TD error| percentiles from a private-RNG buffer sample;
+    * PRE-clip grad norms (clip-at-10 may be silently saturating), captured
+      by wrapping torch.nn.utils.clip_grad_norm_ — training math unchanged.
+
+  Intervention arms (--arm, fire ONCE when the greedy eval first reaches
+  --trigger_cost):
+    * eps0          : kill exploration        → "late exploration is the trigger"
+    * freeze_replay : stop storing, keep training → data poisoning vs bootstrapping
+    * freeze_learn  : stop training, keep acting  → "policy was fine" + early-stop control
+  (--eps_end floors and --target_update cells need no trigger — plain CLI args.)
+
 Usage
 -----
     python probe_gnn.py --n_ues 20 --seed 42 --save_dir probe_runs/ue20/seed42
+    python probe_gnn.py --n_ues 20 --seed 42 --diag_every 10 --arm freeze_replay
 """
 
 import argparse
 import json
 import os
+import random
 
 import numpy as np
 import torch
@@ -214,6 +242,206 @@ def dump_probe_dataset(agent, path, max_snapshots, rng):
     )
 
 
+# ─── Late-collapse diagnostics (session-3 anatomy suite) ───────────────────
+
+class _RNGGuard:
+    """
+    Save → reseed → restore ALL global RNG streams (python `random`,
+    `np.random`, torch CPU + CUDA). env.py consumes the GLOBAL numpy RNG for
+    mobility and task arrivals, so any mid-training rollout would perturb the
+    training trajectory without this guard. Inside the guard everything sees
+    a fixed seed → evals are CRN-paired across runs/seeds/arms; outside, the
+    training streams continue exactly where they left off (bit-identity with
+    trainGnn.py preserved for the baseline arm).
+    """
+
+    def __init__(self, seed: int):
+        self.seed = seed
+
+    def __enter__(self):
+        self._py = random.getstate()
+        self._np = np.random.get_state()
+        self._th = torch.get_rng_state()
+        self._cu = (torch.cuda.get_rng_state_all()
+                    if torch.cuda.is_available() else None)
+        random.seed(self.seed)
+        np.random.seed(self.seed)
+        torch.manual_seed(self.seed)
+        return self
+
+    def __exit__(self, *exc):
+        random.setstate(self._py)
+        np.random.set_state(self._np)
+        torch.set_rng_state(self._th)
+        if self._cu is not None:
+            torch.cuda.set_rng_state_all(self._cu)
+        return False
+
+
+class _GradNormRecorder:
+    """
+    Record PRE-clip total grad norms by wrapping torch.nn.utils.clip_grad_norm_
+    (which returns the norm BEFORE clipping). gnnAgent resolves the function
+    at call time via `nn.utils.clip_grad_norm_`, so patching the module
+    attribute is visible there. Training math is completely unchanged.
+    """
+
+    def __init__(self):
+        self.norms = []
+        self._orig = None
+
+    def install(self):
+        self._orig = torch.nn.utils.clip_grad_norm_
+        rec = self
+
+        def _wrapper(parameters, max_norm, *a, **kw):
+            tn = rec._orig(parameters, max_norm, *a, **kw)
+            rec.norms.append(float(tn))
+            return tn
+
+        torch.nn.utils.clip_grad_norm_ = _wrapper
+
+    def uninstall(self):
+        if self._orig is not None:
+            torch.nn.utils.clip_grad_norm_ = self._orig
+            self._orig = None
+
+    def drain(self):
+        out, self.norms = self.norms, []
+        return out
+
+
+def build_diag_states(cfg, n_states: int, seed: int):
+    """
+    A FIXED batch of random-policy states (ue_obs, uav_feats, edge_w), built
+    under the RNG guard with a fixed seed → identical for every run, seed and
+    arm. Q statistics measured on this batch are therefore directly
+    comparable everywhere (paired across the whole experiment).
+    """
+    with _RNGGuard(seed):
+        env = NTNMECEnv(cfg)
+        ue, uav, ew = [], [], []
+        obs_list = env.reset()
+        graph = env.get_graph_data()
+        while len(ue) < n_states:
+            ue.append(np.stack(obs_list).astype(np.float32))
+            uav.append(np.asarray(graph["uav_x"], dtype=np.float32).copy())
+            ew.append(GNNILAgent.extract_edge_matrix(graph))
+            actions = [np.random.randint(env.n_actions)
+                       for _ in range(env.n_agents)]
+            obs_list, _, done, _ = env.step(actions)
+            graph = env.get_graph_data()
+            if done:
+                obs_list = env.reset()
+                graph = env.get_graph_data()
+    return np.stack(ue), np.stack(uav), np.stack(ew)
+
+
+def diag_q_stats(agent: GNNILAgent, diag_states) -> dict:
+    """Mean/max |Q|, greedy action fractions and entropy on the fixed batch."""
+    ue, uav, ew = diag_states
+    with torch.no_grad():
+        ue_t  = torch.tensor(ue,  dtype=torch.float32, device=agent.device)
+        uav_t = torch.tensor(uav, dtype=torch.float32, device=agent.device)
+        ew_t  = torch.tensor(ew,  dtype=torch.float32, device=agent.device)
+        h        = agent.gnn(ue_t, uav_t, ew_t)
+        enriched = torch.cat([ue_t, h], dim=-1)
+        S, M, _  = ue.shape
+        q        = agent.policy_net(enriched.view(S * M, -1))    # (S*M, A)
+        q_abs    = q.abs()
+        acts     = q.argmax(dim=1).cpu().numpy()
+    frac = np.bincount(acts, minlength=agent.n_actions) / float(len(acts))
+    nz = frac[frac > 0]
+    return {
+        "q_mean_abs":  float(q_abs.mean()),
+        "q_max_abs":   float(q_abs.max()),
+        "act_frac":    [float(x) for x in frac],
+        "act_entropy": float(-(nz * np.log(nz)).sum()),
+    }
+
+
+def diag_td_stats(agent: GNNILAgent, rng: np.random.Generator,
+                  n_samples: int = 128):
+    """
+    Per-sample |TD error| distribution over a private-RNG buffer sample —
+    mirrors train_step()'s Double-DQN target math under no_grad, restricted
+    to task-mask rows (exactly the rows the loss trains on).
+    """
+    buf = agent.buffer.buf
+    if len(buf) < 8:
+        return None
+    idx = rng.permutation(len(buf))[:n_samples]
+    batch = [buf[i] for i in idx]
+    (ue_obs, uav_feats, edge_w, actions, rewards,
+     next_ue_obs, next_uav_feats, next_edge_w, dones, task_masks) = zip(*batch)
+    dev = agent.device
+    t = lambda x, dt: torch.tensor(np.stack(x), dtype=dt, device=dev)
+    ue_obs, uav_feats, edge_w = (t(ue_obs, torch.float32),
+                                 t(uav_feats, torch.float32),
+                                 t(edge_w, torch.float32))
+    next_ue_obs, next_uav_feats, next_edge_w = (
+        t(next_ue_obs, torch.float32), t(next_uav_feats, torch.float32),
+        t(next_edge_w, torch.float32))
+    actions    = t(actions, torch.long)
+    rewards    = t(rewards, torch.float32)
+    dones      = torch.tensor(np.array(dones), dtype=torch.float32, device=dev)
+    task_masks = t(task_masks, torch.bool)
+
+    with torch.no_grad():
+        B, M, _ = ue_obs.shape
+        h      = agent.gnn(ue_obs, uav_feats, edge_w)
+        q_all  = agent.policy_net(
+            torch.cat([ue_obs, h], dim=-1).view(B * M, -1))
+        q_pred = q_all.gather(1, actions.view(B * M, 1)).squeeze(1)
+
+        h_n    = agent.gnn(next_ue_obs, next_uav_feats, next_edge_w)
+        enr_n  = torch.cat([next_ue_obs, h_n], dim=-1).view(B * M, -1)
+        na     = agent.policy_net(enr_n).argmax(dim=1)
+        nq     = agent.target_net(enr_n).gather(1, na.unsqueeze(1)).squeeze(1)
+        dn     = dones.unsqueeze(1).expand(B, M).reshape(B * M)
+        target = rewards.view(B * M) + agent.gamma * nq * (1.0 - dn)
+        td     = (q_pred - target).abs()[task_masks.view(B * M)]
+
+    if td.numel() == 0:
+        return None
+    tdn = td.cpu().numpy()
+    return {"td_p50": float(np.percentile(tdn, 50)),
+            "td_p95": float(np.percentile(tdn, 95)),
+            "td_max": float(tdn.max())}
+
+
+def diag_greedy_eval(agent: GNNILAgent, eval_env: NTNMECEnv,
+                     n_eps: int, seed: int) -> dict:
+    """
+    Greedy rollouts on the canonical eval env under the RNG guard → identical
+    episodes every call, in every run (CRN). Also records per-UAV congestion
+    occupancy (the queue-blowup / env-feedback signature).
+    """
+    costs, cong_means, cong_max = [], [], 0.0
+    with _RNGGuard(seed):
+        for _ in range(n_eps):
+            obs_list = eval_env.reset()
+            graph = eval_env.get_graph_data()
+            step_costs, congs = [], []
+            for _ in range(eval_env.cfg.I):
+                congs.append(
+                    np.asarray(graph["uav_x"], dtype=np.float32)[:, 2])
+                acts = agent.select_actions(obs_list, graph, greedy=True)
+                obs_list, _, done, info = eval_env.step(acts)
+                graph = eval_env.get_graph_data()
+                step_costs.append(info["avg_cost"])
+                if done:
+                    break
+            costs.append(float(np.mean(step_costs)))
+            c = np.stack(congs)
+            cong_means.append(float(c.mean()))
+            cong_max = max(cong_max, float(c.max()))
+    return {"eval_cost": float(np.mean(costs)),
+            "eval_std":  float(np.std(costs)),
+            "cong_mean": float(np.mean(cong_means)),
+            "cong_max":  cong_max}
+
+
 # ─── Training run with per-episode probe logging ───────────────────────────
 
 def train_with_probe(args) -> dict:
@@ -260,6 +488,28 @@ def train_with_probe(args) -> dict:
 
     # Private RNG for probe subsampling — NEVER the global RNG training uses.
     probe_rng = np.random.default_rng(args.probe_seed)
+
+    # ── Late-collapse diagnostics setup (S18 anatomy suite) ────────────
+    diag_every     = getattr(args, "diag_every", 0)
+    arm            = getattr(args, "arm", "none")
+    trigger_cost   = getattr(args, "trigger_cost", 0.9)
+    diag_eval_eps  = getattr(args, "diag_eval_eps", 4)
+    diag_eval_seed = getattr(args, "diag_eval_seed", 990000)
+    n_diag_states  = getattr(args, "diag_states", 256)
+
+    diag_states = eval_env = grad_rec = None
+    trigger_ep = None
+    best_diag_eval, best_diag_ep = float("inf"), None
+    if diag_every > 0:
+        # Fixed probe-state batch + canonical eval env: both built under the
+        # guard with fixed seeds, so they are IDENTICAL across runs and arms.
+        diag_states = build_diag_states(cfg, n_diag_states, diag_eval_seed + 1)
+        with _RNGGuard(diag_eval_seed):
+            eval_env = NTNMECEnv(cfg)
+        grad_rec = _GradNormRecorder()
+        grad_rec.install()
+        print(f"Diagnostics ON: every {diag_every} eps, arm={arm}, "
+              f"trigger_cost={trigger_cost}")
 
     # Encoder snapshots over training → enables offline re-probing later.
     snap_dir = os.path.join(args.save_dir, "snapshots") if args.save_dir else None
@@ -308,6 +558,45 @@ def train_with_probe(args) -> dict:
                 "probe_h_eff_rank":    probe["h_eff_rank"],
                 "probe_h_dormant":     probe["h_dormant_frac"],
             })
+
+        # ── Diagnostics: measure, then (maybe) fire the arm ────────────
+        if diag_every > 0 and (ep % diag_every == 0 or ep == args.episodes):
+            diag = {}
+            diag.update(diag_greedy_eval(agent, eval_env,
+                                         diag_eval_eps, diag_eval_seed))
+            diag.update(diag_q_stats(agent, diag_states))
+            td = diag_td_stats(agent, probe_rng)
+            if td is not None:
+                diag.update(td)
+            g = grad_rec.drain()
+            if g:
+                diag["grad_p50"] = float(np.percentile(g, 50))
+                diag["grad_max"] = float(np.max(g))
+
+            if diag["eval_cost"] < best_diag_eval:
+                best_diag_eval, best_diag_ep = diag["eval_cost"], ep
+
+            if (arm != "none" and trigger_ep is None
+                    and diag["eval_cost"] <= trigger_cost):
+                trigger_ep = ep
+                if arm == "eps0":
+                    agent.eps = 0.0
+                    agent.eps_end = 0.0
+                elif arm == "freeze_replay":
+                    agent.store = lambda *a, **k: None
+                elif arm == "freeze_learn":
+                    agent.train_step = lambda: None
+                print(f"[arm] {arm} TRIGGERED at ep {ep} "
+                      f"(greedy eval {diag['eval_cost']:.4f} "
+                      f"<= {trigger_cost})")
+
+            record.update({f"diag_{k}": v for k, v in diag.items()})
+            print(f"    [diag ep {ep}] eval={diag['eval_cost']:.4f}  "
+                  f"|Q|max={diag.get('q_max_abs', float('nan')):.2f}  "
+                  f"td95={diag.get('td_p95', float('nan')):.3f}  "
+                  f"gradmax={diag.get('grad_max', float('nan')):.1f}  "
+                  f"cong={diag.get('cong_mean', float('nan')):.3f}")
+
         history.append(record)
 
         # Snapshot the encoder+policy for offline re-probing of the trajectory.
@@ -329,6 +618,9 @@ def train_with_probe(args) -> dict:
                   f"{stats['total_loss']:>9.4f}  {stats['eps']:>6.3f}  "
                   f"{r2g:>7.3f}  {r2r:>7.3f}  {r2gd:>7.3f}  {r2rd:>7.3f}  "
                   f"{bst:>6.3f}")
+
+    if grad_rec is not None:
+        grad_rec.uninstall()
 
     # Final greedy eval — identical protocol to trainGnn (classifies the seed)
     eval_costs = [run_episode(env, agent, train=False)["avg_cost"]
@@ -355,6 +647,15 @@ def train_with_probe(args) -> dict:
         "final_probe": final_probe,
         "snapshot_eps": snapshot_eps,
     }
+    if diag_every > 0:
+        results.update({
+            "arm":              arm,
+            "trigger_ep":       trigger_ep,
+            # best greedy CRN eval seen during training + when: this is the
+            # "would early stopping have rescued this run?" number.
+            "diag_best_eval":    best_diag_eval,
+            "diag_best_eval_ep": best_diag_ep,
+        })
 
     if args.save_dir:
         os.makedirs(args.save_dir, exist_ok=True)
@@ -419,6 +720,25 @@ def get_args():
                         "(0=off); enables offline re-probing of the trajectory")
     p.add_argument("--probe_dataset_size", type=int, default=2000,
                    help="snapshots saved to probe_dataset.npz for offline probes")
+
+    # Late-collapse diagnostics (session 3 — see module docstring)
+    p.add_argument("--diag_every", type=int, default=0,
+                   help="run the diagnostics suite every K episodes (0=off). "
+                        "Measurements are RNG-guarded: the baseline training "
+                        "trajectory stays bit-identical to trainGnn.py")
+    p.add_argument("--diag_eval_eps", type=int, default=4,
+                   help="greedy CRN eval episodes per diagnostics point")
+    p.add_argument("--diag_eval_seed", type=int, default=990000,
+                   help="fixed seed for the eval env / probe-state batch "
+                        "(same for every run and arm -> paired comparisons)")
+    p.add_argument("--diag_states", type=int, default=256,
+                   help="size of the fixed random-policy state batch for Q stats")
+    p.add_argument("--arm", type=str, default="none",
+                   choices=["none", "eps0", "freeze_replay", "freeze_learn"],
+                   help="intervention fired ONCE when greedy eval first "
+                        "reaches --trigger_cost (see docstring)")
+    p.add_argument("--trigger_cost", type=float, default=0.9,
+                   help="greedy-eval cost at which the arm fires")
 
     p.add_argument("--seed",      type=int,  default=42)
     p.add_argument("--log_every", type=int,  default=25)

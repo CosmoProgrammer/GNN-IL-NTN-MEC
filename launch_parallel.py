@@ -13,6 +13,13 @@ This launcher only orchestrates the existing scripts (probe_gnn.py, train.py,
 trainGnn.py) as subprocesses — it adds no training logic. Finished jobs are
 skipped (resumable), and each job streams to its own log file.
 
+Live results sync (--sync_every N): spawns sync_results.py beside the pool to
+push all results/logs (*.json/*.npz/*.log — never *.pt weights) to the git
+branch --sync_branch (default 'results-live') every N seconds + once after
+final aggregation, so partial results can be pulled and analysed elsewhere
+while the night is still running. See sync_results.py for the mechanism
+(orphan commits, worktree/index/HEAD untouched) and the laptop-side pull.
+
 Plans
 -----
   probe     : GNN-IL + Bₙ probe            → probe_runs/ue{M}/n{N}/seed{S}/
@@ -32,10 +39,30 @@ Plans
                 4. warmstart  M=30 → M=20                5 jobs
                 5. probe M ∈ {5,10,40} (φ-vs-M curve)   15 jobs
               (ignores --ues; honours --seeds/--uavs/--episodes)
+  diagnight : the session-3 run — EVERYTHING launchable now in ONE night
+              (RESEARCH_LOG S18.4-18.5); only resurrection (needs an analysed
+              pre-divergence checkpoint) is deferred. Priority-ordered blocks:
+                1. anatomy arms  probe_gnn --diag_every 10 (greedy CRN eval,
+                   Q/TD/grad/congestion logging), M ∈ {20,30} × 10 seeds ×
+                   {base, floor .1-.4, eps0, freeze_replay, freeze_learn,
+                    tgt 5/50}                                   200 jobs
+                2. 2x2 cells     CTDE (= shared-MLP IL) + GNN-NoShare,
+                   M ∈ {5,10,20,30,40} × 10 seeds               100 jobs
+                3. consolidation de-confound: eps-decay {.9975,.999} at
+                   2x episodes with diagnostics, M=20 × 10 seeds 20 jobs
+                4. scaling       IL + GNN-IL same grid as 2 (10-seed,
+                   same-hardware baselines)                     100 jobs
+                5. PoA deep      best-response, 20 restarts, N ∈ {2,4},
+                   M ∈ {5,10,20,30,40}                           10 jobs
+              Defaults (when --ues/--seeds are untouched): ~430 jobs.
 
 Examples
 --------
-  # THE overnight run (~60 jobs, resumable — rerun the same command to resume):
+  # THE session-3 anatomy run (~200 jobs, resumable):
+  conda run -n rlProject python launch_parallel.py --plan diagnight \
+      --gpus 0,1 --procs_per_gpu 4
+
+  # the (falsified) race-model overnight run (~60 jobs, resumable):
   conda run -n rlProject python launch_parallel.py --plan overnight \
       --gpus 0,1 --procs_per_gpu 4
 
@@ -54,6 +81,7 @@ Examples
 Output layout (N is always encoded in the path):
   checkpoints/ue{M}/n{N}/seed{S}/{standard,gnn}/...
   probe_runs/ue{M}/n{N}/[eps{D}[_floor{E}]/|warmstart/]seed{S}/gnn_il_probe_results.json
+  probe_runs/diag/ue{M}/n{N}/{arm}/seed{S}/gnn_il_probe_results.json
 """
 
 import argparse
@@ -146,6 +174,143 @@ def warmstart_jobs(uavs, seeds, episodes, out_root, target_m=20, donor_m=30):
                 "done":     os.path.join(sd, "gnn_il_probe_results.json"),
                 "requires": donor,
                 "cell":     cell,
+            })
+    return jobs
+
+
+def diag_jobs(ues, uavs, seeds, episodes, out_root, diag_every=10):
+    """
+    Session-3 late-collapse anatomy (RESEARCH_LOG S18.4). Every job runs the
+    probe with the diagnostics suite ON (--diag_every): greedy CRN eval,
+    |Q| stats on a fixed state batch, TD-error percentiles, pre-clip grad
+    norms, congestion occupancy. Arms:
+      * base / floor* / tgt*  — no trigger, schedule/cadence set from ep 1;
+      * eps0, freeze_replay, freeze_learn — fire once greedy eval < 0.9.
+    Arm-major priority order: if the night is cut short, completed arms are
+    complete across both M and all seeds.
+    """
+    arms = [
+        ("base",         []),                              # ground truth
+        ("floor0.1",     ["--eps_end", "0.1"]),            # dose-response...
+        ("floor0.2",     ["--eps_end", "0.2"]),
+        ("floor0.3",     ["--eps_end", "0.3"]),
+        ("floor0.4",     ["--eps_end", "0.4"]),            # ...phase boundary
+        ("eps0",         ["--arm", "eps0"]),
+        ("freezereplay", ["--arm", "freeze_replay"]),
+        ("freezelearn",  ["--arm", "freeze_learn"]),
+        ("tgt5",         ["--target_update", "5"]),
+        ("tgt50",        ["--target_update", "50"]),
+    ]
+    jobs = []
+    for tag, extra in arms:
+        for M in ues:
+            for N in uavs:
+                for S in seeds:
+                    cell = os.path.join(out_root, "diag", f"ue{M}", f"n{N}", tag)
+                    sd   = os.path.join(cell, f"seed{S}")
+                    jobs.append({
+                        "name":  f"diag_{tag}_M{M}_N{N}_s{S}",
+                        "argv":  [sys.executable, "probe_gnn.py",
+                                  "--n_ues", str(M), "--n_uavs", str(N),
+                                  "--seed", str(S), "--episodes", str(episodes),
+                                  "--diag_every", str(diag_every),
+                                  "--save_dir", sd] + extra,
+                        "done":  os.path.join(sd, "gnn_il_probe_results.json"),
+                        "cell":  cell,
+                    })
+    return jobs
+
+
+def twobytwo_jobs(ues, uavs, seeds, episodes, ckpt_root):
+    """
+    The sharing-vs-graph 2x2, multi-seed (RESEARCH_LOG S18.5): does parameter
+    sharing ALONE produce the bimodal collapse, or does it need the graph
+    coupling? The four cells:
+      IL          : no sharing, no graph   (from scaling_jobs)
+      CTDE        : sharing,    no graph   (ctdeAgent IS shared-MLP IL:
+                                            one shared DQN + shared buffer,
+                                            local obs, no central critic)
+      GNN-NoShare : no sharing, graph
+      GNN-IL      : sharing,    graph      (from scaling_jobs)
+    This builder contributes the CTDE and NoShare cells.
+    """
+    jobs = []
+    for M in ues:
+        for N in uavs:
+            for S in seeds:
+                base = os.path.join(ckpt_root, f"ue{M}", f"n{N}", f"seed{S}")
+                ctde = os.path.join(base, "ctde")
+                nosh = os.path.join(base, "noshare")
+                jobs.append({
+                    "name": f"CTDE_M{M}_N{N}_s{S}",
+                    "argv": [sys.executable, "trainCtde.py",
+                             "--n_ues", str(M), "--n_uavs", str(N),
+                             "--seed", str(S),
+                             "--episodes", str(episodes), "--log_every", "25",
+                             "--save_dir", ctde],
+                    "done": os.path.join(ctde, "ctde_results.json"),
+                })
+                jobs.append({
+                    "name": f"NOSH_M{M}_N{N}_s{S}",
+                    "argv": [sys.executable, "trainGnnNoShare.py",
+                             "--n_ues", str(M), "--n_uavs", str(N),
+                             "--seed", str(S),
+                             "--episodes", str(episodes), "--log_every", "25",
+                             "--save_dir", nosh],
+                    "done": os.path.join(nosh, "gnn_noshare_results.json"),
+                })
+    return jobs
+
+
+def extended_jobs(uavs, seeds, episodes, out_root, diag_every=10,
+                  cells=((20, 0.9975), (20, 0.999))):
+    """
+    Consolidation de-confound (RESEARCH_LOG S18.1 item 2): the Jul-2 race grid
+    confounded exploration BUDGET with CONSOLIDATION TIME — slow-decay cells
+    ended training at eps 0.29-0.61, never getting a near-greedy phase. Re-run
+    those schedules at 2x episodes (default 1000) with the diagnostics suite
+    on, so the greedy CRN eval curve separates "policy is bad" from "training
+    cost is high because eps is high".
+    """
+    ep_ext = 2 * episodes
+    jobs = []
+    for (M, dec) in cells:
+        tag = f"eps{dec:g}_ep{ep_ext}"
+        for N in uavs:
+            for S in seeds:
+                cell = os.path.join(out_root, "diag", f"ue{M}", f"n{N}", tag)
+                sd   = os.path.join(cell, f"seed{S}")
+                jobs.append({
+                    "name":  f"ext_{tag}_M{M}_N{N}_s{S}",
+                    "argv":  [sys.executable, "probe_gnn.py",
+                              "--n_ues", str(M), "--n_uavs", str(N),
+                              "--seed", str(S), "--episodes", str(ep_ext),
+                              "--eps_decay", str(dec),
+                              "--diag_every", str(diag_every),
+                              "--save_dir", sd],
+                    "done":  os.path.join(sd, "gnn_il_probe_results.json"),
+                    "cell":  cell,
+                })
+    return jobs
+
+
+def poa_jobs(ues, out_root, starts=20):
+    """
+    PoA hardening: deep best-response equilibrium search (20 restarts) on the
+    real env, N=2 and N=4, one job per (M, N). poa_best_response.py has no
+    --cpu flag → mark no_cpu_flag so CPU slots don't pass it one.
+    """
+    jobs = []
+    for N, sub in ((2, "poa_deep"), (4, "poa_n4deep")):
+        od = os.path.join(out_root, sub)
+        for M in ues:
+            jobs.append({
+                "name": f"poa_M{M}_N{N}_deep",
+                "argv": [sys.executable, "poa_best_response.py",
+                         "--ues", str(M), "--n_uavs", str(N),
+                         "--pne_starts", str(starts), "--out", od],
+                "done": os.path.join(od, f"poa_M{M}_N{N}.json"),
+                "no_cpu_flag": True,
             })
     return jobs
 
@@ -261,7 +426,7 @@ def run_pool(jobs, slots, log_dir, force):
             env["PYTHONUNBUFFERED"] = "1"     # live, unbuffered child log files
             # CPU slot ("") → make sure the script doesn't try CUDA
             argv = list(job["argv"])
-            if slot == "" and "--cpu" not in argv:
+            if slot == "" and "--cpu" not in argv and not job.get("no_cpu_flag"):
                 argv.append("--cpu")
             log = open(os.path.join(log_dir, job["name"] + ".log"), "w")
             p = subprocess.Popen(argv, env=env, stdout=log,
@@ -327,7 +492,7 @@ def run_pool(jobs, slots, log_dir, force):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", choices=["probe", "scaling", "race", "warmstart",
-                                       "both", "overnight"],
+                                       "both", "overnight", "diagnight"],
                     default="probe")
     ap.add_argument("--ues",   type=int, nargs="+", default=[20])
     ap.add_argument("--uavs",  type=int, nargs="+", default=[2],
@@ -350,6 +515,13 @@ def main():
     ap.add_argument("--log_dir",    type=str, default="parallel_logs")
     ap.add_argument("--force", action="store_true",
                     help="re-run jobs even if their output already exists")
+    ap.add_argument("--sync_every", type=int, default=0,
+                    help="if >0, spawn sync_results.py beside the pool to "
+                         "push results/logs (*.json/*.npz/*.log — never *.pt) "
+                         "to the git branch --sync_branch every N seconds, "
+                         "plus a final push after aggregation. Requires "
+                         "`git push` to be authorized from this clone.")
+    ap.add_argument("--sync_branch", type=str, default="results-live")
     cli = ap.parse_args()
 
     # Build the slot list (each slot = a GPU id string, or "" for CPU)
@@ -363,6 +535,26 @@ def main():
 
     # Assemble jobs per plan
     jobs = []
+    seeds = list(cli.seeds)     # diagnight may widen this (used in aggregation)
+    if cli.plan == "diagnight":
+        # Rate comparisons across arms need statistical power: when the CLI
+        # defaults are untouched, widen to 10 seeds and M ∈ {20, 30} for the
+        # anatomy arms (all_m covers the full 2×2/scaling/PoA sweep).
+        ues   = cli.ues if cli.ues != [20] else [20, 30]
+        all_m = cli.ues if cli.ues != [20] else [5, 10, 20, 30, 40]
+        if seeds == [42, 52, 62, 72, 82]:
+            seeds += [92, 102, 112, 122, 132]
+        # ONE night, priority-ordered — only resurrection (needs an analysed
+        # pre-divergence checkpoint) is deferred to a later run.
+        jobs += diag_jobs(ues, cli.uavs, seeds, cli.episodes,
+                          cli.probe_root)                    # 1. anatomy arms
+        jobs += twobytwo_jobs(all_m, cli.uavs, seeds, cli.episodes,
+                              cli.ckpt_root)                 # 2. CTDE+NoShare
+        jobs += extended_jobs(cli.uavs, seeds, cli.episodes,
+                              cli.probe_root)                # 3. consolidation
+        jobs += scaling_jobs(all_m, cli.uavs, seeds, cli.episodes,
+                             cli.ckpt_root)                  # 4. IL+GNN 10-seed
+        jobs += poa_jobs(all_m, cli.probe_root)              # 5. PoA deep N=2/4
     if cli.plan in ("scaling", "both"):
         jobs += scaling_jobs(cli.ues, cli.uavs, cli.seeds, cli.episodes,
                              cli.ckpt_root)
@@ -400,6 +592,19 @@ def main():
         jobs += probe_jobs([5, 10, 40], cli.uavs, cli.seeds, cli.episodes,
                            cli.probe_root)              # 5. φ-vs-M curve
 
+    # Live results sync: push-only sidecar, safe beside the pool (orphan
+    # commits on a dedicated branch; never touches worktree/index/HEAD).
+    sync_proc = None
+    sync_argv = [sys.executable, "sync_results.py", "--mode", "push",
+                 "--branch", cli.sync_branch,
+                 "--roots", cli.probe_root, cli.ckpt_root, cli.log_dir]
+    if cli.sync_every > 0:
+        sync_proc = subprocess.Popen(
+            sync_argv + ["--loop", "--interval", str(cli.sync_every)])
+        print(f"Results sync: every {cli.sync_every}s -> branch "
+              f"'{cli.sync_branch}' (pull on the laptop with: "
+              f"python sync_results.py --mode pull)\n")
+
     failed = run_pool(jobs, slots, cli.log_dir, cli.force)
 
     # Auto-aggregate the probe contingency table for every probe-style cell
@@ -414,8 +619,18 @@ def main():
             print("\n" + "#" * 64)
             print(f"# PROBE CONTINGENCY  ({c})")
             print("#" * 64)
-            run_probe_sweep.aggregate(c, cli.seeds,
+            run_probe_sweep.aggregate(c, seeds,
                                       cost_threshold=0.9, phi_threshold=0.05)
+
+    # Final sync AFTER aggregation so the per-cell summary JSONs ship too.
+    if cli.sync_every > 0:
+        if sync_proc is not None:
+            sync_proc.terminate()
+            try:
+                sync_proc.wait(timeout=30)
+            except Exception:
+                pass
+        subprocess.call(sync_argv)
 
     sys.exit(1 if failed else 0)
 
