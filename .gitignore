@@ -16,12 +16,12 @@ ENV/
 # ML Model Checkpoints and Large Data
 checkpoints/
 # Experiment run outputs (transferred outside git, same as checkpoints/)
-probe_runs/
-parallel_logs/
+
 *.pth
 *.ckpt
 *.model
 *.h5
+*.pt
 data/
 !data/README.md  # Optional: track a readme inside data but ignore the content
 

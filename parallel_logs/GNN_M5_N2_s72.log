@@ -1,0 +1,12 @@
+Device: cuda
+
+Training GNN-IL — 5 UEs, 2 UAVs, 500 episodes
+GNN: hidden=64, out=32  | enriched_dim=43
+
+ Episode     AvgCost        Loss     Eps
+------------------------------------------
+      25      0.7335      0.5017   0.887
+      50      0.6103      0.4511   0.782
+      75      0.5983      0.4542   0.690
+     100      0.5851      0.4702   0.609
+     125      0.6194      0.4543   0.537

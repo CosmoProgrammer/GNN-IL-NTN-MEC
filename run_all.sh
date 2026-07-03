@@ -16,7 +16,7 @@ set -euo pipefail
 
 # ─── EDIT after profiling ──────────────────────────────────────────────────
 GPUS="0,1"            # comma-separated GPU ids, or "cpu" for CPU-only
-PROCS=2               # processes per GPU (or total processes if GPUS="cpu")
+PROCS=4               # processes per GPU (or total processes if GPUS="cpu")
 SEEDS="42 52 62 72 82"
 EPISODES=500
 # ───────────────────────────────────────────────────────────────────────────
