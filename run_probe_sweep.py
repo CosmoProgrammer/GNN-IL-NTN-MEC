@@ -39,7 +39,7 @@ _BASE = dict(
     gnn_hidden=64, gnn_out=32, dqn_hidden=128,
     eval_episodes=20, lr=1e-3, gamma=0.9,
     batch_size=32, buffer_cap=5_000, target_update=20, eps_decay=0.995,
-    eps_end=0.05, init_encoder="",
+    eps_end=0.05, init_encoder="", init_full="", eps_start=1.0,
     probe_every=5, probe_snapshots=512, probe_seed=12345,
     snapshot_every=25, probe_dataset_size=2000,
     # late-collapse diagnostics (session 3) — off by default here

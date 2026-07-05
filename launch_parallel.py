@@ -46,15 +46,18 @@ Plans
                    Q/TD/grad/congestion logging), M ∈ {20,30} × 10 seeds ×
                    {base, floor .1-.4, eps0, freeze_replay, freeze_learn,
                     tgt 5/50}                                   200 jobs
-                2. 2x2 cells     CTDE (= shared-MLP IL) + GNN-NoShare,
-                   M ∈ {5,10,20,30,40} × 10 seeds               100 jobs
+                2. 2x2 cells     CTDE(Bn) + CTDE-plain (--env plain, the
+                   information-matched shared-MLP-IL cell) + GNN-NoShare,
+                   M ∈ {5,10,20,30,40} × 10 seeds               150 jobs
                 3. consolidation de-confound: eps-decay {.9975,.999} at
                    2x episodes with diagnostics, M=20 × 10 seeds 20 jobs
                 4. scaling       IL + GNN-IL same grid as 2 (10-seed,
                    same-hardware baselines)                     100 jobs
                 5. PoA deep      best-response, 20 restarts, N ∈ {2,4},
                    M ∈ {5,10,20,30,40}                           10 jobs
-              Defaults (when --ues/--seeds are untouched): ~430 jobs.
+              Defaults (when --ues/--seeds are untouched): ~480 jobs
+              (the Jul-3 overnight instance predates the ctde_plain jobs
+              and ran ~430; a resumable rerun adds only the new 50).
 
 Examples
 --------
@@ -227,12 +230,17 @@ def twobytwo_jobs(ues, uavs, seeds, episodes, ckpt_root):
     sharing ALONE produce the bimodal collapse, or does it need the graph
     coupling? The four cells:
       IL          : no sharing, no graph   (from scaling_jobs)
-      CTDE        : sharing,    no graph   (ctdeAgent IS shared-MLP IL:
+      CTDE-plain  : sharing,    no graph   (ctdeAgent IS shared-MLP IL:
                                             one shared DQN + shared buffer,
-                                            local obs, no central critic)
+                                            local obs, no central critic —
+                                            `--env plain` for information
+                                            parity with IL/GNN-IL)
       GNN-NoShare : no sharing, graph
       GNN-IL      : sharing,    graph      (from scaling_jobs)
-    This builder contributes the CTDE and NoShare cells.
+    This builder contributes the CTDE and NoShare cells. NOTE: trainCtde.py
+    was historically hardcoded to envWithBL, so the plain `ctde/` cell run on
+    the night of Jul 3 is actually CTDE(Bn) — kept as the multi-seed fairness
+    ablation; `ctde_plain/` is the true 2x2 cell (added Jul 3, late).
     """
     jobs = []
     for M in ues:
@@ -240,6 +248,7 @@ def twobytwo_jobs(ues, uavs, seeds, episodes, ckpt_root):
             for S in seeds:
                 base = os.path.join(ckpt_root, f"ue{M}", f"n{N}", f"seed{S}")
                 ctde = os.path.join(base, "ctde")
+                ctdp = os.path.join(base, "ctde_plain")
                 nosh = os.path.join(base, "noshare")
                 jobs.append({
                     "name": f"CTDE_M{M}_N{N}_s{S}",
@@ -249,6 +258,15 @@ def twobytwo_jobs(ues, uavs, seeds, episodes, ckpt_root):
                              "--episodes", str(episodes), "--log_every", "25",
                              "--save_dir", ctde],
                     "done": os.path.join(ctde, "ctde_results.json"),
+                })
+                jobs.append({
+                    "name": f"CTDEP_M{M}_N{N}_s{S}",
+                    "argv": [sys.executable, "trainCtde.py",
+                             "--n_ues", str(M), "--n_uavs", str(N),
+                             "--seed", str(S), "--env", "plain",
+                             "--episodes", str(episodes), "--log_every", "25",
+                             "--save_dir", ctdp],
+                    "done": os.path.join(ctdp, "ctde_results.json"),
                 })
                 jobs.append({
                     "name": f"NOSH_M{M}_N{N}_s{S}",

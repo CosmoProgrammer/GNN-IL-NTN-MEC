@@ -17,8 +17,25 @@ import random
 import json
 import os
 
-from envWithBL        import NTNMECEnv, EnvConfig
+# Env is selected at runtime by --env (see get_args). Historical note: this
+# script was HARDCODED to envWithBL (Bₙ in the raw observation) — so every
+# prior "CTDE" checkpoint from this file is CTDE(Bₙ), the information-
+# advantaged fairness cell. The information-matched shared-MLP-IL cell for
+# the sharing-vs-graph 2×2 needs --env plain (same obs as IL/GNN-IL).
+import env as _env_plain
+import envWithBL as _env_bl
+
 from ctdeAgent import CTDEAgent
+
+# Default aliases (BL = historical behaviour) — used for type hints and by
+# the __main__ baseline helpers; train() re-binds per --env.
+NTNMECEnv = _env_bl.NTNMECEnv
+EnvConfig = _env_bl.EnvConfig
+
+
+def _select_env(name: str):
+    mod = _env_plain if name == "plain" else _env_bl
+    return mod.NTNMECEnv, mod.EnvConfig
 
 
 # ─── Helpers ───────────────────────────────────────────────────────────────
@@ -108,13 +125,15 @@ def train(args) -> dict:
     device = "cuda" if torch.cuda.is_available() and not args.cpu else "cpu"
     print(f"Device: {device}")
 
-    cfg = EnvConfig(
+    EnvCls, CfgCls = _select_env(getattr(args, "env", "bl"))
+    print(f"Env: {'envWithBL (Bn in raw obs)' if EnvCls is _env_bl.NTNMECEnv else 'env (plain obs)'}")
+    cfg = CfgCls(
         M      = args.n_ues,
         N      = args.n_uavs,
         I      = args.steps_per_ep,
         P_task = args.task_prob,
     )
-    env        = NTNMECEnv(cfg)
+    env        = EnvCls(cfg)
     controller = make_controller(
         env,
         device         = device,
@@ -262,6 +281,11 @@ def get_args():
     p.add_argument("--log_every", type=int,  default=50)
     p.add_argument("--save_dir",  type=str,  default="checkpoints")
     p.add_argument("--cpu",       action="store_true")
+    p.add_argument("--env", type=str, default="bl", choices=["bl", "plain"],
+                   help="'bl' = envWithBL, Bn in raw obs (historical default; "
+                        "the CTDE(Bn) fairness cell). 'plain' = env.py, same "
+                        "obs as IL/GNN-IL (the information-matched shared-MLP-"
+                        "IL cell of the sharing-vs-graph 2x2).")
 
     return p.parse_args()
 
@@ -270,9 +294,10 @@ if __name__ == "__main__":
     args = get_args()
     results = train(args)
 
-    # Print naive baselines alongside
-    cfg = EnvConfig(M=args.n_ues, N=args.n_uavs)
-    env = NTNMECEnv(cfg)
+    # Print naive baselines alongside (same env variant as the training run)
+    EnvCls, CfgCls = _select_env(args.env)
+    cfg = CfgCls(M=args.n_ues, N=args.n_uavs)
+    env = EnvCls(cfg)
     set_seed(args.seed)
 
     rnd = run_random_policy(env)

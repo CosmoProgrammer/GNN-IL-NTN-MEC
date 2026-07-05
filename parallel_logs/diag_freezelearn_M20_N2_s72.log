@@ -1,0 +1,82 @@
+Device: cuda
+Diagnostics ON: every 10 eps, arm=freeze_learn, trigger_cost=0.9
+
+GNN-IL + Bₙ probe — 20 UEs, 2 UAVs, 500 episodes, seed 72
+   Ep    AvgCost       Loss     Eps   R2_gnn   R2_raw   R2Δgnn   R2Δraw    Bstd
+--------------------------------------------------------------------------------
+[arm] freeze_learn TRIGGERED at ep 10 (greedy eval 0.8090 <= 0.9)
+    [diag ep 10] eval=0.8090  |Q|max=32.21  td95=14.312  gradmax=39.9  cong=0.147
+    [diag ep 20] eval=0.8090  |Q|max=32.21  td95=14.064  gradmax=nan  cong=0.147
+   25     2.9793        nan   0.887    0.755    0.058    0.211    0.010   0.137
+    [diag ep 30] eval=0.8090  |Q|max=32.21  td95=14.065  gradmax=nan  cong=0.147
+    [diag ep 40] eval=0.8090  |Q|max=32.21  td95=13.976  gradmax=nan  cong=0.147
+    [diag ep 50] eval=0.8090  |Q|max=32.21  td95=14.201  gradmax=nan  cong=0.147
+   50     2.6667        nan   0.782    0.762    0.079    0.123   -0.012   0.146
+    [diag ep 60] eval=0.8090  |Q|max=32.21  td95=14.038  gradmax=nan  cong=0.147
+    [diag ep 70] eval=0.8090  |Q|max=32.21  td95=13.322  gradmax=nan  cong=0.147
+   75     1.3852        nan   0.690    0.741    0.085    0.130   -0.015   0.148
+    [diag ep 80] eval=0.8090  |Q|max=32.21  td95=13.828  gradmax=nan  cong=0.147
+    [diag ep 90] eval=0.8090  |Q|max=32.21  td95=13.089  gradmax=nan  cong=0.147
+    [diag ep 100] eval=0.8090  |Q|max=32.21  td95=13.129  gradmax=nan  cong=0.147
+  100     2.1413        nan   0.609    0.712    0.071    0.137    0.005   0.142
+    [diag ep 110] eval=0.8090  |Q|max=32.21  td95=12.633  gradmax=nan  cong=0.147
+    [diag ep 120] eval=0.8090  |Q|max=32.21  td95=12.390  gradmax=nan  cong=0.147
+  125     1.1531        nan   0.537    0.642    0.085    0.065   -0.005   0.135
+    [diag ep 130] eval=0.8090  |Q|max=32.21  td95=12.302  gradmax=nan  cong=0.147
+    [diag ep 140] eval=0.8090  |Q|max=32.21  td95=12.241  gradmax=nan  cong=0.147
+    [diag ep 150] eval=0.8090  |Q|max=32.21  td95=10.982  gradmax=nan  cong=0.147
+  150     1.1521        nan   0.474    0.586    0.103    0.109    0.002   0.133
+    [diag ep 160] eval=0.8090  |Q|max=32.21  td95=11.305  gradmax=nan  cong=0.147
+    [diag ep 170] eval=0.8090  |Q|max=32.21  td95=10.846  gradmax=nan  cong=0.147
+  175     1.0035        nan   0.418    0.495    0.118    0.188    0.008   0.128
+    [diag ep 180] eval=0.8090  |Q|max=32.21  td95=11.543  gradmax=nan  cong=0.147
+    [diag ep 190] eval=0.8090  |Q|max=32.21  td95=10.746  gradmax=nan  cong=0.147
+    [diag ep 200] eval=0.8090  |Q|max=32.21  td95=9.997  gradmax=nan  cong=0.147
+  200     1.1159        nan   0.369    0.481    0.074    0.186    0.001   0.124
+    [diag ep 210] eval=0.8090  |Q|max=32.21  td95=9.900  gradmax=nan  cong=0.147
+    [diag ep 220] eval=0.8090  |Q|max=32.21  td95=6.768  gradmax=nan  cong=0.147
+  225     0.8597        nan   0.325    0.487    0.088    0.150   -0.001   0.129
+    [diag ep 230] eval=0.8090  |Q|max=32.21  td95=7.582  gradmax=nan  cong=0.147
+    [diag ep 240] eval=0.8090  |Q|max=32.21  td95=8.208  gradmax=nan  cong=0.147
+    [diag ep 250] eval=0.8090  |Q|max=32.21  td95=6.235  gradmax=nan  cong=0.147
+  250     0.9493        nan   0.287    0.404    0.078    0.172   -0.006   0.133
+    [diag ep 260] eval=0.8090  |Q|max=32.21  td95=9.148  gradmax=nan  cong=0.147
+    [diag ep 270] eval=0.8090  |Q|max=32.21  td95=8.041  gradmax=nan  cong=0.147
+  275     0.9387        nan   0.253    0.399    0.070    0.101    0.001   0.138
+    [diag ep 280] eval=0.8090  |Q|max=32.21  td95=6.735  gradmax=nan  cong=0.147
+    [diag ep 290] eval=0.8090  |Q|max=32.21  td95=9.697  gradmax=nan  cong=0.147
+    [diag ep 300] eval=0.8090  |Q|max=32.21  td95=8.217  gradmax=nan  cong=0.147
+  300     1.1045        nan   0.223    0.453    0.044    0.245    0.008   0.143
+    [diag ep 310] eval=0.8090  |Q|max=32.21  td95=8.641  gradmax=nan  cong=0.147
+    [diag ep 320] eval=0.8090  |Q|max=32.21  td95=6.780  gradmax=nan  cong=0.147
+  325     0.8226        nan   0.197    0.386    0.023    0.252   -0.008   0.142
+    [diag ep 330] eval=0.8090  |Q|max=32.21  td95=5.489  gradmax=nan  cong=0.147
+    [diag ep 340] eval=0.8090  |Q|max=32.21  td95=7.625  gradmax=nan  cong=0.147
+    [diag ep 350] eval=0.8090  |Q|max=32.21  td95=5.798  gradmax=nan  cong=0.147
+  350     0.9304        nan   0.174    0.366    0.027    0.148   -0.011   0.144
+    [diag ep 360] eval=0.8090  |Q|max=32.21  td95=4.588  gradmax=nan  cong=0.147
+    [diag ep 370] eval=0.8090  |Q|max=32.21  td95=5.441  gradmax=nan  cong=0.147
+  375     0.9099        nan   0.153    0.375    0.032    0.161   -0.001   0.147
+    [diag ep 380] eval=0.8090  |Q|max=32.21  td95=5.153  gradmax=nan  cong=0.147
+    [diag ep 390] eval=0.8090  |Q|max=32.21  td95=3.781  gradmax=nan  cong=0.147
+    [diag ep 400] eval=0.8090  |Q|max=32.21  td95=4.492  gradmax=nan  cong=0.147
+  400     1.0341        nan   0.135    0.261    0.025    0.117   -0.027   0.155
+    [diag ep 410] eval=0.8090  |Q|max=32.21  td95=8.212  gradmax=nan  cong=0.147
+    [diag ep 420] eval=0.8090  |Q|max=32.21  td95=8.436  gradmax=nan  cong=0.147
+  425     0.8621        nan   0.119    0.402    0.027    0.292    0.006   0.152
+    [diag ep 430] eval=0.8090  |Q|max=32.21  td95=8.326  gradmax=nan  cong=0.147
+    [diag ep 440] eval=0.8090  |Q|max=32.21  td95=6.436  gradmax=nan  cong=0.147
+    [diag ep 450] eval=0.8090  |Q|max=32.21  td95=6.250  gradmax=nan  cong=0.147
+  450     0.8250        nan   0.105    0.351    0.051    0.205    0.005   0.152
+    [diag ep 460] eval=0.8090  |Q|max=32.21  td95=3.196  gradmax=nan  cong=0.147
+    [diag ep 470] eval=0.8090  |Q|max=32.21  td95=2.893  gradmax=nan  cong=0.147
+  475     0.8778        nan   0.093    0.416    0.036    0.149   -0.007   0.155
+    [diag ep 480] eval=0.8090  |Q|max=32.21  td95=3.276  gradmax=nan  cong=0.147
+    [diag ep 490] eval=0.8090  |Q|max=32.21  td95=5.172  gradmax=nan  cong=0.147
+    [diag ep 500] eval=0.8090  |Q|max=32.21  td95=2.832  gradmax=nan  cong=0.147
+  500     0.8431        nan   0.082    0.377    0.028    0.173   -0.007   0.156
+
+Eval (20 eps): mean=0.8652 std=0.0511  |  final R2_gnn=0.362  R2_raw=0.047  R2Δgnn=0.175  R2Δraw=0.003
+Saved to probe_runs/diag/ue20/n2/freezelearn/seed72/  (results.json, 20 snapshots, probe_dataset.npz, final.pt)
+
+GNN-IL+probe — eval 0.8652 ± 0.0511  |  final φ (R2Δgnn) 0.175  (static R2_gnn 0.362)

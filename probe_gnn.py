@@ -469,6 +469,7 @@ def train_with_probe(args) -> dict:
         batch_size    = args.batch_size,
         buffer_cap    = args.buffer_cap,
         target_update = args.target_update,
+        eps_start     = getattr(args, "eps_start", 1.0),
         eps_decay     = args.eps_decay,
         eps_end       = getattr(args, "eps_end", 0.05),
         device        = device,
@@ -485,6 +486,18 @@ def train_with_probe(args) -> dict:
         agent.gnn.load_state_dict(ckpt["gnn"])
         print(f"Warm-started encoder from {init_encoder} "
               f"(policy net remains randomly initialised)")
+
+    # Resurrection (S18.5): restart from a mid-training snapshot — loads gnn +
+    # policy + target. Combine with --eps_start set to the eps at the snapshot
+    # episode to resume the schedule, and a different --seed for a different
+    # RNG stream (deterministic doom vs knife-edge chance). Caveat: the replay
+    # buffer is NOT checkpointed — it refills from scratch (weights-only
+    # resurrection; document in any writeup).
+    init_full = getattr(args, "init_full", "")
+    if init_full:
+        agent.load(init_full)
+        print(f"Resurrection: loaded gnn+policy(+target) from {init_full}, "
+              f"eps starts at {agent.eps:.3f}")
 
     # Private RNG for probe subsampling — NEVER the global RNG training uses.
     probe_rng = np.random.default_rng(args.probe_seed)
@@ -707,6 +720,13 @@ def get_args():
                    help="path to a .pt checkpoint whose 'gnn' weights warm-"
                         "start the encoder (race-model fix #2; donor from a "
                         "different M = curriculum test #3)")
+    p.add_argument("--init_full",     type=str,   default="",
+                   help="resurrection: load gnn+policy(+target) from a mid-"
+                        "training snapshot; pair with --eps_start and a "
+                        "different --seed (buffer is NOT restored)")
+    p.add_argument("--eps_start",     type=float, default=1.0,
+                   help="initial epsilon (set to the snapshot-episode eps "
+                        "when resurrecting)")
 
     # Probe-specific
     p.add_argument("--probe_every",     type=int, default=5,
