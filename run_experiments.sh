@@ -31,7 +31,22 @@ if ! command -v conda > /dev/null 2>&1; then
     log "ERROR: conda not found on PATH — aborting."
     exit 1
 fi
-PY="conda run -n rlproject --no-capture-output python"
+
+# Pick the env that actually exists on this machine (server = gnn_il).
+CONDA_ENV=""
+for e in gnn_il rlproject rlProject; do
+    if conda env list | awk '{print $1}' | grep -qx "$e"; then
+        CONDA_ENV="$e"
+        break
+    fi
+done
+if [ -z "$CONDA_ENV" ]; then
+    log "ERROR: none of gnn_il/rlproject/rlProject found in conda env list — aborting."
+    conda env list >> "$INFO"
+    exit 1
+fi
+log "conda env: $CONDA_ENV"
+PY="conda run -n $CONDA_ENV --no-capture-output python"
 
 # ── GPU auto-detect ─────────────────────────────────────────────────────────
 # A GPU counts as free if it has <2 GB in use and <20% utilization right now.
