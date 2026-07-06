@@ -207,6 +207,7 @@ class GNNILAgent:
         eps_end:      float = 0.05,
         eps_decay:    float = 0.995,
         device:       str   = "cpu",
+        target_encoder: bool = False,
     ):
         self.n_actions     = n_actions
         self.gamma         = gamma
@@ -238,6 +239,23 @@ class GNNILAgent:
         ).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
+
+        # Fully-frozen bootstrap target (cold-review control, default OFF):
+        # historically the TD target's next-state embeddings come from the
+        # ONLINE encoder — only the DQN head has a frozen copy — so the target
+        # drifts with every encoder update. With target_encoder=True a frozen
+        # encoder copy is kept and hard-synced together with target_net, making
+        # the bootstrap target fully frozen between syncs.
+        self.target_gnn = None
+        if target_encoder:
+            self.target_gnn = BipartiteGNNEncoder(
+                ue_dim  = obs_dim,
+                uav_dim = 3,
+                hidden  = gnn_hidden,
+                out_dim = gnn_out,
+            ).to(self.device)
+            self.target_gnn.load_state_dict(self.gnn.state_dict())
+            self.target_gnn.eval()
 
         # Single optimiser covers BOTH gnn and policy_net parameters
         self.optimiser = torch.optim.RMSprop(
@@ -378,7 +396,17 @@ class GNNILAgent:
             enriched_nflat = enriched_next.view(B * M, -1)    # (B*M, enriched_dim)
 
             next_actions   = self.policy_net(enriched_nflat).argmax(dim=1)
-            next_q         = self.target_net(enriched_nflat).gather(
+            # Double-DQN: the online net selects (above); the frozen net
+            # evaluates. With target_encoder, evaluation features come from
+            # the frozen encoder copy, not the drifting online encoder.
+            if self.target_gnn is not None:
+                h_next_tgt = self.target_gnn(
+                    next_ue_obs, next_uav_feats, next_edge_w)
+                eval_nflat = torch.cat(
+                    [next_ue_obs, h_next_tgt], dim=-1).view(B * M, -1)
+            else:
+                eval_nflat = enriched_nflat
+            next_q         = self.target_net(eval_nflat).gather(
                 1, next_actions.unsqueeze(1)
             ).squeeze(1)                                        # (B*M,)
 
@@ -405,6 +433,8 @@ class GNNILAgent:
         self.steps += 1
         if self.steps % self.target_update == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
+            if self.target_gnn is not None:
+                self.target_gnn.load_state_dict(self.gnn.state_dict())
 
         return float(loss.item())
 
@@ -427,3 +457,5 @@ class GNNILAgent:
         self.gnn.load_state_dict(ckpt["gnn"])
         self.policy_net.load_state_dict(ckpt["policy_net"])
         self.target_net.load_state_dict(ckpt["policy_net"])
+        if self.target_gnn is not None:
+            self.target_gnn.load_state_dict(ckpt["gnn"])

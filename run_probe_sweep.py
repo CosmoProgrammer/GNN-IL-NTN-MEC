@@ -44,7 +44,8 @@ _BASE = dict(
     snapshot_every=25, probe_dataset_size=2000,
     # late-collapse diagnostics (session 3) — off by default here
     diag_every=0, diag_eval_eps=4, diag_eval_seed=990000, diag_states=256,
-    arm="none", trigger_cost=0.9,
+    arm="none", trigger_cost=0.9, trigger_mode="raw", trigger_min_ep=0,
+    target_encoder=False,
     log_every=100,
 )
 

@@ -58,6 +58,22 @@ Plans
               Defaults (when --ues/--seeds are untouched): ~480 jobs
               (the Jul-3 overnight instance predates the ctde_plain jobs
               and ran ~430; a resumable rerun adds only the new 50).
+  coldnight : the cold-review controls (RESEARCH_LOG §25) — decides whether
+              the divergence anatomy is sharing-generic or a GNN-IL artifact,
+              and de-confounds the 2×2. Priority-ordered blocks
+              (M ∈ {20,30} × 10 seeds unless noted):
+                1. CTDE-plain diag base traces (probe_ctde)       20 jobs
+                2. CTDE-Bn    diag base traces                    20 jobs
+                3. GNN-IL fully-frozen target (--target_encoder)  20 jobs
+                4. CTDE-plain arms: eps0(corrected trigger) +
+                   freeze_replay                                  40 jobs
+                5. CTDE-Bn    arms: same                          40 jobs
+                6. GNN-IL eps0 with CORRECTED trigger (smoothed
+                   <=0.8, min ep 100 — the old raw<=0.9 fired at
+                   ep 10 in all M=20 seeds)                       20 jobs
+                7. fairness: CTDE-plain batch=32*M + GNN-IL
+                   buffer window matched to CTDE (cap 50k)        40 jobs
+              ~200 jobs; resumable; blocks 1–3 are the thesis-deciders.
 
 Examples
 --------
@@ -213,6 +229,64 @@ def diag_jobs(ues, uavs, seeds, episodes, out_root, diag_every=10):
                     sd   = os.path.join(cell, f"seed{S}")
                     jobs.append({
                         "name":  f"diag_{tag}_M{M}_N{N}_s{S}",
+                        "argv":  [sys.executable, "probe_gnn.py",
+                                  "--n_ues", str(M), "--n_uavs", str(N),
+                                  "--seed", str(S), "--episodes", str(episodes),
+                                  "--diag_every", str(diag_every),
+                                  "--save_dir", sd] + extra,
+                        "done":  os.path.join(sd, "gnn_il_probe_results.json"),
+                        "cell":  cell,
+                    })
+    return jobs
+
+
+def ctde_diag_jobs(env_variant, ues, uavs, seeds, episodes, out_root, arms,
+                   diag_every=10):
+    """
+    Cold-review controls: the SAME diagnostic suite probe_gnn runs, on the
+    shared-MLP cells (probe_ctde.py). env_variant: 'plain' (env.py,
+    information-matched) or 'bl' (envWithBL, CTDE-Bn). `arms` is a list of
+    (tag, extra_argv) cells. No 'cell' key: run_probe_sweep's φ-contingency
+    aggregation doesn't apply to CTDE (no encoder probe).
+    """
+    sub = "plain" if env_variant == "plain" else "bn"
+    jobs = []
+    for tag, extra in arms:
+        for M in ues:
+            for N in uavs:
+                for S in seeds:
+                    sd = os.path.join(out_root, "diag_ctde", sub,
+                                      f"ue{M}", f"n{N}", tag, f"seed{S}")
+                    jobs.append({
+                        "name": f"cdiag_{sub}_{tag}_M{M}_N{N}_s{S}",
+                        "argv": [sys.executable, "probe_ctde.py",
+                                 "--env", env_variant,
+                                 "--n_ues", str(M), "--n_uavs", str(N),
+                                 "--seed", str(S), "--episodes", str(episodes),
+                                 "--diag_every", str(diag_every),
+                                 "--save_dir", sd] + extra,
+                        "done": os.path.join(sd, "ctde_probe_results.json"),
+                    })
+    return jobs
+
+
+def gnn_control_jobs(cells, ues, uavs, seeds, episodes, out_root,
+                     diag_every=10):
+    """
+    Cold-review GNN-side controls, run through probe_gnn with diagnostics on.
+    `cells` is a list of (tag, extra_argv); outputs land beside the existing
+    diag arms (probe_runs/diag/ue{M}/n{N}/{tag}/seed{S}/) so the analyzer's
+    arm table picks them up automatically.
+    """
+    jobs = []
+    for tag, extra in cells:
+        for M in ues:
+            for N in uavs:
+                for S in seeds:
+                    cell = os.path.join(out_root, "diag", f"ue{M}", f"n{N}", tag)
+                    sd   = os.path.join(cell, f"seed{S}")
+                    jobs.append({
+                        "name":  f"gctl_{tag}_M{M}_N{N}_s{S}",
                         "argv":  [sys.executable, "probe_gnn.py",
                                   "--n_ues", str(M), "--n_uavs", str(N),
                                   "--seed", str(S), "--episodes", str(episodes),
@@ -510,7 +584,8 @@ def run_pool(jobs, slots, log_dir, force):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", choices=["probe", "scaling", "race", "warmstart",
-                                       "both", "overnight", "diagnight"],
+                                       "both", "overnight", "diagnight",
+                                       "coldnight"],
                     default="probe")
     ap.add_argument("--ues",   type=int, nargs="+", default=[20])
     ap.add_argument("--uavs",  type=int, nargs="+", default=[2],
@@ -533,6 +608,9 @@ def main():
     ap.add_argument("--log_dir",    type=str, default="parallel_logs")
     ap.add_argument("--force", action="store_true",
                     help="re-run jobs even if their output already exists")
+    ap.add_argument("--dry_run", action="store_true",
+                    help="print the job list (name + done-file, in priority "
+                         "order) and exit without launching anything")
     ap.add_argument("--sync_every", type=int, default=0,
                     help="if >0, spawn sync_results.py beside the pool to "
                          "push results/logs (*.json/*.npz/*.log — never *.pt) "
@@ -573,6 +651,43 @@ def main():
         jobs += scaling_jobs(all_m, cli.uavs, seeds, cli.episodes,
                              cli.ckpt_root)                  # 4. IL+GNN 10-seed
         jobs += poa_jobs(all_m, cli.probe_root)              # 5. PoA deep N=2/4
+    if cli.plan == "coldnight":
+        # Cold-review controls (RESEARCH_LOG §25). Same widening convention
+        # as diagnight: untouched CLI → M ∈ {20,30} × 10 seeds.
+        ues = cli.ues if cli.ues != [20] else [20, 30]
+        if seeds == [42, 52, 62, 72, 82]:
+            seeds += [92, 102, 112, 122, 132]
+        # Corrected trigger: fire on the smoothed (median-of-3) CRN eval
+        # crossing 0.8 — the v2-label convergence bar — and never before
+        # ep 100. The historical raw<=0.9 trigger fired at ep 10 in ALL ten
+        # M=20 eps0 seeds (a near-untrained policy already evals <=0.9).
+        corrected = ["--trigger_mode", "smoothed",
+                     "--trigger_cost", "0.8",
+                     "--trigger_min_ep", "100"]
+        base_arm  = [("base", [])]
+        ctde_arms = [("eps0",         ["--arm", "eps0"] + corrected),
+                     ("freezereplay", ["--arm", "freeze_replay"] + corrected)]
+        jobs += ctde_diag_jobs("plain", ues, cli.uavs, seeds, cli.episodes,
+                               cli.probe_root, base_arm)     # 1. thesis-decider
+        jobs += ctde_diag_jobs("bl", ues, cli.uavs, seeds, cli.episodes,
+                               cli.probe_root, base_arm)     # 2. info-matched
+        jobs += gnn_control_jobs([("tgtenc", ["--target_encoder"])],
+                                 ues, cli.uavs, seeds, cli.episodes,
+                                 cli.probe_root)             # 3. artifact ctrl
+        jobs += ctde_diag_jobs("plain", ues, cli.uavs, seeds, cli.episodes,
+                               cli.probe_root, ctde_arms)    # 4. CTDE arms
+        jobs += ctde_diag_jobs("bl", ues, cli.uavs, seeds, cli.episodes,
+                               cli.probe_root, ctde_arms)    # 5. CTDE-Bn arms
+        jobs += gnn_control_jobs([("eps0v2",
+                                   ["--arm", "eps0"] + corrected)],
+                                 ues, cli.uavs, seeds, cli.episodes,
+                                 cli.probe_root)             # 6. eps0 redone
+        jobs += ctde_diag_jobs("plain", ues, cli.uavs, seeds, cli.episodes,
+                               cli.probe_root,
+                               [("batchM", ["--batch_scale_m"])])  # 7a. fairness
+        jobs += gnn_control_jobs([("bigbuf", ["--buffer_cap", "50000"])],
+                                 ues, cli.uavs, seeds, cli.episodes,
+                                 cli.probe_root)             # 7b. fairness
     if cli.plan in ("scaling", "both"):
         jobs += scaling_jobs(cli.ues, cli.uavs, cli.seeds, cli.episodes,
                              cli.ckpt_root)
@@ -609,6 +724,17 @@ def main():
                                cli.probe_root)          # 4. fix #2/#3
         jobs += probe_jobs([5, 10, 40], cli.uavs, cli.seeds, cli.episodes,
                            cli.probe_root)              # 5. φ-vs-M curve
+
+    if cli.dry_run:
+        print(f"DRY RUN — {len(jobs)} jobs in priority order:\n")
+        for i, j in enumerate(jobs, 1):
+            state = "DONE" if (j.get("done") and os.path.exists(j["done"])) \
+                    else "pending"
+            print(f"{i:>4}. [{state:>7}] {j['name']}")
+        n_done = sum(1 for j in jobs
+                     if j.get("done") and os.path.exists(j["done"]))
+        print(f"\n{len(jobs) - n_done} to run, {n_done} already resolved.")
+        return
 
     # Live results sync: push-only sidecar, safe beside the pool (orphan
     # commits on a dedicated branch; never touches worktree/index/HEAD).

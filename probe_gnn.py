@@ -473,7 +473,11 @@ def train_with_probe(args) -> dict:
         eps_decay     = args.eps_decay,
         eps_end       = getattr(args, "eps_end", 0.05),
         device        = device,
+        target_encoder = getattr(args, "target_encoder", False),
     )
+    if getattr(args, "target_encoder", False):
+        print("Fully-frozen bootstrap target: encoder target copy ON "
+              "(cold-review artifact control)")
 
     # Race-model fix #2 (warm start) / #3 (curriculum): initialise the ENCODER
     # from a trained donor checkpoint. GNN weights are M-agnostic, so a donor
@@ -506,12 +510,15 @@ def train_with_probe(args) -> dict:
     diag_every     = getattr(args, "diag_every", 0)
     arm            = getattr(args, "arm", "none")
     trigger_cost   = getattr(args, "trigger_cost", 0.9)
+    trigger_mode   = getattr(args, "trigger_mode", "raw")
+    trigger_min_ep = getattr(args, "trigger_min_ep", 0)
     diag_eval_eps  = getattr(args, "diag_eval_eps", 4)
     diag_eval_seed = getattr(args, "diag_eval_seed", 990000)
     n_diag_states  = getattr(args, "diag_states", 256)
 
     diag_states = eval_env = grad_rec = None
     trigger_ep = None
+    recent_evals = []      # rolling CRN evals for the smoothed trigger
     best_diag_eval, best_diag_ep = float("inf"), None
     if diag_every > 0:
         # Fixed probe-state batch + canonical eval env: both built under the
@@ -589,8 +596,22 @@ def train_with_probe(args) -> dict:
             if diag["eval_cost"] < best_diag_eval:
                 best_diag_eval, best_diag_ep = diag["eval_cost"], ep
 
+            # Trigger statistic. "raw" = the historical behaviour (single CRN
+            # eval ≤ threshold — degenerate at M=20, where a near-untrained
+            # policy already evals ≤ 0.9 at ep 10). "smoothed" = median of the
+            # last 3 CRN evals, matching the v2-label convergence definition,
+            # combined with --trigger_min_ep so the arm can only fire on a
+            # genuinely converged policy.
+            recent_evals.append(diag["eval_cost"])
+            if trigger_mode == "smoothed":
+                trig_val = (float(np.median(recent_evals[-3:]))
+                            if len(recent_evals) >= 3 else float("inf"))
+            else:
+                trig_val = diag["eval_cost"]
+
             if (arm != "none" and trigger_ep is None
-                    and diag["eval_cost"] <= trigger_cost):
+                    and ep >= trigger_min_ep
+                    and trig_val <= trigger_cost):
                 trigger_ep = ep
                 if arm == "eps0":
                     agent.eps = 0.0
@@ -759,6 +780,22 @@ def get_args():
                         "reaches --trigger_cost (see docstring)")
     p.add_argument("--trigger_cost", type=float, default=0.9,
                    help="greedy-eval cost at which the arm fires")
+    p.add_argument("--trigger_mode", type=str, default="raw",
+                   choices=["raw", "smoothed"],
+                   help="'raw' = single CRN eval <= trigger_cost (historical; "
+                        "degenerate at M=20 where it fires at ep 10). "
+                        "'smoothed' = median of last 3 CRN evals <= "
+                        "trigger_cost (matches the v2-label convergence "
+                        "definition)")
+    p.add_argument("--trigger_min_ep", type=int, default=0,
+                   help="arm may not fire before this episode (guards the "
+                        "eps0 arm against firing on a near-untrained policy)")
+    p.add_argument("--target_encoder", action="store_true",
+                   help="keep a FROZEN target copy of the GNN encoder for the "
+                        "TD target (synced with target_net). Default off = "
+                        "historical behaviour: next-state embeddings from the "
+                        "online encoder (half-frozen target). Cold-review "
+                        "artifact control.")
 
     p.add_argument("--seed",      type=int,  default=42)
     p.add_argument("--log_every", type=int,  default=25)
