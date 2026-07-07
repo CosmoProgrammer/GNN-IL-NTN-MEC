@@ -1,0 +1,5140 @@
+{
+  "method": "GNN-IL+probe",
+  "config": {
+    "n_ues": 20,
+    "n_uavs": 2,
+    "steps_per_ep": 100,
+    "task_prob": 0.3,
+    "gnn_hidden": 64,
+    "gnn_out": 32,
+    "dqn_hidden": 128,
+    "episodes": 500,
+    "eval_episodes": 20,
+    "lr": 0.001,
+    "gamma": 0.9,
+    "batch_size": 32,
+    "buffer_cap": 5000,
+    "target_update": 20,
+    "eps_decay": 0.995,
+    "eps_end": 0.05,
+    "init_encoder": "",
+    "probe_every": 5,
+    "probe_snapshots": 512,
+    "probe_seed": 12345,
+    "snapshot_every": 25,
+    "probe_dataset_size": 2000,
+    "diag_every": 10,
+    "diag_eval_eps": 4,
+    "diag_eval_seed": 990000,
+    "diag_states": 256,
+    "arm": "freeze_learn",
+    "trigger_cost": 0.9,
+    "seed": 42,
+    "log_every": 25,
+    "save_dir": "probe_runs/diag/ue20/n2/freezelearn/seed42",
+    "cpu": false
+  },
+  "history": [
+    {
+      "episode": 1,
+      "avg_cost": 3.608695879288667,
+      "total_loss": 3.475801908451578,
+      "eps": 1.0
+    },
+    {
+      "episode": 2,
+      "avg_cost": 3.8304332583879597,
+      "total_loss": 2.36141414642334,
+      "eps": 0.995
+    },
+    {
+      "episode": 3,
+      "avg_cost": 3.3996199997466308,
+      "total_loss": 2.2578536570072174,
+      "eps": 0.990025
+    },
+    {
+      "episode": 4,
+      "avg_cost": 3.113153763923404,
+      "total_loss": 2.2751523566246035,
+      "eps": 0.985074875
+    },
+    {
+      "episode": 5,
+      "avg_cost": 3.371023997621598,
+      "total_loss": 2.373509818315506,
+      "eps": 0.9801495006250001,
+      "probe_r2_gnn": 0.9009067118167877,
+      "probe_r2_gnn_per_uav": [
+        0.9161291718482971,
+        0.8856842517852783
+      ],
+      "probe_r2_rawobs": 0.05833214521408081,
+      "probe_r2_gnn_delta": 0.06577423214912415,
+      "probe_r2_raw_delta": -0.010654330253601074,
+      "probe_r2_congbase_delta": 0.08608955144882202,
+      "probe_bn_std": 0.15413743257522583,
+      "probe_dbn_std": 0.06574361026287079,
+      "probe_h_eff_rank": 1.9006222486495972,
+      "probe_h_dormant": 0.4375
+    },
+    {
+      "episode": 6,
+      "avg_cost": 4.1846267537121795,
+      "total_loss": 2.202639752626419,
+      "eps": 0.9752487531218751
+    },
+    {
+      "episode": 7,
+      "avg_cost": 3.2425252412881833,
+      "total_loss": 2.126414475440979,
+      "eps": 0.9703725093562657
+    },
+    {
+      "episode": 8,
+      "avg_cost": 3.6339644773170323,
+      "total_loss": 1.955974485874176,
+      "eps": 0.9655206468094844
+    },
+    {
+      "episode": 9,
+      "avg_cost": 3.637300628272692,
+      "total_loss": 1.919471298456192,
+      "eps": 0.960693043575437
+    },
+    {
+      "episode": 10,
+      "avg_cost": 3.1637342244429827,
+      "total_loss": 1.8596388745307921,
+      "eps": 0.9558895783575597,
+      "probe_r2_gnn": 0.7951203286647797,
+      "probe_r2_gnn_per_uav": [
+        0.7395949363708496,
+        0.8506457209587097
+      ],
+      "probe_r2_rawobs": 0.10705390572547913,
+      "probe_r2_gnn_delta": 0.0472983717918396,
+      "probe_r2_raw_delta": 0.001672983169555664,
+      "probe_r2_congbase_delta": 0.10509365797042847,
+      "probe_bn_std": 0.16224156320095062,
+      "probe_dbn_std": 0.0671989768743515,
+      "probe_h_eff_rank": 1.6723527908325195,
+      "probe_h_dormant": 0.40625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.9444096088409424,
+      "diag_td_p95": 13.625985145568848,
+      "diag_td_max": 21.92721939086914,
+      "diag_grad_p50": 16.89255142211914,
+      "diag_grad_max": 32.2845458984375
+    },
+    {
+      "episode": 11,
+      "avg_cost": 3.3540725530706608,
+      "total_loss": NaN,
+      "eps": 0.9511101304657719
+    },
+    {
+      "episode": 12,
+      "avg_cost": 3.2061118154126627,
+      "total_loss": NaN,
+      "eps": 0.946354579813443
+    },
+    {
+      "episode": 13,
+      "avg_cost": 3.142850123882441,
+      "total_loss": NaN,
+      "eps": 0.9416228069143757
+    },
+    {
+      "episode": 14,
+      "avg_cost": 3.332735178900496,
+      "total_loss": NaN,
+      "eps": 0.9369146928798039
+    },
+    {
+      "episode": 15,
+      "avg_cost": 3.017407768054955,
+      "total_loss": NaN,
+      "eps": 0.9322301194154049,
+      "probe_r2_gnn": 0.8135269582271576,
+      "probe_r2_gnn_per_uav": [
+        0.7828012108802795,
+        0.8442527055740356
+      ],
+      "probe_r2_rawobs": 0.1149124801158905,
+      "probe_r2_gnn_delta": 0.09804826974868774,
+      "probe_r2_raw_delta": 0.0059545040130615234,
+      "probe_r2_congbase_delta": 0.11471384763717651,
+      "probe_bn_std": 0.16431942582130432,
+      "probe_dbn_std": 0.06883344054222107,
+      "probe_h_eff_rank": 1.6262484788894653,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 16,
+      "avg_cost": 3.2508908466159636,
+      "total_loss": NaN,
+      "eps": 0.9275689688183278
+    },
+    {
+      "episode": 17,
+      "avg_cost": 3.4417728385402895,
+      "total_loss": NaN,
+      "eps": 0.9229311239742362
+    },
+    {
+      "episode": 18,
+      "avg_cost": 3.071479647609725,
+      "total_loss": NaN,
+      "eps": 0.918316468354365
+    },
+    {
+      "episode": 19,
+      "avg_cost": 3.619393753862868,
+      "total_loss": NaN,
+      "eps": 0.9137248860125932
+    },
+    {
+      "episode": 20,
+      "avg_cost": 3.2692665352932893,
+      "total_loss": NaN,
+      "eps": 0.9091562615825302,
+      "probe_r2_gnn": 0.7928547263145447,
+      "probe_r2_gnn_per_uav": [
+        0.7611481547355652,
+        0.8245612978935242
+      ],
+      "probe_r2_rawobs": 0.0994558036327362,
+      "probe_r2_gnn_delta": 0.0817924439907074,
+      "probe_r2_raw_delta": -0.0005406737327575684,
+      "probe_r2_congbase_delta": 0.14779120683670044,
+      "probe_bn_std": 0.15343928337097168,
+      "probe_dbn_std": 0.0677877739071846,
+      "probe_h_eff_rank": 1.7222576141357422,
+      "probe_h_dormant": 0.40625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8206491470336914,
+      "diag_td_p95": 13.892196655273438,
+      "diag_td_max": 20.44236183166504
+    },
+    {
+      "episode": 21,
+      "avg_cost": 2.4789981461049053,
+      "total_loss": NaN,
+      "eps": 0.9046104802746175
+    },
+    {
+      "episode": 22,
+      "avg_cost": 3.257954039047939,
+      "total_loss": NaN,
+      "eps": 0.9000874278732445
+    },
+    {
+      "episode": 23,
+      "avg_cost": 3.1946608729484613,
+      "total_loss": NaN,
+      "eps": 0.8955869907338783
+    },
+    {
+      "episode": 24,
+      "avg_cost": 3.3593727274608365,
+      "total_loss": NaN,
+      "eps": 0.8911090557802088
+    },
+    {
+      "episode": 25,
+      "avg_cost": 2.8552432058008845,
+      "total_loss": NaN,
+      "eps": 0.8866535105013078,
+      "probe_r2_gnn": 0.8206105530261993,
+      "probe_r2_gnn_per_uav": [
+        0.7970014214515686,
+        0.8442196846008301
+      ],
+      "probe_r2_rawobs": 0.10932719707489014,
+      "probe_r2_gnn_delta": -0.027662694454193115,
+      "probe_r2_raw_delta": 0.0008836090564727783,
+      "probe_r2_congbase_delta": 0.03036847710609436,
+      "probe_bn_std": 0.15934614837169647,
+      "probe_dbn_std": 0.0684758871793747,
+      "probe_h_eff_rank": 1.627817153930664,
+      "probe_h_dormant": 0.40625
+    },
+    {
+      "episode": 26,
+      "avg_cost": 3.219477638773692,
+      "total_loss": NaN,
+      "eps": 0.8822202429488013
+    },
+    {
+      "episode": 27,
+      "avg_cost": 3.293480345322194,
+      "total_loss": NaN,
+      "eps": 0.8778091417340573
+    },
+    {
+      "episode": 28,
+      "avg_cost": 2.952497479184964,
+      "total_loss": NaN,
+      "eps": 0.8734200960253871
+    },
+    {
+      "episode": 29,
+      "avg_cost": 3.220818944506149,
+      "total_loss": NaN,
+      "eps": 0.8690529955452602
+    },
+    {
+      "episode": 30,
+      "avg_cost": 2.7256601550977093,
+      "total_loss": NaN,
+      "eps": 0.8647077305675338,
+      "probe_r2_gnn": 0.8002640604972839,
+      "probe_r2_gnn_per_uav": [
+        0.7612451314926147,
+        0.8392829895019531
+      ],
+      "probe_r2_rawobs": 0.10117152333259583,
+      "probe_r2_gnn_delta": 0.07388272881507874,
+      "probe_r2_raw_delta": -0.029086947441101074,
+      "probe_r2_congbase_delta": 0.07644248008728027,
+      "probe_bn_std": 0.15973860025405884,
+      "probe_dbn_std": 0.0656621903181076,
+      "probe_h_eff_rank": 1.674055576324463,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8891820907592773,
+      "diag_td_p95": 13.548370361328125,
+      "diag_td_max": 22.330039978027344
+    },
+    {
+      "episode": 31,
+      "avg_cost": 2.8624772480965612,
+      "total_loss": NaN,
+      "eps": 0.8603841919146962
+    },
+    {
+      "episode": 32,
+      "avg_cost": 1.9189188718370946,
+      "total_loss": NaN,
+      "eps": 0.8560822709551227
+    },
+    {
+      "episode": 33,
+      "avg_cost": 2.9916943737982633,
+      "total_loss": NaN,
+      "eps": 0.851801859600347
+    },
+    {
+      "episode": 34,
+      "avg_cost": 2.7455441405977092,
+      "total_loss": NaN,
+      "eps": 0.8475428503023453
+    },
+    {
+      "episode": 35,
+      "avg_cost": 2.7901875871171455,
+      "total_loss": NaN,
+      "eps": 0.8433051360508336,
+      "probe_r2_gnn": 0.7992834150791168,
+      "probe_r2_gnn_per_uav": [
+        0.7977938652038574,
+        0.8007729649543762
+      ],
+      "probe_r2_rawobs": 0.10738134384155273,
+      "probe_r2_gnn_delta": 0.049108684062957764,
+      "probe_r2_raw_delta": 0.0029627978801727295,
+      "probe_r2_congbase_delta": 0.09513971209526062,
+      "probe_bn_std": 0.16259174048900604,
+      "probe_dbn_std": 0.06707780808210373,
+      "probe_h_eff_rank": 1.630687952041626,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 36,
+      "avg_cost": 3.173673578569465,
+      "total_loss": NaN,
+      "eps": 0.8390886103705794
+    },
+    {
+      "episode": 37,
+      "avg_cost": 2.7627231214940338,
+      "total_loss": NaN,
+      "eps": 0.8348931673187264
+    },
+    {
+      "episode": 38,
+      "avg_cost": 3.058943724171901,
+      "total_loss": NaN,
+      "eps": 0.8307187014821328
+    },
+    {
+      "episode": 39,
+      "avg_cost": 3.1969077396869925,
+      "total_loss": NaN,
+      "eps": 0.8265651079747222
+    },
+    {
+      "episode": 40,
+      "avg_cost": 2.6250281393142343,
+      "total_loss": NaN,
+      "eps": 0.8224322824348486,
+      "probe_r2_gnn": 0.8057951629161835,
+      "probe_r2_gnn_per_uav": [
+        0.7771583199501038,
+        0.8344320058822632
+      ],
+      "probe_r2_rawobs": 0.09556999802589417,
+      "probe_r2_gnn_delta": 0.043293893337249756,
+      "probe_r2_raw_delta": -0.00296822190284729,
+      "probe_r2_congbase_delta": 0.06646960973739624,
+      "probe_bn_std": 0.1494070291519165,
+      "probe_dbn_std": 0.06533529609441757,
+      "probe_h_eff_rank": 1.719844937324524,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8985481262207031,
+      "diag_td_p95": 13.773038864135742,
+      "diag_td_max": 18.933115005493164
+    },
+    {
+      "episode": 41,
+      "avg_cost": 2.5688843962333165,
+      "total_loss": NaN,
+      "eps": 0.8183201210226743
+    },
+    {
+      "episode": 42,
+      "avg_cost": 2.717339269325123,
+      "total_loss": NaN,
+      "eps": 0.8142285204175609
+    },
+    {
+      "episode": 43,
+      "avg_cost": 2.4514153962005927,
+      "total_loss": NaN,
+      "eps": 0.810157377815473
+    },
+    {
+      "episode": 44,
+      "avg_cost": 2.468031076518082,
+      "total_loss": NaN,
+      "eps": 0.8061065909263957
+    },
+    {
+      "episode": 45,
+      "avg_cost": 2.4250456580036337,
+      "total_loss": NaN,
+      "eps": 0.8020760579717637,
+      "probe_r2_gnn": 0.7866656184196472,
+      "probe_r2_gnn_per_uav": [
+        0.7435526847839355,
+        0.8297785520553589
+      ],
+      "probe_r2_rawobs": 0.11023136973381042,
+      "probe_r2_gnn_delta": 0.05746057629585266,
+      "probe_r2_raw_delta": -0.014125734567642212,
+      "probe_r2_congbase_delta": 0.08036848902702332,
+      "probe_bn_std": 0.14770740270614624,
+      "probe_dbn_std": 0.06559925526380539,
+      "probe_h_eff_rank": 1.7220650911331177,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 46,
+      "avg_cost": 2.4294964185371875,
+      "total_loss": NaN,
+      "eps": 0.798065677681905
+    },
+    {
+      "episode": 47,
+      "avg_cost": 2.445154266393418,
+      "total_loss": NaN,
+      "eps": 0.7940753492934954
+    },
+    {
+      "episode": 48,
+      "avg_cost": 2.6815807686388036,
+      "total_loss": NaN,
+      "eps": 0.7901049725470279
+    },
+    {
+      "episode": 49,
+      "avg_cost": 2.8598869390100194,
+      "total_loss": NaN,
+      "eps": 0.7861544476842928
+    },
+    {
+      "episode": 50,
+      "avg_cost": 2.2397912877068875,
+      "total_loss": NaN,
+      "eps": 0.7822236754458713,
+      "probe_r2_gnn": 0.7589046955108643,
+      "probe_r2_gnn_per_uav": [
+        0.7485772371292114,
+        0.7692321538925171
+      ],
+      "probe_r2_rawobs": 0.08438462018966675,
+      "probe_r2_gnn_delta": 0.10366079211235046,
+      "probe_r2_raw_delta": 0.005238145589828491,
+      "probe_r2_congbase_delta": 0.12039563059806824,
+      "probe_bn_std": 0.1560131162405014,
+      "probe_dbn_std": 0.06746110320091248,
+      "probe_h_eff_rank": 1.646418809890747,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8743395805358887,
+      "diag_td_p95": 13.898592948913574,
+      "diag_td_max": 16.478525161743164
+    },
+    {
+      "episode": 51,
+      "avg_cost": 2.762774431560306,
+      "total_loss": NaN,
+      "eps": 0.778312557068642
+    },
+    {
+      "episode": 52,
+      "avg_cost": 2.1264416176477714,
+      "total_loss": NaN,
+      "eps": 0.7744209942832988
+    },
+    {
+      "episode": 53,
+      "avg_cost": 2.7322471299699096,
+      "total_loss": NaN,
+      "eps": 0.7705488893118823
+    },
+    {
+      "episode": 54,
+      "avg_cost": 2.7133729761503464,
+      "total_loss": NaN,
+      "eps": 0.7666961448653229
+    },
+    {
+      "episode": 55,
+      "avg_cost": 2.8327870354740834,
+      "total_loss": NaN,
+      "eps": 0.7628626641409962,
+      "probe_r2_gnn": 0.8158690333366394,
+      "probe_r2_gnn_per_uav": [
+        0.7752033472061157,
+        0.8565347194671631
+      ],
+      "probe_r2_rawobs": 0.12881413102149963,
+      "probe_r2_gnn_delta": 0.0977800190448761,
+      "probe_r2_raw_delta": 0.002157241106033325,
+      "probe_r2_congbase_delta": 0.11846664547920227,
+      "probe_bn_std": 0.1596188247203827,
+      "probe_dbn_std": 0.06591732054948807,
+      "probe_h_eff_rank": 1.6104469299316406,
+      "probe_h_dormant": 0.40625
+    },
+    {
+      "episode": 56,
+      "avg_cost": 2.3594145149075256,
+      "total_loss": NaN,
+      "eps": 0.7590483508202912
+    },
+    {
+      "episode": 57,
+      "avg_cost": 2.4004809829382414,
+      "total_loss": NaN,
+      "eps": 0.7552531090661897
+    },
+    {
+      "episode": 58,
+      "avg_cost": 2.4065508973801655,
+      "total_loss": NaN,
+      "eps": 0.7514768435208588
+    },
+    {
+      "episode": 59,
+      "avg_cost": 2.3751771678975406,
+      "total_loss": NaN,
+      "eps": 0.7477194593032545
+    },
+    {
+      "episode": 60,
+      "avg_cost": 2.689221323101935,
+      "total_loss": NaN,
+      "eps": 0.7439808620067382,
+      "probe_r2_gnn": 0.7992643117904663,
+      "probe_r2_gnn_per_uav": [
+        0.773740291595459,
+        0.8247883319854736
+      ],
+      "probe_r2_rawobs": 0.06462281942367554,
+      "probe_r2_gnn_delta": 0.09785005450248718,
+      "probe_r2_raw_delta": 0.00036132335662841797,
+      "probe_r2_congbase_delta": 0.1213681697845459,
+      "probe_bn_std": 0.14958852529525757,
+      "probe_dbn_std": 0.06431737542152405,
+      "probe_h_eff_rank": 1.6280920505523682,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8339099884033203,
+      "diag_td_p95": 14.204164505004883,
+      "diag_td_max": 19.98685073852539
+    },
+    {
+      "episode": 61,
+      "avg_cost": 2.144648831184545,
+      "total_loss": NaN,
+      "eps": 0.7402609576967045
+    },
+    {
+      "episode": 62,
+      "avg_cost": 2.3826436750071847,
+      "total_loss": NaN,
+      "eps": 0.736559652908221
+    },
+    {
+      "episode": 63,
+      "avg_cost": 2.6078459278566335,
+      "total_loss": NaN,
+      "eps": 0.7328768546436799
+    },
+    {
+      "episode": 64,
+      "avg_cost": 2.5163142459131267,
+      "total_loss": NaN,
+      "eps": 0.7292124703704616
+    },
+    {
+      "episode": 65,
+      "avg_cost": 2.076810714076094,
+      "total_loss": NaN,
+      "eps": 0.7255664080186093,
+      "probe_r2_gnn": 0.7915148437023163,
+      "probe_r2_gnn_per_uav": [
+        0.7891984581947327,
+        0.7938312292098999
+      ],
+      "probe_r2_rawobs": 0.08714428544044495,
+      "probe_r2_gnn_delta": 0.06281587481498718,
+      "probe_r2_raw_delta": 0.0014746487140655518,
+      "probe_r2_congbase_delta": 0.1077549159526825,
+      "probe_bn_std": 0.15501846373081207,
+      "probe_dbn_std": 0.06688641011714935,
+      "probe_h_eff_rank": 1.58768892288208,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 66,
+      "avg_cost": 2.442079160253662,
+      "total_loss": NaN,
+      "eps": 0.7219385759785162
+    },
+    {
+      "episode": 67,
+      "avg_cost": 2.667242389922766,
+      "total_loss": NaN,
+      "eps": 0.7183288830986236
+    },
+    {
+      "episode": 68,
+      "avg_cost": 2.3332558496069926,
+      "total_loss": NaN,
+      "eps": 0.7147372386831305
+    },
+    {
+      "episode": 69,
+      "avg_cost": 2.0352785985829542,
+      "total_loss": NaN,
+      "eps": 0.7111635524897149
+    },
+    {
+      "episode": 70,
+      "avg_cost": 2.0958620889078325,
+      "total_loss": NaN,
+      "eps": 0.7076077347272662,
+      "probe_r2_gnn": 0.7926339209079742,
+      "probe_r2_gnn_per_uav": [
+        0.7922896146774292,
+        0.7929782271385193
+      ],
+      "probe_r2_rawobs": 0.08719447255134583,
+      "probe_r2_gnn_delta": 0.10032638907432556,
+      "probe_r2_raw_delta": 0.0037286579608917236,
+      "probe_r2_congbase_delta": 0.0817541778087616,
+      "probe_bn_std": 0.1426452249288559,
+      "probe_dbn_std": 0.06315574049949646,
+      "probe_h_eff_rank": 1.674118995666504,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8941278457641602,
+      "diag_td_p95": 13.81760025024414,
+      "diag_td_max": 20.758670806884766
+    },
+    {
+      "episode": 71,
+      "avg_cost": 1.8636068996976933,
+      "total_loss": NaN,
+      "eps": 0.7040696960536299
+    },
+    {
+      "episode": 72,
+      "avg_cost": 1.4582355229811503,
+      "total_loss": NaN,
+      "eps": 0.7005493475733617
+    },
+    {
+      "episode": 73,
+      "avg_cost": 2.8280757329884216,
+      "total_loss": NaN,
+      "eps": 0.697046600835495
+    },
+    {
+      "episode": 74,
+      "avg_cost": 2.667257031337211,
+      "total_loss": NaN,
+      "eps": 0.6935613678313175
+    },
+    {
+      "episode": 75,
+      "avg_cost": 1.9800910221881853,
+      "total_loss": NaN,
+      "eps": 0.6900935609921609,
+      "probe_r2_gnn": 0.7651060819625854,
+      "probe_r2_gnn_per_uav": [
+        0.7368600368499756,
+        0.7933521270751953
+      ],
+      "probe_r2_rawobs": 0.07637915015220642,
+      "probe_r2_gnn_delta": 0.10507529973983765,
+      "probe_r2_raw_delta": -0.0029562413692474365,
+      "probe_r2_congbase_delta": 0.09225046634674072,
+      "probe_bn_std": 0.1507181078195572,
+      "probe_dbn_std": 0.06807074695825577,
+      "probe_h_eff_rank": 1.60448157787323,
+      "probe_h_dormant": 0.34375
+    },
+    {
+      "episode": 76,
+      "avg_cost": 2.425922944886936,
+      "total_loss": NaN,
+      "eps": 0.6866430931872001
+    },
+    {
+      "episode": 77,
+      "avg_cost": 2.156701688633478,
+      "total_loss": NaN,
+      "eps": 0.6832098777212641
+    },
+    {
+      "episode": 78,
+      "avg_cost": 2.0282773572772017,
+      "total_loss": NaN,
+      "eps": 0.6797938283326578
+    },
+    {
+      "episode": 79,
+      "avg_cost": 2.0598762277331,
+      "total_loss": NaN,
+      "eps": 0.6763948591909945
+    },
+    {
+      "episode": 80,
+      "avg_cost": 2.0445471213418016,
+      "total_loss": NaN,
+      "eps": 0.6730128848950395,
+      "probe_r2_gnn": 0.7959119081497192,
+      "probe_r2_gnn_per_uav": [
+        0.7845237851142883,
+        0.8073000311851501
+      ],
+      "probe_r2_rawobs": 0.08635741472244263,
+      "probe_r2_gnn_delta": 0.0844828188419342,
+      "probe_r2_raw_delta": -0.0006161332130432129,
+      "probe_r2_congbase_delta": 0.10284870862960815,
+      "probe_bn_std": 0.1533072143793106,
+      "probe_dbn_std": 0.0694204643368721,
+      "probe_h_eff_rank": 1.5008634328842163,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.855095624923706,
+      "diag_td_p95": 13.279264450073242,
+      "diag_td_max": 16.058609008789062
+    },
+    {
+      "episode": 81,
+      "avg_cost": 2.1977832025969737,
+      "total_loss": NaN,
+      "eps": 0.6696478204705644
+    },
+    {
+      "episode": 82,
+      "avg_cost": 2.365011637953575,
+      "total_loss": NaN,
+      "eps": 0.6662995813682115
+    },
+    {
+      "episode": 83,
+      "avg_cost": 2.4965375065196698,
+      "total_loss": NaN,
+      "eps": 0.6629680834613705
+    },
+    {
+      "episode": 84,
+      "avg_cost": 1.6022365018342368,
+      "total_loss": NaN,
+      "eps": 0.6596532430440636
+    },
+    {
+      "episode": 85,
+      "avg_cost": 1.5675092850213843,
+      "total_loss": NaN,
+      "eps": 0.6563549768288433,
+      "probe_r2_gnn": 0.7837264835834503,
+      "probe_r2_gnn_per_uav": [
+        0.788188099861145,
+        0.7792648673057556
+      ],
+      "probe_r2_rawobs": 0.08515536785125732,
+      "probe_r2_gnn_delta": 0.114604651927948,
+      "probe_r2_raw_delta": -0.0007774829864501953,
+      "probe_r2_congbase_delta": 0.09987449645996094,
+      "probe_bn_std": 0.1514352709054947,
+      "probe_dbn_std": 0.06466908752918243,
+      "probe_h_eff_rank": 1.5571306943893433,
+      "probe_h_dormant": 0.34375
+    },
+    {
+      "episode": 86,
+      "avg_cost": 1.7082091533036274,
+      "total_loss": NaN,
+      "eps": 0.653073201944699
+    },
+    {
+      "episode": 87,
+      "avg_cost": 1.7327771567080927,
+      "total_loss": NaN,
+      "eps": 0.6498078359349755
+    },
+    {
+      "episode": 88,
+      "avg_cost": 2.17711855835971,
+      "total_loss": NaN,
+      "eps": 0.6465587967553006
+    },
+    {
+      "episode": 89,
+      "avg_cost": 1.7135690373500407,
+      "total_loss": NaN,
+      "eps": 0.6433260027715241
+    },
+    {
+      "episode": 90,
+      "avg_cost": 1.8595983947566423,
+      "total_loss": NaN,
+      "eps": 0.6401093727576664,
+      "probe_r2_gnn": 0.5630362629890442,
+      "probe_r2_gnn_per_uav": [
+        0.5513837337493896,
+        0.5746887922286987
+      ],
+      "probe_r2_rawobs": 0.11165869235992432,
+      "probe_r2_gnn_delta": -0.7320795655250549,
+      "probe_r2_raw_delta": 0.0028612613677978516,
+      "probe_r2_congbase_delta": 0.1325760781764984,
+      "probe_bn_std": 0.15226240456104279,
+      "probe_dbn_std": 0.0644785538315773,
+      "probe_h_eff_rank": 1.504859209060669,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8760943412780762,
+      "diag_td_p95": 13.651415824890137,
+      "diag_td_max": 21.68405532836914
+    },
+    {
+      "episode": 91,
+      "avg_cost": 1.5872540150672172,
+      "total_loss": NaN,
+      "eps": 0.6369088258938781
+    },
+    {
+      "episode": 92,
+      "avg_cost": 1.786709121037124,
+      "total_loss": NaN,
+      "eps": 0.6337242817644086
+    },
+    {
+      "episode": 93,
+      "avg_cost": 1.4430947042360842,
+      "total_loss": NaN,
+      "eps": 0.6305556603555866
+    },
+    {
+      "episode": 94,
+      "avg_cost": 1.7587839448880005,
+      "total_loss": NaN,
+      "eps": 0.6274028820538087
+    },
+    {
+      "episode": 95,
+      "avg_cost": 1.8633240087735026,
+      "total_loss": NaN,
+      "eps": 0.6242658676435396,
+      "probe_r2_gnn": 0.7613119184970856,
+      "probe_r2_gnn_per_uav": [
+        0.7513668537139893,
+        0.7712569832801819
+      ],
+      "probe_r2_rawobs": 0.09013628959655762,
+      "probe_r2_gnn_delta": -0.010690182447433472,
+      "probe_r2_raw_delta": -0.006373405456542969,
+      "probe_r2_congbase_delta": 0.044587522745132446,
+      "probe_bn_std": 0.1530751734972,
+      "probe_dbn_std": 0.06323178112506866,
+      "probe_h_eff_rank": 1.4791946411132812,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 96,
+      "avg_cost": 1.367672271752722,
+      "total_loss": NaN,
+      "eps": 0.6211445383053219
+    },
+    {
+      "episode": 97,
+      "avg_cost": 1.5058695134667304,
+      "total_loss": NaN,
+      "eps": 0.6180388156137953
+    },
+    {
+      "episode": 98,
+      "avg_cost": 1.4541087979436016,
+      "total_loss": NaN,
+      "eps": 0.6149486215357263
+    },
+    {
+      "episode": 99,
+      "avg_cost": 1.5143898587139164,
+      "total_loss": NaN,
+      "eps": 0.6118738784280476
+    },
+    {
+      "episode": 100,
+      "avg_cost": 1.7307163059756285,
+      "total_loss": NaN,
+      "eps": 0.6088145090359074,
+      "probe_r2_gnn": 0.7987607717514038,
+      "probe_r2_gnn_per_uav": [
+        0.8054540157318115,
+        0.7920675277709961
+      ],
+      "probe_r2_rawobs": 0.10766288638114929,
+      "probe_r2_gnn_delta": 0.0783519446849823,
+      "probe_r2_raw_delta": 0.001250147819519043,
+      "probe_r2_congbase_delta": 0.06566810607910156,
+      "probe_bn_std": 0.15620572865009308,
+      "probe_dbn_std": 0.06440864503383636,
+      "probe_h_eff_rank": 1.444075345993042,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.9494442939758301,
+      "diag_td_p95": 13.31132984161377,
+      "diag_td_max": 16.692462921142578
+    },
+    {
+      "episode": 101,
+      "avg_cost": 1.6121694008101322,
+      "total_loss": NaN,
+      "eps": 0.6057704364907278
+    },
+    {
+      "episode": 102,
+      "avg_cost": 1.4695311647329155,
+      "total_loss": NaN,
+      "eps": 0.6027415843082742
+    },
+    {
+      "episode": 103,
+      "avg_cost": 1.508767142266518,
+      "total_loss": NaN,
+      "eps": 0.5997278763867329
+    },
+    {
+      "episode": 104,
+      "avg_cost": 1.8752804370534535,
+      "total_loss": NaN,
+      "eps": 0.5967292370047992
+    },
+    {
+      "episode": 105,
+      "avg_cost": 1.0773023275165756,
+      "total_loss": NaN,
+      "eps": 0.5937455908197752,
+      "probe_r2_gnn": 0.7607383131980896,
+      "probe_r2_gnn_per_uav": [
+        0.7842711806297302,
+        0.737205445766449
+      ],
+      "probe_r2_rawobs": 0.10312828421592712,
+      "probe_r2_gnn_delta": 0.0640735924243927,
+      "probe_r2_raw_delta": -0.004426419734954834,
+      "probe_r2_congbase_delta": 0.01384800672531128,
+      "probe_bn_std": 0.15103843808174133,
+      "probe_dbn_std": 0.06220511719584465,
+      "probe_h_eff_rank": 1.4462945461273193,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 106,
+      "avg_cost": 1.357973318308205,
+      "total_loss": NaN,
+      "eps": 0.5907768628656763
+    },
+    {
+      "episode": 107,
+      "avg_cost": 1.5904212132538218,
+      "total_loss": NaN,
+      "eps": 0.5878229785513479
+    },
+    {
+      "episode": 108,
+      "avg_cost": 1.4234477922999287,
+      "total_loss": NaN,
+      "eps": 0.5848838636585911
+    },
+    {
+      "episode": 109,
+      "avg_cost": 1.4508289067712057,
+      "total_loss": NaN,
+      "eps": 0.5819594443402982
+    },
+    {
+      "episode": 110,
+      "avg_cost": 1.1382698813945977,
+      "total_loss": NaN,
+      "eps": 0.5790496471185967,
+      "probe_r2_gnn": 0.7821311056613922,
+      "probe_r2_gnn_per_uav": [
+        0.8027145862579346,
+        0.7615476250648499
+      ],
+      "probe_r2_rawobs": 0.14106756448745728,
+      "probe_r2_gnn_delta": 0.046061158180236816,
+      "probe_r2_raw_delta": -0.0018673539161682129,
+      "probe_r2_congbase_delta": 0.043014854192733765,
+      "probe_bn_std": 0.1573253720998764,
+      "probe_dbn_std": 0.06447257846593857,
+      "probe_h_eff_rank": 1.4103199243545532,
+      "probe_h_dormant": 0.3125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8409576416015625,
+      "diag_td_p95": 13.02867603302002,
+      "diag_td_max": 17.262699127197266
+    },
+    {
+      "episode": 111,
+      "avg_cost": 0.946530091895432,
+      "total_loss": NaN,
+      "eps": 0.5761543988830038
+    },
+    {
+      "episode": 112,
+      "avg_cost": 1.7943299690771448,
+      "total_loss": NaN,
+      "eps": 0.5732736268885887
+    },
+    {
+      "episode": 113,
+      "avg_cost": 1.7993309066277658,
+      "total_loss": NaN,
+      "eps": 0.5704072587541458
+    },
+    {
+      "episode": 114,
+      "avg_cost": 1.1200813838894594,
+      "total_loss": NaN,
+      "eps": 0.567555222460375
+    },
+    {
+      "episode": 115,
+      "avg_cost": 1.5848618973030844,
+      "total_loss": NaN,
+      "eps": 0.5647174463480732,
+      "probe_r2_gnn": 0.7806084454059601,
+      "probe_r2_gnn_per_uav": [
+        0.8081203103065491,
+        0.7530965805053711
+      ],
+      "probe_r2_rawobs": 0.12787267565727234,
+      "probe_r2_gnn_delta": 0.0517558753490448,
+      "probe_r2_raw_delta": -0.003354012966156006,
+      "probe_r2_congbase_delta": 0.05411115288734436,
+      "probe_bn_std": 0.15205945074558258,
+      "probe_dbn_std": 0.0639820471405983,
+      "probe_h_eff_rank": 1.4073125123977661,
+      "probe_h_dormant": 0.3125
+    },
+    {
+      "episode": 116,
+      "avg_cost": 1.4331878682431283,
+      "total_loss": NaN,
+      "eps": 0.5618938591163328
+    },
+    {
+      "episode": 117,
+      "avg_cost": 1.4089910222693944,
+      "total_loss": NaN,
+      "eps": 0.5590843898207511
+    },
+    {
+      "episode": 118,
+      "avg_cost": 1.1873516164714346,
+      "total_loss": NaN,
+      "eps": 0.5562889678716474
+    },
+    {
+      "episode": 119,
+      "avg_cost": 1.120594605983162,
+      "total_loss": NaN,
+      "eps": 0.5535075230322891
+    },
+    {
+      "episode": 120,
+      "avg_cost": 0.9478632932728226,
+      "total_loss": NaN,
+      "eps": 0.5507399854171277,
+      "probe_r2_gnn": 0.7166032791137695,
+      "probe_r2_gnn_per_uav": [
+        0.7846857309341431,
+        0.648520827293396
+      ],
+      "probe_r2_rawobs": 0.11802396178245544,
+      "probe_r2_gnn_delta": 0.06727826595306396,
+      "probe_r2_raw_delta": 0.005360394716262817,
+      "probe_r2_congbase_delta": 0.09199276566505432,
+      "probe_bn_std": 0.1451772302389145,
+      "probe_dbn_std": 0.0617738701403141,
+      "probe_h_eff_rank": 1.429903268814087,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8683838844299316,
+      "diag_td_p95": 12.66477108001709,
+      "diag_td_max": 20.951587677001953
+    },
+    {
+      "episode": 121,
+      "avg_cost": 1.2442494137121274,
+      "total_loss": NaN,
+      "eps": 0.547986285490042
+    },
+    {
+      "episode": 122,
+      "avg_cost": 1.3760388576666522,
+      "total_loss": NaN,
+      "eps": 0.5452463540625918
+    },
+    {
+      "episode": 123,
+      "avg_cost": 1.1321746883246864,
+      "total_loss": NaN,
+      "eps": 0.5425201222922789
+    },
+    {
+      "episode": 124,
+      "avg_cost": 1.1020336150947359,
+      "total_loss": NaN,
+      "eps": 0.5398075216808175
+    },
+    {
+      "episode": 125,
+      "avg_cost": 1.2268099607939245,
+      "total_loss": NaN,
+      "eps": 0.5371084840724134,
+      "probe_r2_gnn": 0.7326512634754181,
+      "probe_r2_gnn_per_uav": [
+        0.7586195468902588,
+        0.7066829800605774
+      ],
+      "probe_r2_rawobs": 0.11902540922164917,
+      "probe_r2_gnn_delta": 0.013409793376922607,
+      "probe_r2_raw_delta": -0.011942684650421143,
+      "probe_r2_congbase_delta": 0.012691020965576172,
+      "probe_bn_std": 0.14368735253810883,
+      "probe_dbn_std": 0.061308976262807846,
+      "probe_h_eff_rank": 1.3974261283874512,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 126,
+      "avg_cost": 1.2014295896714666,
+      "total_loss": NaN,
+      "eps": 0.5344229416520513
+    },
+    {
+      "episode": 127,
+      "avg_cost": 1.3343313403978951,
+      "total_loss": NaN,
+      "eps": 0.531750826943791
+    },
+    {
+      "episode": 128,
+      "avg_cost": 1.1205635636035363,
+      "total_loss": NaN,
+      "eps": 0.5290920728090721
+    },
+    {
+      "episode": 129,
+      "avg_cost": 0.8452671484790796,
+      "total_loss": NaN,
+      "eps": 0.5264466124450268
+    },
+    {
+      "episode": 130,
+      "avg_cost": 1.0919369509729058,
+      "total_loss": NaN,
+      "eps": 0.5238143793828016,
+      "probe_r2_gnn": 0.7854486405849457,
+      "probe_r2_gnn_per_uav": [
+        0.8047032356262207,
+        0.7661940455436707
+      ],
+      "probe_r2_rawobs": 0.12792211771011353,
+      "probe_r2_gnn_delta": 0.017350375652313232,
+      "probe_r2_raw_delta": -0.008462280035018921,
+      "probe_r2_congbase_delta": 0.044990718364715576,
+      "probe_bn_std": 0.14426997303962708,
+      "probe_dbn_std": 0.06255338340997696,
+      "probe_h_eff_rank": 1.4113022089004517,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8797073364257812,
+      "diag_td_p95": 12.406312942504883,
+      "diag_td_max": 18.66204833984375
+    },
+    {
+      "episode": 131,
+      "avg_cost": 1.3425488143011277,
+      "total_loss": NaN,
+      "eps": 0.5211953074858876
+    },
+    {
+      "episode": 132,
+      "avg_cost": 1.2189475776367382,
+      "total_loss": NaN,
+      "eps": 0.5185893309484582
+    },
+    {
+      "episode": 133,
+      "avg_cost": 0.8313103935392135,
+      "total_loss": NaN,
+      "eps": 0.5159963842937159
+    },
+    {
+      "episode": 134,
+      "avg_cost": 0.961537946811173,
+      "total_loss": NaN,
+      "eps": 0.5134164023722473
+    },
+    {
+      "episode": 135,
+      "avg_cost": 1.1194391286997238,
+      "total_loss": NaN,
+      "eps": 0.510849320360386,
+      "probe_r2_gnn": 0.7241053581237793,
+      "probe_r2_gnn_per_uav": [
+        0.7672747373580933,
+        0.6809359788894653
+      ],
+      "probe_r2_rawobs": 0.11889365315437317,
+      "probe_r2_gnn_delta": 0.0006189644336700439,
+      "probe_r2_raw_delta": -0.001276463270187378,
+      "probe_r2_congbase_delta": -0.0037193596363067627,
+      "probe_bn_std": 0.14002572000026703,
+      "probe_dbn_std": 0.06094055250287056,
+      "probe_h_eff_rank": 1.4265385866165161,
+      "probe_h_dormant": 0.3125
+    },
+    {
+      "episode": 136,
+      "avg_cost": 1.0287325543806884,
+      "total_loss": NaN,
+      "eps": 0.5082950737585841
+    },
+    {
+      "episode": 137,
+      "avg_cost": 1.1224749357064072,
+      "total_loss": NaN,
+      "eps": 0.5057535983897912
+    },
+    {
+      "episode": 138,
+      "avg_cost": 0.7389858027845486,
+      "total_loss": NaN,
+      "eps": 0.5032248303978422
+    },
+    {
+      "episode": 139,
+      "avg_cost": 1.034595486470575,
+      "total_loss": NaN,
+      "eps": 0.500708706245853
+    },
+    {
+      "episode": 140,
+      "avg_cost": 1.5924191483114538,
+      "total_loss": NaN,
+      "eps": 0.4982051627146237,
+      "probe_r2_gnn": 0.6990674734115601,
+      "probe_r2_gnn_per_uav": [
+        0.6868686676025391,
+        0.711266279220581
+      ],
+      "probe_r2_rawobs": 0.11644408106803894,
+      "probe_r2_gnn_delta": 0.024757713079452515,
+      "probe_r2_raw_delta": 0.0015263259410858154,
+      "probe_r2_congbase_delta": 0.08662253618240356,
+      "probe_bn_std": 0.14386127889156342,
+      "probe_dbn_std": 0.06162687763571739,
+      "probe_h_eff_rank": 1.415931224822998,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.9381003379821777,
+      "diag_td_p95": 12.073813438415527,
+      "diag_td_max": 19.33002471923828
+    },
+    {
+      "episode": 141,
+      "avg_cost": 0.7679138960410089,
+      "total_loss": NaN,
+      "eps": 0.49571413690105054
+    },
+    {
+      "episode": 142,
+      "avg_cost": 1.1077526948674772,
+      "total_loss": NaN,
+      "eps": 0.4932355662165453
+    },
+    {
+      "episode": 143,
+      "avg_cost": 0.7765376095662992,
+      "total_loss": NaN,
+      "eps": 0.4907693883854626
+    },
+    {
+      "episode": 144,
+      "avg_cost": 0.7918282960707657,
+      "total_loss": NaN,
+      "eps": 0.4883155414435353
+    },
+    {
+      "episode": 145,
+      "avg_cost": 0.7803211386530371,
+      "total_loss": NaN,
+      "eps": 0.4858739637363176,
+      "probe_r2_gnn": 0.7342693209648132,
+      "probe_r2_gnn_per_uav": [
+        0.7582347989082336,
+        0.7103038430213928
+      ],
+      "probe_r2_rawobs": 0.13176214694976807,
+      "probe_r2_gnn_delta": -0.004745543003082275,
+      "probe_r2_raw_delta": -0.02686309814453125,
+      "probe_r2_congbase_delta": 0.02065292000770569,
+      "probe_bn_std": 0.13863882422447205,
+      "probe_dbn_std": 0.06104632839560509,
+      "probe_h_eff_rank": 1.4376651048660278,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 146,
+      "avg_cost": 1.0257587602063822,
+      "total_loss": NaN,
+      "eps": 0.483444593917636
+    },
+    {
+      "episode": 147,
+      "avg_cost": 1.3280829382100447,
+      "total_loss": NaN,
+      "eps": 0.4810273709480478
+    },
+    {
+      "episode": 148,
+      "avg_cost": 0.7101985252942852,
+      "total_loss": NaN,
+      "eps": 0.47862223409330756
+    },
+    {
+      "episode": 149,
+      "avg_cost": 0.9861656035433718,
+      "total_loss": NaN,
+      "eps": 0.47622912292284103
+    },
+    {
+      "episode": 150,
+      "avg_cost": 0.7662493187074143,
+      "total_loss": NaN,
+      "eps": 0.4738479773082268,
+      "probe_r2_gnn": 0.7081277668476105,
+      "probe_r2_gnn_per_uav": [
+        0.7235419750213623,
+        0.6927135586738586
+      ],
+      "probe_r2_rawobs": 0.13569819927215576,
+      "probe_r2_gnn_delta": 0.0033169686794281006,
+      "probe_r2_raw_delta": -0.02803635597229004,
+      "probe_r2_congbase_delta": 0.00047653913497924805,
+      "probe_bn_std": 0.13714388012886047,
+      "probe_dbn_std": 0.05865158140659332,
+      "probe_h_eff_rank": 1.422594666481018,
+      "probe_h_dormant": 0.3125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8532698154449463,
+      "diag_td_p95": 10.151219367980957,
+      "diag_td_max": 19.31414222717285
+    },
+    {
+      "episode": 151,
+      "avg_cost": 1.0360188301988358,
+      "total_loss": NaN,
+      "eps": 0.47147873742168567
+    },
+    {
+      "episode": 152,
+      "avg_cost": 0.6947514046714273,
+      "total_loss": NaN,
+      "eps": 0.46912134373457726
+    },
+    {
+      "episode": 153,
+      "avg_cost": 0.9672670185676385,
+      "total_loss": NaN,
+      "eps": 0.46677573701590436
+    },
+    {
+      "episode": 154,
+      "avg_cost": 0.8054446426633965,
+      "total_loss": NaN,
+      "eps": 0.46444185833082485
+    },
+    {
+      "episode": 155,
+      "avg_cost": 0.7237730838422604,
+      "total_loss": NaN,
+      "eps": 0.46211964903917074,
+      "probe_r2_gnn": 0.6966759562492371,
+      "probe_r2_gnn_per_uav": [
+        0.7282086610794067,
+        0.6651432514190674
+      ],
+      "probe_r2_rawobs": 0.12493866682052612,
+      "probe_r2_gnn_delta": 0.014174878597259521,
+      "probe_r2_raw_delta": -0.014972388744354248,
+      "probe_r2_congbase_delta": 0.026684284210205078,
+      "probe_bn_std": 0.13250304758548737,
+      "probe_dbn_std": 0.062223199754953384,
+      "probe_h_eff_rank": 1.4592753648757935,
+      "probe_h_dormant": 0.34375
+    },
+    {
+      "episode": 156,
+      "avg_cost": 1.0680544046265312,
+      "total_loss": NaN,
+      "eps": 0.4598090507939749
+    },
+    {
+      "episode": 157,
+      "avg_cost": 0.927398423883147,
+      "total_loss": NaN,
+      "eps": 0.457510005540005
+    },
+    {
+      "episode": 158,
+      "avg_cost": 0.9717413505993246,
+      "total_loss": NaN,
+      "eps": 0.45522245551230495
+    },
+    {
+      "episode": 159,
+      "avg_cost": 0.7505111051799005,
+      "total_loss": NaN,
+      "eps": 0.4529463432347434
+    },
+    {
+      "episode": 160,
+      "avg_cost": 0.6514242885781776,
+      "total_loss": NaN,
+      "eps": 0.4506816115185697,
+      "probe_r2_gnn": 0.6847194731235504,
+      "probe_r2_gnn_per_uav": [
+        0.7055838704109192,
+        0.6638550758361816
+      ],
+      "probe_r2_rawobs": 0.12292367219924927,
+      "probe_r2_gnn_delta": -0.0015736520290374756,
+      "probe_r2_raw_delta": -0.012156248092651367,
+      "probe_r2_congbase_delta": 0.0039016902446746826,
+      "probe_bn_std": 0.12863604724407196,
+      "probe_dbn_std": 0.06272900104522705,
+      "probe_h_eff_rank": 1.4802855253219604,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8592624664306641,
+      "diag_td_p95": 7.844175338745117,
+      "diag_td_max": 19.31414222717285
+    },
+    {
+      "episode": 161,
+      "avg_cost": 0.7807227244911195,
+      "total_loss": NaN,
+      "eps": 0.4484282034609769
+    },
+    {
+      "episode": 162,
+      "avg_cost": 1.0678477507979718,
+      "total_loss": NaN,
+      "eps": 0.446186062443672
+    },
+    {
+      "episode": 163,
+      "avg_cost": 0.9544117139855068,
+      "total_loss": NaN,
+      "eps": 0.4439551321314536
+    },
+    {
+      "episode": 164,
+      "avg_cost": 0.8348459912445502,
+      "total_loss": NaN,
+      "eps": 0.4417353564707963
+    },
+    {
+      "episode": 165,
+      "avg_cost": 0.8861975506563325,
+      "total_loss": NaN,
+      "eps": 0.43952667968844233,
+      "probe_r2_gnn": 0.6561768054962158,
+      "probe_r2_gnn_per_uav": [
+        0.6798361539840698,
+        0.6325174570083618
+      ],
+      "probe_r2_rawobs": 0.1292230784893036,
+      "probe_r2_gnn_delta": -0.02980661392211914,
+      "probe_r2_raw_delta": -0.002849578857421875,
+      "probe_r2_congbase_delta": 0.028071075677871704,
+      "probe_bn_std": 0.13112308084964752,
+      "probe_dbn_std": 0.06189865618944168,
+      "probe_h_eff_rank": 1.5110507011413574,
+      "probe_h_dormant": 0.34375
+    },
+    {
+      "episode": 166,
+      "avg_cost": 0.9965601618463822,
+      "total_loss": NaN,
+      "eps": 0.43732904629000013
+    },
+    {
+      "episode": 167,
+      "avg_cost": 0.7019427524259331,
+      "total_loss": NaN,
+      "eps": 0.4351424010585501
+    },
+    {
+      "episode": 168,
+      "avg_cost": 0.7777603804944684,
+      "total_loss": NaN,
+      "eps": 0.43296668905325736
+    },
+    {
+      "episode": 169,
+      "avg_cost": 0.6562858344021814,
+      "total_loss": NaN,
+      "eps": 0.43080185560799106
+    },
+    {
+      "episode": 170,
+      "avg_cost": 0.8745277690779338,
+      "total_loss": NaN,
+      "eps": 0.4286478463299511,
+      "probe_r2_gnn": 0.6643226742744446,
+      "probe_r2_gnn_per_uav": [
+        0.745342493057251,
+        0.5833028554916382
+      ],
+      "probe_r2_rawobs": 0.15066677331924438,
+      "probe_r2_gnn_delta": 0.02572411298751831,
+      "probe_r2_raw_delta": 0.003117382526397705,
+      "probe_r2_congbase_delta": 0.0350337028503418,
+      "probe_bn_std": 0.1208682581782341,
+      "probe_dbn_std": 0.06021549180150032,
+      "probe_h_eff_rank": 1.5322598218917847,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.858309268951416,
+      "diag_td_p95": 8.412450790405273,
+      "diag_td_max": 17.13211441040039
+    },
+    {
+      "episode": 171,
+      "avg_cost": 0.7815579589159364,
+      "total_loss": NaN,
+      "eps": 0.42650460709830135
+    },
+    {
+      "episode": 172,
+      "avg_cost": 0.8460475547730908,
+      "total_loss": NaN,
+      "eps": 0.42437208406280985
+    },
+    {
+      "episode": 173,
+      "avg_cost": 0.9427577462925292,
+      "total_loss": NaN,
+      "eps": 0.4222502236424958
+    },
+    {
+      "episode": 174,
+      "avg_cost": 0.8795375587486436,
+      "total_loss": NaN,
+      "eps": 0.42013897252428334
+    },
+    {
+      "episode": 175,
+      "avg_cost": 0.8121806025538153,
+      "total_loss": NaN,
+      "eps": 0.4180382776616619,
+      "probe_r2_gnn": 0.6423348784446716,
+      "probe_r2_gnn_per_uav": [
+        0.6362855434417725,
+        0.6483842134475708
+      ],
+      "probe_r2_rawobs": 0.13493993878364563,
+      "probe_r2_gnn_delta": -0.016558587551116943,
+      "probe_r2_raw_delta": -0.013669133186340332,
+      "probe_r2_congbase_delta": 0.060279786586761475,
+      "probe_bn_std": 0.11934599280357361,
+      "probe_dbn_std": 0.056505683809518814,
+      "probe_h_eff_rank": 1.5469261407852173,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 176,
+      "avg_cost": 0.6644707654451567,
+      "total_loss": NaN,
+      "eps": 0.4159480862733536
+    },
+    {
+      "episode": 177,
+      "avg_cost": 0.8271827669062398,
+      "total_loss": NaN,
+      "eps": 0.41386834584198684
+    },
+    {
+      "episode": 178,
+      "avg_cost": 0.828872048600667,
+      "total_loss": NaN,
+      "eps": 0.4117990041127769
+    },
+    {
+      "episode": 179,
+      "avg_cost": 0.8546749541734823,
+      "total_loss": NaN,
+      "eps": 0.40974000909221303
+    },
+    {
+      "episode": 180,
+      "avg_cost": 0.7801679216631016,
+      "total_loss": NaN,
+      "eps": 0.40769130904675194,
+      "probe_r2_gnn": 0.6503986716270447,
+      "probe_r2_gnn_per_uav": [
+        0.6823477745056152,
+        0.6184495687484741
+      ],
+      "probe_r2_rawobs": 0.12544354796409607,
+      "probe_r2_gnn_delta": 0.03474608063697815,
+      "probe_r2_raw_delta": -0.00220644474029541,
+      "probe_r2_congbase_delta": 0.04707145690917969,
+      "probe_bn_std": 0.11278548091650009,
+      "probe_dbn_std": 0.05710737034678459,
+      "probe_h_eff_rank": 1.6284890174865723,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8016548156738281,
+      "diag_td_p95": 7.133230209350586,
+      "diag_td_max": 18.96784210205078
+    },
+    {
+      "episode": 181,
+      "avg_cost": 0.7853956361050067,
+      "total_loss": NaN,
+      "eps": 0.40565285250151817
+    },
+    {
+      "episode": 182,
+      "avg_cost": 0.9426210029563881,
+      "total_loss": NaN,
+      "eps": 0.4036245882390106
+    },
+    {
+      "episode": 183,
+      "avg_cost": 0.7720043434934211,
+      "total_loss": NaN,
+      "eps": 0.4016064652978155
+    },
+    {
+      "episode": 184,
+      "avg_cost": 0.7502841339405845,
+      "total_loss": NaN,
+      "eps": 0.3995984329713264
+    },
+    {
+      "episode": 185,
+      "avg_cost": 0.7354668958056123,
+      "total_loss": NaN,
+      "eps": 0.3976004408064698,
+      "probe_r2_gnn": 0.6164154410362244,
+      "probe_r2_gnn_per_uav": [
+        0.6405666470527649,
+        0.5922642350196838
+      ],
+      "probe_r2_rawobs": 0.14191260933876038,
+      "probe_r2_gnn_delta": 0.03460967540740967,
+      "probe_r2_raw_delta": -0.0014977753162384033,
+      "probe_r2_congbase_delta": 0.041427940130233765,
+      "probe_bn_std": 0.10885053873062134,
+      "probe_dbn_std": 0.05846712738275528,
+      "probe_h_eff_rank": 1.658903956413269,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 186,
+      "avg_cost": 0.7322341357131795,
+      "total_loss": NaN,
+      "eps": 0.39561243860243744
+    },
+    {
+      "episode": 187,
+      "avg_cost": 0.7126473518506076,
+      "total_loss": NaN,
+      "eps": 0.3936343764094253
+    },
+    {
+      "episode": 188,
+      "avg_cost": 0.8548790838566789,
+      "total_loss": NaN,
+      "eps": 0.39166620452737816
+    },
+    {
+      "episode": 189,
+      "avg_cost": 0.8312995170330576,
+      "total_loss": NaN,
+      "eps": 0.3897078735047413
+    },
+    {
+      "episode": 190,
+      "avg_cost": 0.6602164412410434,
+      "total_loss": NaN,
+      "eps": 0.3877593341372176,
+      "probe_r2_gnn": 0.6168134808540344,
+      "probe_r2_gnn_per_uav": [
+        0.5773553848266602,
+        0.6562715768814087
+      ],
+      "probe_r2_rawobs": 0.11455810070037842,
+      "probe_r2_gnn_delta": 0.06571486592292786,
+      "probe_r2_raw_delta": 0.00022876262664794922,
+      "probe_r2_congbase_delta": 0.11425310373306274,
+      "probe_bn_std": 0.10202400386333466,
+      "probe_dbn_std": 0.05870917811989784,
+      "probe_h_eff_rank": 1.7462687492370605,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.777838945388794,
+      "diag_td_p95": 6.37061071395874,
+      "diag_td_max": 19.353147506713867
+    },
+    {
+      "episode": 191,
+      "avg_cost": 0.8506995990158076,
+      "total_loss": NaN,
+      "eps": 0.3858205374665315
+    },
+    {
+      "episode": 192,
+      "avg_cost": 0.9607904137688255,
+      "total_loss": NaN,
+      "eps": 0.38389143477919885
+    },
+    {
+      "episode": 193,
+      "avg_cost": 0.756439053607291,
+      "total_loss": NaN,
+      "eps": 0.3819719776053028
+    },
+    {
+      "episode": 194,
+      "avg_cost": 0.7586239490610344,
+      "total_loss": NaN,
+      "eps": 0.3800621177172763
+    },
+    {
+      "episode": 195,
+      "avg_cost": 0.7365292487091912,
+      "total_loss": NaN,
+      "eps": 0.37816180712868996,
+      "probe_r2_gnn": 0.5878518223762512,
+      "probe_r2_gnn_per_uav": [
+        0.5711953639984131,
+        0.6045082807540894
+      ],
+      "probe_r2_rawobs": 0.1162373423576355,
+      "probe_r2_gnn_delta": -0.01844167709350586,
+      "probe_r2_raw_delta": -0.026719212532043457,
+      "probe_r2_congbase_delta": 0.0694989264011383,
+      "probe_bn_std": 0.10980670154094696,
+      "probe_dbn_std": 0.059122614562511444,
+      "probe_h_eff_rank": 1.652967929840088,
+      "probe_h_dormant": 0.40625
+    },
+    {
+      "episode": 196,
+      "avg_cost": 0.6802736425763272,
+      "total_loss": NaN,
+      "eps": 0.37627099809304654
+    },
+    {
+      "episode": 197,
+      "avg_cost": 0.6460931662329977,
+      "total_loss": NaN,
+      "eps": 0.3743896431025813
+    },
+    {
+      "episode": 198,
+      "avg_cost": 0.8949120520432352,
+      "total_loss": NaN,
+      "eps": 0.37251769488706843
+    },
+    {
+      "episode": 199,
+      "avg_cost": 0.7175717145766468,
+      "total_loss": NaN,
+      "eps": 0.3706551064126331
+    },
+    {
+      "episode": 200,
+      "avg_cost": 0.8030540377464882,
+      "total_loss": NaN,
+      "eps": 0.36880183088056995,
+      "probe_r2_gnn": 0.548353910446167,
+      "probe_r2_gnn_per_uav": [
+        0.540666937828064,
+        0.55604088306427
+      ],
+      "probe_r2_rawobs": 0.10364800691604614,
+      "probe_r2_gnn_delta": 0.026650220155715942,
+      "probe_r2_raw_delta": 0.0028304457664489746,
+      "probe_r2_congbase_delta": 0.10885518789291382,
+      "probe_bn_std": 0.09834323823451996,
+      "probe_dbn_std": 0.0592263825237751,
+      "probe_h_eff_rank": 1.8418867588043213,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.7864584922790527,
+      "diag_td_p95": 4.9215826988220215,
+      "diag_td_max": 17.836000442504883
+    },
+    {
+      "episode": 201,
+      "avg_cost": 0.7014487906597551,
+      "total_loss": NaN,
+      "eps": 0.3669578217261671
+    },
+    {
+      "episode": 202,
+      "avg_cost": 0.7196555600908283,
+      "total_loss": NaN,
+      "eps": 0.36512303261753626
+    },
+    {
+      "episode": 203,
+      "avg_cost": 0.7042213583018231,
+      "total_loss": NaN,
+      "eps": 0.3632974174544486
+    },
+    {
+      "episode": 204,
+      "avg_cost": 0.6577366187376329,
+      "total_loss": NaN,
+      "eps": 0.3614809303671764
+    },
+    {
+      "episode": 205,
+      "avg_cost": 0.7393118942131055,
+      "total_loss": NaN,
+      "eps": 0.3596735257153405,
+      "probe_r2_gnn": 0.51776322722435,
+      "probe_r2_gnn_per_uav": [
+        0.5497525930404663,
+        0.48577386140823364
+      ],
+      "probe_r2_rawobs": 0.10484537482261658,
+      "probe_r2_gnn_delta": 0.01602405309677124,
+      "probe_r2_raw_delta": -0.008894920349121094,
+      "probe_r2_congbase_delta": 0.0816388726234436,
+      "probe_bn_std": 0.0999075397849083,
+      "probe_dbn_std": 0.056164465844631195,
+      "probe_h_eff_rank": 1.8213633298873901,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 206,
+      "avg_cost": 0.8227682411051255,
+      "total_loss": NaN,
+      "eps": 0.3578751580867638
+    },
+    {
+      "episode": 207,
+      "avg_cost": 0.738603812749433,
+      "total_loss": NaN,
+      "eps": 0.35608578229633
+    },
+    {
+      "episode": 208,
+      "avg_cost": 0.6931486101876807,
+      "total_loss": NaN,
+      "eps": 0.3543053533848483
+    },
+    {
+      "episode": 209,
+      "avg_cost": 0.6520342271280535,
+      "total_loss": NaN,
+      "eps": 0.35253382661792404
+    },
+    {
+      "episode": 210,
+      "avg_cost": 0.6503296006173811,
+      "total_loss": NaN,
+      "eps": 0.3507711574848344,
+      "probe_r2_gnn": 0.5494648218154907,
+      "probe_r2_gnn_per_uav": [
+        0.5724088549613953,
+        0.5265207886695862
+      ],
+      "probe_r2_rawobs": 0.11642950773239136,
+      "probe_r2_gnn_delta": 0.0032261908054351807,
+      "probe_r2_raw_delta": -0.006074875593185425,
+      "probe_r2_congbase_delta": 0.09387370944023132,
+      "probe_bn_std": 0.09871803969144821,
+      "probe_dbn_std": 0.059824876487255096,
+      "probe_h_eff_rank": 1.8414453268051147,
+      "probe_h_dormant": 0.34375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.7388663291931152,
+      "diag_td_p95": 3.276965379714966,
+      "diag_td_max": 18.759498596191406
+    },
+    {
+      "episode": 211,
+      "avg_cost": 0.7247289487251457,
+      "total_loss": NaN,
+      "eps": 0.34901730169741024
+    },
+    {
+      "episode": 212,
+      "avg_cost": 0.7177857135780461,
+      "total_loss": NaN,
+      "eps": 0.3472722151889232
+    },
+    {
+      "episode": 213,
+      "avg_cost": 0.6677760264676027,
+      "total_loss": NaN,
+      "eps": 0.3455358541129786
+    },
+    {
+      "episode": 214,
+      "avg_cost": 0.8295214211152423,
+      "total_loss": NaN,
+      "eps": 0.3438081748424137
+    },
+    {
+      "episode": 215,
+      "avg_cost": 0.6889293537294304,
+      "total_loss": NaN,
+      "eps": 0.3420891339682016,
+      "probe_r2_gnn": 0.5750999450683594,
+      "probe_r2_gnn_per_uav": [
+        0.5127924680709839,
+        0.6374074220657349
+      ],
+      "probe_r2_rawobs": 0.1067478358745575,
+      "probe_r2_gnn_delta": 0.01705154776573181,
+      "probe_r2_raw_delta": -0.0005572736263275146,
+      "probe_r2_congbase_delta": 0.07739007472991943,
+      "probe_bn_std": 0.09540671855211258,
+      "probe_dbn_std": 0.05751049518585205,
+      "probe_h_eff_rank": 1.8662587404251099,
+      "probe_h_dormant": 0.40625
+    },
+    {
+      "episode": 216,
+      "avg_cost": 0.6715170106438433,
+      "total_loss": NaN,
+      "eps": 0.3403786882983606
+    },
+    {
+      "episode": 217,
+      "avg_cost": 0.9412634819471052,
+      "total_loss": NaN,
+      "eps": 0.3386767948568688
+    },
+    {
+      "episode": 218,
+      "avg_cost": 0.8390186041224176,
+      "total_loss": NaN,
+      "eps": 0.33698341088258443
+    },
+    {
+      "episode": 219,
+      "avg_cost": 0.680822524641878,
+      "total_loss": NaN,
+      "eps": 0.3352984938281715
+    },
+    {
+      "episode": 220,
+      "avg_cost": 0.7480305699716786,
+      "total_loss": NaN,
+      "eps": 0.33362200135903064,
+      "probe_r2_gnn": 0.4954632520675659,
+      "probe_r2_gnn_per_uav": [
+        0.49029457569122314,
+        0.5006319284439087
+      ],
+      "probe_r2_rawobs": 0.09781485795974731,
+      "probe_r2_gnn_delta": -0.00029972195625305176,
+      "probe_r2_raw_delta": -0.0008493363857269287,
+      "probe_r2_congbase_delta": 0.08359530568122864,
+      "probe_bn_std": 0.0956743136048317,
+      "probe_dbn_std": 0.05623779445886612,
+      "probe_h_eff_rank": 1.965941309928894,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8150439262390137,
+      "diag_td_p95": 4.222067356109619,
+      "diag_td_max": 18.128902435302734
+    },
+    {
+      "episode": 221,
+      "avg_cost": 0.7204215439684557,
+      "total_loss": NaN,
+      "eps": 0.33195389135223546
+    },
+    {
+      "episode": 222,
+      "avg_cost": 0.7365923741849112,
+      "total_loss": NaN,
+      "eps": 0.3302941218954743
+    },
+    {
+      "episode": 223,
+      "avg_cost": 0.8266935330931695,
+      "total_loss": NaN,
+      "eps": 0.32864265128599696
+    },
+    {
+      "episode": 224,
+      "avg_cost": 0.7776552956166163,
+      "total_loss": NaN,
+      "eps": 0.326999438029567
+    },
+    {
+      "episode": 225,
+      "avg_cost": 0.8222635892129226,
+      "total_loss": NaN,
+      "eps": 0.3253644408394192,
+      "probe_r2_gnn": 0.4983338415622711,
+      "probe_r2_gnn_per_uav": [
+        0.4978015422821045,
+        0.49886614084243774
+      ],
+      "probe_r2_rawobs": 0.11720913648605347,
+      "probe_r2_gnn_delta": 0.05331307649612427,
+      "probe_r2_raw_delta": 0.002121537923812866,
+      "probe_r2_congbase_delta": 0.12641072273254395,
+      "probe_bn_std": 0.08907683193683624,
+      "probe_dbn_std": 0.05700279772281647,
+      "probe_h_eff_rank": 2.044954776763916,
+      "probe_h_dormant": 0.40625
+    },
+    {
+      "episode": 226,
+      "avg_cost": 0.7386693899144815,
+      "total_loss": NaN,
+      "eps": 0.3237376186352221
+    },
+    {
+      "episode": 227,
+      "avg_cost": 0.8653754467984216,
+      "total_loss": NaN,
+      "eps": 0.322118930542046
+    },
+    {
+      "episode": 228,
+      "avg_cost": 0.6652643986024779,
+      "total_loss": NaN,
+      "eps": 0.32050833588933575
+    },
+    {
+      "episode": 229,
+      "avg_cost": 0.6523411727601994,
+      "total_loss": NaN,
+      "eps": 0.31890579420988907
+    },
+    {
+      "episode": 230,
+      "avg_cost": 0.705617740851277,
+      "total_loss": NaN,
+      "eps": 0.3173112652388396,
+      "probe_r2_gnn": 0.3988627791404724,
+      "probe_r2_gnn_per_uav": [
+        0.2475268840789795,
+        0.5501986742019653
+      ],
+      "probe_r2_rawobs": 0.09414505958557129,
+      "probe_r2_gnn_delta": 0.03501555323600769,
+      "probe_r2_raw_delta": 0.0007366836071014404,
+      "probe_r2_congbase_delta": 0.10673066973686218,
+      "probe_bn_std": 0.08491124957799911,
+      "probe_dbn_std": 0.05737768113613129,
+      "probe_h_eff_rank": 2.0670812129974365,
+      "probe_h_dormant": 0.40625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8492550849914551,
+      "diag_td_p95": 3.0323994159698486,
+      "diag_td_max": 18.13178062438965
+    },
+    {
+      "episode": 231,
+      "avg_cost": 0.8632057016679145,
+      "total_loss": NaN,
+      "eps": 0.3157247089126454
+    },
+    {
+      "episode": 232,
+      "avg_cost": 0.7386262144228837,
+      "total_loss": NaN,
+      "eps": 0.3141460853680822
+    },
+    {
+      "episode": 233,
+      "avg_cost": 0.7743917991818219,
+      "total_loss": NaN,
+      "eps": 0.3125753549412418
+    },
+    {
+      "episode": 234,
+      "avg_cost": 0.681533835646205,
+      "total_loss": NaN,
+      "eps": 0.31101247816653554
+    },
+    {
+      "episode": 235,
+      "avg_cost": 0.6813414399731285,
+      "total_loss": NaN,
+      "eps": 0.30945741577570285,
+      "probe_r2_gnn": 0.49842578172683716,
+      "probe_r2_gnn_per_uav": [
+        0.4577198028564453,
+        0.539131760597229
+      ],
+      "probe_r2_rawobs": 0.10147342085838318,
+      "probe_r2_gnn_delta": 0.048385679721832275,
+      "probe_r2_raw_delta": -7.742643356323242e-05,
+      "probe_r2_congbase_delta": 0.10658019781112671,
+      "probe_bn_std": 0.08124624192714691,
+      "probe_dbn_std": 0.056649696081876755,
+      "probe_h_eff_rank": 2.1438512802124023,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 236,
+      "avg_cost": 0.6421051443466231,
+      "total_loss": NaN,
+      "eps": 0.3079101286968243
+    },
+    {
+      "episode": 237,
+      "avg_cost": 0.7154937837816925,
+      "total_loss": NaN,
+      "eps": 0.3063705780533402
+    },
+    {
+      "episode": 238,
+      "avg_cost": 0.6438091095166882,
+      "total_loss": NaN,
+      "eps": 0.30483872516307353
+    },
+    {
+      "episode": 239,
+      "avg_cost": 0.688700528495613,
+      "total_loss": NaN,
+      "eps": 0.3033145315372582
+    },
+    {
+      "episode": 240,
+      "avg_cost": 0.7947943594573853,
+      "total_loss": NaN,
+      "eps": 0.3017979588795719,
+      "probe_r2_gnn": 0.39481478929519653,
+      "probe_r2_gnn_per_uav": [
+        0.4820755124092102,
+        0.30755406618118286
+      ],
+      "probe_r2_rawobs": 0.03938332200050354,
+      "probe_r2_gnn_delta": 0.032408207654953,
+      "probe_r2_raw_delta": -0.0026078224182128906,
+      "probe_r2_congbase_delta": 0.09746748208999634,
+      "probe_bn_std": 0.07699424773454666,
+      "probe_dbn_std": 0.053921088576316833,
+      "probe_h_eff_rank": 2.145693778991699,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.846552848815918,
+      "diag_td_p95": 3.609954833984375,
+      "diag_td_max": 18.84185028076172
+    },
+    {
+      "episode": 241,
+      "avg_cost": 0.799550055134873,
+      "total_loss": NaN,
+      "eps": 0.30028896908517405
+    },
+    {
+      "episode": 242,
+      "avg_cost": 0.7070210569299199,
+      "total_loss": NaN,
+      "eps": 0.2987875242397482
+    },
+    {
+      "episode": 243,
+      "avg_cost": 0.6872777550405871,
+      "total_loss": NaN,
+      "eps": 0.29729358661854943
+    },
+    {
+      "episode": 244,
+      "avg_cost": 0.7694739097920886,
+      "total_loss": NaN,
+      "eps": 0.29580711868545667
+    },
+    {
+      "episode": 245,
+      "avg_cost": 0.6409326214608119,
+      "total_loss": NaN,
+      "eps": 0.2943280830920294,
+      "probe_r2_gnn": 0.39873501658439636,
+      "probe_r2_gnn_per_uav": [
+        0.4962848424911499,
+        0.3011851906776428
+      ],
+      "probe_r2_rawobs": 0.049180805683135986,
+      "probe_r2_gnn_delta": 0.0015899240970611572,
+      "probe_r2_raw_delta": 0.0007192790508270264,
+      "probe_r2_congbase_delta": 0.11861523985862732,
+      "probe_bn_std": 0.07682374119758606,
+      "probe_dbn_std": 0.055240560322999954,
+      "probe_h_eff_rank": 2.1396374702453613,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 246,
+      "avg_cost": 0.7485449253438345,
+      "total_loss": NaN,
+      "eps": 0.29285644267656924
+    },
+    {
+      "episode": 247,
+      "avg_cost": 0.7651731453941469,
+      "total_loss": NaN,
+      "eps": 0.2913921604631864
+    },
+    {
+      "episode": 248,
+      "avg_cost": 0.7828564291651559,
+      "total_loss": NaN,
+      "eps": 0.28993519966087045
+    },
+    {
+      "episode": 249,
+      "avg_cost": 0.8091773011776321,
+      "total_loss": NaN,
+      "eps": 0.2884855236625661
+    },
+    {
+      "episode": 250,
+      "avg_cost": 0.6591372655595055,
+      "total_loss": NaN,
+      "eps": 0.28704309604425327,
+      "probe_r2_gnn": 0.4435020983219147,
+      "probe_r2_gnn_per_uav": [
+        0.4600217342376709,
+        0.42698246240615845
+      ],
+      "probe_r2_rawobs": 0.06839510798454285,
+      "probe_r2_gnn_delta": 0.017013907432556152,
+      "probe_r2_raw_delta": -0.008339643478393555,
+      "probe_r2_congbase_delta": 0.13370823860168457,
+      "probe_bn_std": 0.07434655725955963,
+      "probe_dbn_std": 0.05589862912893295,
+      "probe_h_eff_rank": 2.2259082794189453,
+      "probe_h_dormant": 0.4375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.7928769588470459,
+      "diag_td_p95": 2.952853202819824,
+      "diag_td_max": 19.022232055664062
+    },
+    {
+      "episode": 251,
+      "avg_cost": 0.7992183573915748,
+      "total_loss": NaN,
+      "eps": 0.285607880564032
+    },
+    {
+      "episode": 252,
+      "avg_cost": 0.6939510492598062,
+      "total_loss": NaN,
+      "eps": 0.28417984116121187
+    },
+    {
+      "episode": 253,
+      "avg_cost": 0.7312241879953212,
+      "total_loss": NaN,
+      "eps": 0.2827589419554058
+    },
+    {
+      "episode": 254,
+      "avg_cost": 0.6899264141318799,
+      "total_loss": NaN,
+      "eps": 0.28134514724562876
+    },
+    {
+      "episode": 255,
+      "avg_cost": 0.7701951877142136,
+      "total_loss": NaN,
+      "eps": 0.2799384215094006,
+      "probe_r2_gnn": 0.4165416955947876,
+      "probe_r2_gnn_per_uav": [
+        0.3862413763999939,
+        0.4468420147895813
+      ],
+      "probe_r2_rawobs": 0.09973180294036865,
+      "probe_r2_gnn_delta": -0.05025690793991089,
+      "probe_r2_raw_delta": -0.020682215690612793,
+      "probe_r2_congbase_delta": 0.11798503994941711,
+      "probe_bn_std": 0.06839004158973694,
+      "probe_dbn_std": 0.05102870985865593,
+      "probe_h_eff_rank": 2.3322176933288574,
+      "probe_h_dormant": 0.40625
+    },
+    {
+      "episode": 256,
+      "avg_cost": 0.7748484319973084,
+      "total_loss": NaN,
+      "eps": 0.27853872940185365
+    },
+    {
+      "episode": 257,
+      "avg_cost": 0.7540732366454479,
+      "total_loss": NaN,
+      "eps": 0.27714603575484437
+    },
+    {
+      "episode": 258,
+      "avg_cost": 0.66912491812581,
+      "total_loss": NaN,
+      "eps": 0.2757603055760701
+    },
+    {
+      "episode": 259,
+      "avg_cost": 0.8451679087372901,
+      "total_loss": NaN,
+      "eps": 0.2743815040481898
+    },
+    {
+      "episode": 260,
+      "avg_cost": 0.786958050514298,
+      "total_loss": NaN,
+      "eps": 0.2730095965279488,
+      "probe_r2_gnn": 0.4104783833026886,
+      "probe_r2_gnn_per_uav": [
+        0.5112206339836121,
+        0.30973613262176514
+      ],
+      "probe_r2_rawobs": 0.05922609567642212,
+      "probe_r2_gnn_delta": 0.031094104051589966,
+      "probe_r2_raw_delta": 0.004705846309661865,
+      "probe_r2_congbase_delta": 0.15054887533187866,
+      "probe_bn_std": 0.07396073639392853,
+      "probe_dbn_std": 0.05173715204000473,
+      "probe_h_eff_rank": 2.2183938026428223,
+      "probe_h_dormant": 0.375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.7812190055847168,
+      "diag_td_p95": 2.971780776977539,
+      "diag_td_max": 19.847862243652344
+    },
+    {
+      "episode": 261,
+      "avg_cost": 0.8392416906488083,
+      "total_loss": NaN,
+      "eps": 0.27164454854530906
+    },
+    {
+      "episode": 262,
+      "avg_cost": 0.6860804493892024,
+      "total_loss": NaN,
+      "eps": 0.2702863258025825
+    },
+    {
+      "episode": 263,
+      "avg_cost": 0.7091925389239884,
+      "total_loss": NaN,
+      "eps": 0.2689348941735696
+    },
+    {
+      "episode": 264,
+      "avg_cost": 0.7252621723802328,
+      "total_loss": NaN,
+      "eps": 0.26759021970270175
+    },
+    {
+      "episode": 265,
+      "avg_cost": 0.7718114791207875,
+      "total_loss": NaN,
+      "eps": 0.2662522686041882,
+      "probe_r2_gnn": 0.33209508657455444,
+      "probe_r2_gnn_per_uav": [
+        0.32814735174179077,
+        0.3360428214073181
+      ],
+      "probe_r2_rawobs": 0.059449076652526855,
+      "probe_r2_gnn_delta": 0.04628872871398926,
+      "probe_r2_raw_delta": 0.005308479070663452,
+      "probe_r2_congbase_delta": 0.1708383858203888,
+      "probe_bn_std": 0.06816154718399048,
+      "probe_dbn_std": 0.05166744813323021,
+      "probe_h_eff_rank": 2.2824618816375732,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 266,
+      "avg_cost": 0.7501500902527607,
+      "total_loss": NaN,
+      "eps": 0.2649210072611673
+    },
+    {
+      "episode": 267,
+      "avg_cost": 0.7104555441353984,
+      "total_loss": NaN,
+      "eps": 0.26359640222486147
+    },
+    {
+      "episode": 268,
+      "avg_cost": 0.6569074257657718,
+      "total_loss": NaN,
+      "eps": 0.26227842021373715
+    },
+    {
+      "episode": 269,
+      "avg_cost": 0.790195483903493,
+      "total_loss": NaN,
+      "eps": 0.2609670281126685
+    },
+    {
+      "episode": 270,
+      "avg_cost": 0.8546411015439738,
+      "total_loss": NaN,
+      "eps": 0.25966219297210513,
+      "probe_r2_gnn": 0.3765829801559448,
+      "probe_r2_gnn_per_uav": [
+        0.29318463802337646,
+        0.4599813222885132
+      ],
+      "probe_r2_rawobs": 0.073027104139328,
+      "probe_r2_gnn_delta": 0.052820682525634766,
+      "probe_r2_raw_delta": 0.003445863723754883,
+      "probe_r2_congbase_delta": 0.16260197758674622,
+      "probe_bn_std": 0.0658544972538948,
+      "probe_dbn_std": 0.05354107916355133,
+      "probe_h_eff_rank": 2.2807133197784424,
+      "probe_h_dormant": 0.40625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8349339962005615,
+      "diag_td_p95": 2.8802075386047363,
+      "diag_td_max": 18.618261337280273
+    },
+    {
+      "episode": 271,
+      "avg_cost": 0.8629371345428111,
+      "total_loss": NaN,
+      "eps": 0.2583638820072446
+    },
+    {
+      "episode": 272,
+      "avg_cost": 0.7191766253734648,
+      "total_loss": NaN,
+      "eps": 0.2570720625972084
+    },
+    {
+      "episode": 273,
+      "avg_cost": 0.8535102720868879,
+      "total_loss": NaN,
+      "eps": 0.25578670228422234
+    },
+    {
+      "episode": 274,
+      "avg_cost": 0.8281479672656501,
+      "total_loss": NaN,
+      "eps": 0.25450776877280124
+    },
+    {
+      "episode": 275,
+      "avg_cost": 0.7265264915028229,
+      "total_loss": NaN,
+      "eps": 0.2532352299289372,
+      "probe_r2_gnn": 0.40180274844169617,
+      "probe_r2_gnn_per_uav": [
+        0.38549429178237915,
+        0.4181112051010132
+      ],
+      "probe_r2_rawobs": 0.08157810568809509,
+      "probe_r2_gnn_delta": 0.06938368082046509,
+      "probe_r2_raw_delta": -0.0005328059196472168,
+      "probe_r2_congbase_delta": 0.14164674282073975,
+      "probe_bn_std": 0.06602196395397186,
+      "probe_dbn_std": 0.05034497007727623,
+      "probe_h_eff_rank": 2.291301727294922,
+      "probe_h_dormant": 0.4375
+    },
+    {
+      "episode": 276,
+      "avg_cost": 0.7224619947285613,
+      "total_loss": NaN,
+      "eps": 0.2519690537792925
+    },
+    {
+      "episode": 277,
+      "avg_cost": 0.8130204283941549,
+      "total_loss": NaN,
+      "eps": 0.2507092085103961
+    },
+    {
+      "episode": 278,
+      "avg_cost": 0.7969401708980203,
+      "total_loss": NaN,
+      "eps": 0.2494556624678441
+    },
+    {
+      "episode": 279,
+      "avg_cost": 0.7089203395839513,
+      "total_loss": NaN,
+      "eps": 0.24820838415550486
+    },
+    {
+      "episode": 280,
+      "avg_cost": 0.7913666797326079,
+      "total_loss": NaN,
+      "eps": 0.24696734223472733,
+      "probe_r2_gnn": 0.33340421319007874,
+      "probe_r2_gnn_per_uav": [
+        0.18691414594650269,
+        0.4798942804336548
+      ],
+      "probe_r2_rawobs": 0.05712389945983887,
+      "probe_r2_gnn_delta": 0.05255421996116638,
+      "probe_r2_raw_delta": 0.0016096830368041992,
+      "probe_r2_congbase_delta": 0.14689567685127258,
+      "probe_bn_std": 0.0583307109773159,
+      "probe_dbn_std": 0.05007166787981987,
+      "probe_h_eff_rank": 2.324855327606201,
+      "probe_h_dormant": 0.40625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.7847943305969238,
+      "diag_td_p95": 2.9441447257995605,
+      "diag_td_max": 19.41646957397461
+    },
+    {
+      "episode": 281,
+      "avg_cost": 0.8378758079135075,
+      "total_loss": NaN,
+      "eps": 0.2457325055235537
+    },
+    {
+      "episode": 282,
+      "avg_cost": 0.8124817443388237,
+      "total_loss": NaN,
+      "eps": 0.24450384299593592
+    },
+    {
+      "episode": 283,
+      "avg_cost": 0.8336271121392924,
+      "total_loss": NaN,
+      "eps": 0.24328132378095624
+    },
+    {
+      "episode": 284,
+      "avg_cost": 0.7326405672474524,
+      "total_loss": NaN,
+      "eps": 0.24206491716205145
+    },
+    {
+      "episode": 285,
+      "avg_cost": 0.7575735837470751,
+      "total_loss": NaN,
+      "eps": 0.2408545925762412,
+      "probe_r2_gnn": 0.375357985496521,
+      "probe_r2_gnn_per_uav": [
+        0.34710073471069336,
+        0.40361523628234863
+      ],
+      "probe_r2_rawobs": 0.07183259725570679,
+      "probe_r2_gnn_delta": 0.020864039659500122,
+      "probe_r2_raw_delta": -0.0007659494876861572,
+      "probe_r2_congbase_delta": 0.1472843885421753,
+      "probe_bn_std": 0.058847106993198395,
+      "probe_dbn_std": 0.05006783455610275,
+      "probe_h_eff_rank": 2.300967216491699,
+      "probe_h_dormant": 0.375
+    },
+    {
+      "episode": 286,
+      "avg_cost": 0.6528101372252173,
+      "total_loss": NaN,
+      "eps": 0.23965031961336
+    },
+    {
+      "episode": 287,
+      "avg_cost": 0.8571721652861747,
+      "total_loss": NaN,
+      "eps": 0.2384520680152932
+    },
+    {
+      "episode": 288,
+      "avg_cost": 0.7255816720212509,
+      "total_loss": NaN,
+      "eps": 0.23725980767521673
+    },
+    {
+      "episode": 289,
+      "avg_cost": 0.7375196811911561,
+      "total_loss": NaN,
+      "eps": 0.23607350863684065
+    },
+    {
+      "episode": 290,
+      "avg_cost": 0.7531138634050923,
+      "total_loss": NaN,
+      "eps": 0.23489314109365644,
+      "probe_r2_gnn": 0.39110565185546875,
+      "probe_r2_gnn_per_uav": [
+        0.4447660446166992,
+        0.3374452590942383
+      ],
+      "probe_r2_rawobs": 0.06547722220420837,
+      "probe_r2_gnn_delta": 0.040114909410476685,
+      "probe_r2_raw_delta": -0.0016138255596160889,
+      "probe_r2_congbase_delta": 0.17383155226707458,
+      "probe_bn_std": 0.05698809400200844,
+      "probe_dbn_std": 0.04851147532463074,
+      "probe_h_eff_rank": 2.2565627098083496,
+      "probe_h_dormant": 0.46875,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8226766586303711,
+      "diag_td_p95": 2.9656782150268555,
+      "diag_td_max": 18.029937744140625
+    },
+    {
+      "episode": 291,
+      "avg_cost": 0.6674028726308013,
+      "total_loss": NaN,
+      "eps": 0.23371867538818816
+    },
+    {
+      "episode": 292,
+      "avg_cost": 0.7161045409457115,
+      "total_loss": NaN,
+      "eps": 0.23255008201124722
+    },
+    {
+      "episode": 293,
+      "avg_cost": 0.7546548416569362,
+      "total_loss": NaN,
+      "eps": 0.231387331601191
+    },
+    {
+      "episode": 294,
+      "avg_cost": 0.8057908357146377,
+      "total_loss": NaN,
+      "eps": 0.23023039494318503
+    },
+    {
+      "episode": 295,
+      "avg_cost": 0.832394385986913,
+      "total_loss": NaN,
+      "eps": 0.2290792429684691,
+      "probe_r2_gnn": 0.3619222640991211,
+      "probe_r2_gnn_per_uav": [
+        0.20236319303512573,
+        0.5214813351631165
+      ],
+      "probe_r2_rawobs": 0.069276362657547,
+      "probe_r2_gnn_delta": -0.08641517162322998,
+      "probe_r2_raw_delta": -0.009217798709869385,
+      "probe_r2_congbase_delta": 0.06573578715324402,
+      "probe_bn_std": 0.05912648141384125,
+      "probe_dbn_std": 0.047804877161979675,
+      "probe_h_eff_rank": 2.2857370376586914,
+      "probe_h_dormant": 0.4375
+    },
+    {
+      "episode": 296,
+      "avg_cost": 0.7835480291604471,
+      "total_loss": NaN,
+      "eps": 0.22793384675362674
+    },
+    {
+      "episode": 297,
+      "avg_cost": 0.6475762503106577,
+      "total_loss": NaN,
+      "eps": 0.22679417751985861
+    },
+    {
+      "episode": 298,
+      "avg_cost": 0.8181162405951955,
+      "total_loss": NaN,
+      "eps": 0.22566020663225933
+    },
+    {
+      "episode": 299,
+      "avg_cost": 0.8303513625940355,
+      "total_loss": NaN,
+      "eps": 0.22453190559909803
+    },
+    {
+      "episode": 300,
+      "avg_cost": 0.7988776498215391,
+      "total_loss": NaN,
+      "eps": 0.22340924607110255,
+      "probe_r2_gnn": 0.2965644299983978,
+      "probe_r2_gnn_per_uav": [
+        0.21128255128860474,
+        0.3818463087081909
+      ],
+      "probe_r2_rawobs": 0.05689844489097595,
+      "probe_r2_gnn_delta": 0.052483975887298584,
+      "probe_r2_raw_delta": 0.00042515993118286133,
+      "probe_r2_congbase_delta": 0.17459991574287415,
+      "probe_bn_std": 0.05500388145446777,
+      "probe_dbn_std": 0.04942253232002258,
+      "probe_h_eff_rank": 2.237922430038452,
+      "probe_h_dormant": 0.5,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8330864906311035,
+      "diag_td_p95": 2.9900312423706055,
+      "diag_td_max": 19.061248779296875
+    },
+    {
+      "episode": 301,
+      "avg_cost": 0.7645289087313288,
+      "total_loss": NaN,
+      "eps": 0.22229219984074702
+    },
+    {
+      "episode": 302,
+      "avg_cost": 0.70549022065657,
+      "total_loss": NaN,
+      "eps": 0.2211807388415433
+    },
+    {
+      "episode": 303,
+      "avg_cost": 0.735614270049761,
+      "total_loss": NaN,
+      "eps": 0.22007483514733558
+    },
+    {
+      "episode": 304,
+      "avg_cost": 0.8472259317761595,
+      "total_loss": NaN,
+      "eps": 0.2189744609715989
+    },
+    {
+      "episode": 305,
+      "avg_cost": 0.7603622287562487,
+      "total_loss": NaN,
+      "eps": 0.2178795886667409,
+      "probe_r2_gnn": -30.51320171356201,
+      "probe_r2_gnn_per_uav": [
+        -51.53117370605469,
+        -9.495229721069336
+      ],
+      "probe_r2_rawobs": 0.07565629482269287,
+      "probe_r2_gnn_delta": -16.065678596496582,
+      "probe_r2_raw_delta": -0.004895836114883423,
+      "probe_r2_congbase_delta": 0.21018674969673157,
+      "probe_bn_std": 0.05754479020833969,
+      "probe_dbn_std": 0.04961973428726196,
+      "probe_h_eff_rank": 2.3089041709899902,
+      "probe_h_dormant": 0.4375
+    },
+    {
+      "episode": 306,
+      "avg_cost": 0.7416617524803799,
+      "total_loss": NaN,
+      "eps": 0.2167901907234072
+    },
+    {
+      "episode": 307,
+      "avg_cost": 0.6927588644291538,
+      "total_loss": NaN,
+      "eps": 0.21570623976979014
+    },
+    {
+      "episode": 308,
+      "avg_cost": 0.7922660678396213,
+      "total_loss": NaN,
+      "eps": 0.21462770857094118
+    },
+    {
+      "episode": 309,
+      "avg_cost": 0.6987651837897428,
+      "total_loss": NaN,
+      "eps": 0.21355457002808648
+    },
+    {
+      "episode": 310,
+      "avg_cost": 0.7099213031198895,
+      "total_loss": NaN,
+      "eps": 0.21248679717794605,
+      "probe_r2_gnn": 0.3153994381427765,
+      "probe_r2_gnn_per_uav": [
+        0.37856525182724,
+        0.252233624458313
+      ],
+      "probe_r2_rawobs": 0.06568577885627747,
+      "probe_r2_gnn_delta": 0.05255943536758423,
+      "probe_r2_raw_delta": -0.0142897367477417,
+      "probe_r2_congbase_delta": 0.1463964581489563,
+      "probe_bn_std": 0.056806065142154694,
+      "probe_dbn_std": 0.04882126674056053,
+      "probe_h_eff_rank": 2.3143258094787598,
+      "probe_h_dormant": 0.4375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8426065444946289,
+      "diag_td_p95": 2.6478681564331055,
+      "diag_td_max": 18.079116821289062
+    },
+    {
+      "episode": 311,
+      "avg_cost": 0.7471773574170081,
+      "total_loss": NaN,
+      "eps": 0.21142436319205632
+    },
+    {
+      "episode": 312,
+      "avg_cost": 0.7624929974013479,
+      "total_loss": NaN,
+      "eps": 0.21036724137609603
+    },
+    {
+      "episode": 313,
+      "avg_cost": 0.8000254703782897,
+      "total_loss": NaN,
+      "eps": 0.20931540516921554
+    },
+    {
+      "episode": 314,
+      "avg_cost": 0.7202739391405919,
+      "total_loss": NaN,
+      "eps": 0.20826882814336947
+    },
+    {
+      "episode": 315,
+      "avg_cost": 0.7414729604443656,
+      "total_loss": NaN,
+      "eps": 0.20722748400265262,
+      "probe_r2_gnn": 0.25514450669288635,
+      "probe_r2_gnn_per_uav": [
+        0.26005351543426514,
+        0.25023549795150757
+      ],
+      "probe_r2_rawobs": 0.05929762125015259,
+      "probe_r2_gnn_delta": 0.06377220153808594,
+      "probe_r2_raw_delta": 0.005033016204833984,
+      "probe_r2_congbase_delta": 0.2507261335849762,
+      "probe_bn_std": 0.05169602856040001,
+      "probe_dbn_std": 0.04525097832083702,
+      "probe_h_eff_rank": 2.309783458709717,
+      "probe_h_dormant": 0.46875
+    },
+    {
+      "episode": 316,
+      "avg_cost": 0.7425248436040421,
+      "total_loss": NaN,
+      "eps": 0.20619134658263935
+    },
+    {
+      "episode": 317,
+      "avg_cost": 0.7280024714140972,
+      "total_loss": NaN,
+      "eps": 0.20516038984972615
+    },
+    {
+      "episode": 318,
+      "avg_cost": 0.8093198692112388,
+      "total_loss": NaN,
+      "eps": 0.2041345879004775
+    },
+    {
+      "episode": 319,
+      "avg_cost": 0.6931534289226601,
+      "total_loss": NaN,
+      "eps": 0.2031139149609751
+    },
+    {
+      "episode": 320,
+      "avg_cost": 0.7969228209456161,
+      "total_loss": NaN,
+      "eps": 0.20209834538617025,
+      "probe_r2_gnn": -9.538098335266113,
+      "probe_r2_gnn_per_uav": [
+        -2.471576690673828,
+        -16.6046199798584
+      ],
+      "probe_r2_rawobs": 0.07048627734184265,
+      "probe_r2_gnn_delta": -5.348082005977631,
+      "probe_r2_raw_delta": 0.0007637441158294678,
+      "probe_r2_congbase_delta": 0.15411686897277832,
+      "probe_bn_std": 0.050325386226177216,
+      "probe_dbn_std": 0.045135971158742905,
+      "probe_h_eff_rank": 2.2635998725891113,
+      "probe_h_dormant": 0.46875,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8357319831848145,
+      "diag_td_p95": 3.295741319656372,
+      "diag_td_max": 19.572843551635742
+    },
+    {
+      "episode": 321,
+      "avg_cost": 0.8381187270273347,
+      "total_loss": NaN,
+      "eps": 0.2010878536592394
+    },
+    {
+      "episode": 322,
+      "avg_cost": 0.8913702051689846,
+      "total_loss": NaN,
+      "eps": 0.2000824143909432
+    },
+    {
+      "episode": 323,
+      "avg_cost": 0.7806152318903133,
+      "total_loss": NaN,
+      "eps": 0.19908200231898848
+    },
+    {
+      "episode": 324,
+      "avg_cost": 0.7972423827135274,
+      "total_loss": NaN,
+      "eps": 0.19808659230739353
+    },
+    {
+      "episode": 325,
+      "avg_cost": 0.8084210827859398,
+      "total_loss": NaN,
+      "eps": 0.19709615934585656,
+      "probe_r2_gnn": 0.273489773273468,
+      "probe_r2_gnn_per_uav": [
+        0.24065172672271729,
+        0.30632781982421875
+      ],
+      "probe_r2_rawobs": 0.03032606840133667,
+      "probe_r2_gnn_delta": 0.08102476596832275,
+      "probe_r2_raw_delta": -0.0005310773849487305,
+      "probe_r2_congbase_delta": 0.2774899899959564,
+      "probe_bn_std": 0.05207926779985428,
+      "probe_dbn_std": 0.048202142119407654,
+      "probe_h_eff_rank": 2.2495689392089844,
+      "probe_h_dormant": 0.5
+    },
+    {
+      "episode": 326,
+      "avg_cost": 0.7418045554511566,
+      "total_loss": NaN,
+      "eps": 0.19611067854912728
+    },
+    {
+      "episode": 327,
+      "avg_cost": 0.7889913497909014,
+      "total_loss": NaN,
+      "eps": 0.19513012515638165
+    },
+    {
+      "episode": 328,
+      "avg_cost": 0.8636977531179423,
+      "total_loss": NaN,
+      "eps": 0.19415447453059972
+    },
+    {
+      "episode": 329,
+      "avg_cost": 0.7988486349945967,
+      "total_loss": NaN,
+      "eps": 0.19318370215794672
+    },
+    {
+      "episode": 330,
+      "avg_cost": 0.7738648796575035,
+      "total_loss": NaN,
+      "eps": 0.192217783647157,
+      "probe_r2_gnn": 0.16393566131591797,
+      "probe_r2_gnn_per_uav": [
+        0.1979941725730896,
+        0.12987715005874634
+      ],
+      "probe_r2_rawobs": 0.0399494469165802,
+      "probe_r2_gnn_delta": -0.016038358211517334,
+      "probe_r2_raw_delta": -0.029351115226745605,
+      "probe_r2_congbase_delta": 0.16592317819595337,
+      "probe_bn_std": 0.05258585140109062,
+      "probe_dbn_std": 0.04674519598484039,
+      "probe_h_eff_rank": 2.2072348594665527,
+      "probe_h_dormant": 0.5,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8069019317626953,
+      "diag_td_p95": 2.618191719055176,
+      "diag_td_max": 19.473630905151367
+    },
+    {
+      "episode": 331,
+      "avg_cost": 0.7680009740596592,
+      "total_loss": NaN,
+      "eps": 0.1912566947289212
+    },
+    {
+      "episode": 332,
+      "avg_cost": 0.679739454035767,
+      "total_loss": NaN,
+      "eps": 0.1903004112552766
+    },
+    {
+      "episode": 333,
+      "avg_cost": 0.9191438767223936,
+      "total_loss": NaN,
+      "eps": 0.18934890919900021
+    },
+    {
+      "episode": 334,
+      "avg_cost": 0.8118467231247217,
+      "total_loss": NaN,
+      "eps": 0.18840216465300522
+    },
+    {
+      "episode": 335,
+      "avg_cost": 0.7484532270326407,
+      "total_loss": NaN,
+      "eps": 0.18746015382974018,
+      "probe_r2_gnn": 0.23704257607460022,
+      "probe_r2_gnn_per_uav": [
+        0.2873886227607727,
+        0.18669652938842773
+      ],
+      "probe_r2_rawobs": 0.0484541654586792,
+      "probe_r2_gnn_delta": 0.045380353927612305,
+      "probe_r2_raw_delta": -0.002805173397064209,
+      "probe_r2_congbase_delta": 0.210554301738739,
+      "probe_bn_std": 0.048749059438705444,
+      "probe_dbn_std": 0.045814838260412216,
+      "probe_h_eff_rank": 2.20938777923584,
+      "probe_h_dormant": 0.46875
+    },
+    {
+      "episode": 336,
+      "avg_cost": 0.822115928227749,
+      "total_loss": NaN,
+      "eps": 0.1865228530605915
+    },
+    {
+      "episode": 337,
+      "avg_cost": 0.7437919299252976,
+      "total_loss": NaN,
+      "eps": 0.18559023879528855
+    },
+    {
+      "episode": 338,
+      "avg_cost": 0.7284963940875453,
+      "total_loss": NaN,
+      "eps": 0.1846622876013121
+    },
+    {
+      "episode": 339,
+      "avg_cost": 0.7786237645843866,
+      "total_loss": NaN,
+      "eps": 0.18373897616330553
+    },
+    {
+      "episode": 340,
+      "avg_cost": 0.7621354869902423,
+      "total_loss": NaN,
+      "eps": 0.182820281282489,
+      "probe_r2_gnn": 0.2591891884803772,
+      "probe_r2_gnn_per_uav": [
+        0.2796626091003418,
+        0.2387157678604126
+      ],
+      "probe_r2_rawobs": 0.04133892059326172,
+      "probe_r2_gnn_delta": 0.06819522380828857,
+      "probe_r2_raw_delta": 0.0014938414096832275,
+      "probe_r2_congbase_delta": 0.1906386911869049,
+      "probe_bn_std": 0.04864004626870155,
+      "probe_dbn_std": 0.0447976179420948,
+      "probe_h_eff_rank": 2.178229808807373,
+      "probe_h_dormant": 0.46875,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8387000560760498,
+      "diag_td_p95": 3.275646924972534,
+      "diag_td_max": 18.462474822998047
+    },
+    {
+      "episode": 341,
+      "avg_cost": 0.8104657586598358,
+      "total_loss": NaN,
+      "eps": 0.18190617987607657
+    },
+    {
+      "episode": 342,
+      "avg_cost": 0.9125102923052008,
+      "total_loss": NaN,
+      "eps": 0.18099664897669618
+    },
+    {
+      "episode": 343,
+      "avg_cost": 0.8379353838854285,
+      "total_loss": NaN,
+      "eps": 0.1800916657318127
+    },
+    {
+      "episode": 344,
+      "avg_cost": 0.8564167608304372,
+      "total_loss": NaN,
+      "eps": 0.17919120740315364
+    },
+    {
+      "episode": 345,
+      "avg_cost": 0.799142253108187,
+      "total_loss": NaN,
+      "eps": 0.17829525136613786,
+      "probe_r2_gnn": 0.2488917112350464,
+      "probe_r2_gnn_per_uav": [
+        0.1438397765159607,
+        0.3539436459541321
+      ],
+      "probe_r2_rawobs": 0.058562278747558594,
+      "probe_r2_gnn_delta": 0.04393264651298523,
+      "probe_r2_raw_delta": -0.011860191822052002,
+      "probe_r2_congbase_delta": 0.1711454689502716,
+      "probe_bn_std": 0.04780330881476402,
+      "probe_dbn_std": 0.04144630581140518,
+      "probe_h_eff_rank": 2.1023662090301514,
+      "probe_h_dormant": 0.53125
+    },
+    {
+      "episode": 346,
+      "avg_cost": 0.7379414074422901,
+      "total_loss": NaN,
+      "eps": 0.17740377510930716
+    },
+    {
+      "episode": 347,
+      "avg_cost": 0.8728928073754746,
+      "total_loss": NaN,
+      "eps": 0.17651675623376062
+    },
+    {
+      "episode": 348,
+      "avg_cost": 0.8235156957866943,
+      "total_loss": NaN,
+      "eps": 0.1756341724525918
+    },
+    {
+      "episode": 349,
+      "avg_cost": 0.7881122849212072,
+      "total_loss": NaN,
+      "eps": 0.17475600159032884
+    },
+    {
+      "episode": 350,
+      "avg_cost": 0.7035490811545244,
+      "total_loss": NaN,
+      "eps": 0.17388222158237718,
+      "probe_r2_gnn": 0.24996337294578552,
+      "probe_r2_gnn_per_uav": [
+        0.2346697449684143,
+        0.26525700092315674
+      ],
+      "probe_r2_rawobs": 0.04296225309371948,
+      "probe_r2_gnn_delta": 0.02324509620666504,
+      "probe_r2_raw_delta": -0.0033684968948364258,
+      "probe_r2_congbase_delta": 0.16607454419136047,
+      "probe_bn_std": 0.04377198591828346,
+      "probe_dbn_std": 0.04250636324286461,
+      "probe_h_eff_rank": 2.108227491378784,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.835446834564209,
+      "diag_td_p95": 2.520451068878174,
+      "diag_td_max": 18.701793670654297
+    },
+    {
+      "episode": 351,
+      "avg_cost": 0.9084481917127686,
+      "total_loss": NaN,
+      "eps": 0.1730128104744653
+    },
+    {
+      "episode": 352,
+      "avg_cost": 0.7501683090241879,
+      "total_loss": NaN,
+      "eps": 0.17214774642209296
+    },
+    {
+      "episode": 353,
+      "avg_cost": 0.7728696083370693,
+      "total_loss": NaN,
+      "eps": 0.1712870076899825
+    },
+    {
+      "episode": 354,
+      "avg_cost": 0.6471124097777136,
+      "total_loss": NaN,
+      "eps": 0.17043057265153258
+    },
+    {
+      "episode": 355,
+      "avg_cost": 0.7937526648582055,
+      "total_loss": NaN,
+      "eps": 0.16957841978827493,
+      "probe_r2_gnn": 0.2974667251110077,
+      "probe_r2_gnn_per_uav": [
+        0.3060486316680908,
+        0.28888481855392456
+      ],
+      "probe_r2_rawobs": 0.052451133728027344,
+      "probe_r2_gnn_delta": 0.006574273109436035,
+      "probe_r2_raw_delta": -0.00021532177925109863,
+      "probe_r2_congbase_delta": 0.20967066287994385,
+      "probe_bn_std": 0.047189291566610336,
+      "probe_dbn_std": 0.044110555201768875,
+      "probe_h_eff_rank": 2.152634859085083,
+      "probe_h_dormant": 0.53125
+    },
+    {
+      "episode": 356,
+      "avg_cost": 0.7587289226412562,
+      "total_loss": NaN,
+      "eps": 0.16873052768933355
+    },
+    {
+      "episode": 357,
+      "avg_cost": 0.6852687529906172,
+      "total_loss": NaN,
+      "eps": 0.1678868750508869
+    },
+    {
+      "episode": 358,
+      "avg_cost": 0.7708628022827989,
+      "total_loss": NaN,
+      "eps": 0.16704744067563246
+    },
+    {
+      "episode": 359,
+      "avg_cost": 0.7298571963471221,
+      "total_loss": NaN,
+      "eps": 0.1662122034722543
+    },
+    {
+      "episode": 360,
+      "avg_cost": 0.7288472247401419,
+      "total_loss": NaN,
+      "eps": 0.16538114245489302,
+      "probe_r2_gnn": 0.20285481214523315,
+      "probe_r2_gnn_per_uav": [
+        0.19478607177734375,
+        0.21092355251312256
+      ],
+      "probe_r2_rawobs": 0.05901417136192322,
+      "probe_r2_gnn_delta": 0.0008935928344726562,
+      "probe_r2_raw_delta": 0.0028717517852783203,
+      "probe_r2_congbase_delta": 0.25195416808128357,
+      "probe_bn_std": 0.0445205383002758,
+      "probe_dbn_std": 0.041542261838912964,
+      "probe_h_eff_rank": 2.1910862922668457,
+      "probe_h_dormant": 0.4375,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.7769639492034912,
+      "diag_td_p95": 2.6664388179779053,
+      "diag_td_max": 18.601539611816406
+    },
+    {
+      "episode": 361,
+      "avg_cost": 0.8421720841161622,
+      "total_loss": NaN,
+      "eps": 0.16455423674261854
+    },
+    {
+      "episode": 362,
+      "avg_cost": 0.7362924629593074,
+      "total_loss": NaN,
+      "eps": 0.16373146555890544
+    },
+    {
+      "episode": 363,
+      "avg_cost": 0.8720086970832712,
+      "total_loss": NaN,
+      "eps": 0.16291280823111093
+    },
+    {
+      "episode": 364,
+      "avg_cost": 0.9333225163138692,
+      "total_loss": NaN,
+      "eps": 0.16209824418995536
+    },
+    {
+      "episode": 365,
+      "avg_cost": 0.7210654307668988,
+      "total_loss": NaN,
+      "eps": 0.16128775296900558,
+      "probe_r2_gnn": 0.27615731954574585,
+      "probe_r2_gnn_per_uav": [
+        0.34654688835144043,
+        0.20576775074005127
+      ],
+      "probe_r2_rawobs": 0.029376238584518433,
+      "probe_r2_gnn_delta": 0.03380322456359863,
+      "probe_r2_raw_delta": -0.0013834238052368164,
+      "probe_r2_congbase_delta": 0.21539375185966492,
+      "probe_bn_std": 0.045747313648462296,
+      "probe_dbn_std": 0.04210895672440529,
+      "probe_h_eff_rank": 2.173095226287842,
+      "probe_h_dormant": 0.53125
+    },
+    {
+      "episode": 366,
+      "avg_cost": 0.875208435035448,
+      "total_loss": NaN,
+      "eps": 0.16048131420416054
+    },
+    {
+      "episode": 367,
+      "avg_cost": 0.9177439759827637,
+      "total_loss": NaN,
+      "eps": 0.15967890763313974
+    },
+    {
+      "episode": 368,
+      "avg_cost": 0.8466391073096934,
+      "total_loss": NaN,
+      "eps": 0.15888051309497406
+    },
+    {
+      "episode": 369,
+      "avg_cost": 0.922993917538838,
+      "total_loss": NaN,
+      "eps": 0.1580861105294992
+    },
+    {
+      "episode": 370,
+      "avg_cost": 0.8768725048750861,
+      "total_loss": NaN,
+      "eps": 0.1572956799768517,
+      "probe_r2_gnn": 0.2476615607738495,
+      "probe_r2_gnn_per_uav": [
+        0.17601227760314941,
+        0.31931084394454956
+      ],
+      "probe_r2_rawobs": 0.045727431774139404,
+      "probe_r2_gnn_delta": 0.05904543399810791,
+      "probe_r2_raw_delta": 0.003795921802520752,
+      "probe_r2_congbase_delta": 0.2126692831516266,
+      "probe_bn_std": 0.04556182399392128,
+      "probe_dbn_std": 0.04160130396485329,
+      "probe_h_eff_rank": 2.141359329223633,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8508524894714355,
+      "diag_td_p95": 3.300912857055664,
+      "diag_td_max": 19.78693389892578
+    },
+    {
+      "episode": 371,
+      "avg_cost": 0.8535855625908582,
+      "total_loss": NaN,
+      "eps": 0.15650920157696743
+    },
+    {
+      "episode": 372,
+      "avg_cost": 0.7193681182892133,
+      "total_loss": NaN,
+      "eps": 0.1557266555690826
+    },
+    {
+      "episode": 373,
+      "avg_cost": 0.7000071668034841,
+      "total_loss": NaN,
+      "eps": 0.1549480222912372
+    },
+    {
+      "episode": 374,
+      "avg_cost": 0.8138822091379331,
+      "total_loss": NaN,
+      "eps": 0.15417328217978102
+    },
+    {
+      "episode": 375,
+      "avg_cost": 0.8260076937439215,
+      "total_loss": NaN,
+      "eps": 0.1534024157688821,
+      "probe_r2_gnn": 0.1601322889328003,
+      "probe_r2_gnn_per_uav": [
+        -0.11093556880950928,
+        0.43120014667510986
+      ],
+      "probe_r2_rawobs": 0.04742652177810669,
+      "probe_r2_gnn_delta": -0.2565799951553345,
+      "probe_r2_raw_delta": -0.02609318494796753,
+      "probe_r2_congbase_delta": 0.00650361180305481,
+      "probe_bn_std": 0.04456165060400963,
+      "probe_dbn_std": 0.039182160049676895,
+      "probe_h_eff_rank": 2.21620774269104,
+      "probe_h_dormant": 0.4375
+    },
+    {
+      "episode": 376,
+      "avg_cost": 0.7824275526732388,
+      "total_loss": NaN,
+      "eps": 0.1526354036900377
+    },
+    {
+      "episode": 377,
+      "avg_cost": 0.82484904194158,
+      "total_loss": NaN,
+      "eps": 0.1518722266715875
+    },
+    {
+      "episode": 378,
+      "avg_cost": 0.8396949006441428,
+      "total_loss": NaN,
+      "eps": 0.15111286553822956
+    },
+    {
+      "episode": 379,
+      "avg_cost": 0.8498693688981136,
+      "total_loss": NaN,
+      "eps": 0.15035730121053842
+    },
+    {
+      "episode": 380,
+      "avg_cost": 0.7707313882481865,
+      "total_loss": NaN,
+      "eps": 0.14960551470448571,
+      "probe_r2_gnn": 0.2537307143211365,
+      "probe_r2_gnn_per_uav": [
+        0.13809561729431152,
+        0.3693658113479614
+      ],
+      "probe_r2_rawobs": 0.05411270260810852,
+      "probe_r2_gnn_delta": 0.016289860010147095,
+      "probe_r2_raw_delta": -0.005411803722381592,
+      "probe_r2_congbase_delta": 0.11787781119346619,
+      "probe_bn_std": 0.044394731521606445,
+      "probe_dbn_std": 0.04143526405096054,
+      "probe_h_eff_rank": 2.1295549869537354,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8352375030517578,
+      "diag_td_p95": 2.8811049461364746,
+      "diag_td_max": 19.139253616333008
+    },
+    {
+      "episode": 381,
+      "avg_cost": 0.8388004042160834,
+      "total_loss": NaN,
+      "eps": 0.14885748713096328
+    },
+    {
+      "episode": 382,
+      "avg_cost": 0.8338329954370581,
+      "total_loss": NaN,
+      "eps": 0.14811319969530845
+    },
+    {
+      "episode": 383,
+      "avg_cost": 0.7461037836094317,
+      "total_loss": NaN,
+      "eps": 0.1473726336968319
+    },
+    {
+      "episode": 384,
+      "avg_cost": 0.7786204433347667,
+      "total_loss": NaN,
+      "eps": 0.14663577052834775
+    },
+    {
+      "episode": 385,
+      "avg_cost": 0.7258658131882649,
+      "total_loss": NaN,
+      "eps": 0.14590259167570602,
+      "probe_r2_gnn": 0.3181957006454468,
+      "probe_r2_gnn_per_uav": [
+        0.29936039447784424,
+        0.3370310068130493
+      ],
+      "probe_r2_rawobs": 0.05831247568130493,
+      "probe_r2_gnn_delta": 0.0017451345920562744,
+      "probe_r2_raw_delta": -0.0014013946056365967,
+      "probe_r2_congbase_delta": 0.18997099995613098,
+      "probe_bn_std": 0.045360226184129715,
+      "probe_dbn_std": 0.03890397772192955,
+      "probe_h_eff_rank": 2.1812167167663574,
+      "probe_h_dormant": 0.46875
+    },
+    {
+      "episode": 386,
+      "avg_cost": 0.8178760629977723,
+      "total_loss": NaN,
+      "eps": 0.1451730787173275
+    },
+    {
+      "episode": 387,
+      "avg_cost": 0.7955722139478253,
+      "total_loss": NaN,
+      "eps": 0.14444721332374086
+    },
+    {
+      "episode": 388,
+      "avg_cost": 0.7196801588813936,
+      "total_loss": NaN,
+      "eps": 0.14372497725712216
+    },
+    {
+      "episode": 389,
+      "avg_cost": 0.8663946091664778,
+      "total_loss": NaN,
+      "eps": 0.14300635237083656
+    },
+    {
+      "episode": 390,
+      "avg_cost": 0.8463468861392023,
+      "total_loss": NaN,
+      "eps": 0.14229132060898236,
+      "probe_r2_gnn": 0.23417025804519653,
+      "probe_r2_gnn_per_uav": [
+        0.1520196795463562,
+        0.31632083654403687
+      ],
+      "probe_r2_rawobs": 0.03957793116569519,
+      "probe_r2_gnn_delta": 0.037810444831848145,
+      "probe_r2_raw_delta": 0.004205882549285889,
+      "probe_r2_congbase_delta": 0.27074572443962097,
+      "probe_bn_std": 0.044031139463186264,
+      "probe_dbn_std": 0.039988745003938675,
+      "probe_h_eff_rank": 2.1402366161346436,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.839777946472168,
+      "diag_td_p95": 2.9114556312561035,
+      "diag_td_max": 18.94291877746582
+    },
+    {
+      "episode": 391,
+      "avg_cost": 0.8454641718988145,
+      "total_loss": NaN,
+      "eps": 0.14157986400593744
+    },
+    {
+      "episode": 392,
+      "avg_cost": 0.8485592112224836,
+      "total_loss": NaN,
+      "eps": 0.14087196468590776
+    },
+    {
+      "episode": 393,
+      "avg_cost": 0.8318464428526184,
+      "total_loss": NaN,
+      "eps": 0.14016760486247823
+    },
+    {
+      "episode": 394,
+      "avg_cost": 0.9166224060425,
+      "total_loss": NaN,
+      "eps": 0.13946676683816583
+    },
+    {
+      "episode": 395,
+      "avg_cost": 0.7583797319237248,
+      "total_loss": NaN,
+      "eps": 0.138769433003975,
+      "probe_r2_gnn": 0.31763631105422974,
+      "probe_r2_gnn_per_uav": [
+        0.2598921060562134,
+        0.3753805160522461
+      ],
+      "probe_r2_rawobs": 0.05647331476211548,
+      "probe_r2_gnn_delta": -0.04663056135177612,
+      "probe_r2_raw_delta": -0.02521747350692749,
+      "probe_r2_congbase_delta": 0.07282751798629761,
+      "probe_bn_std": 0.04508798569440842,
+      "probe_dbn_std": 0.0402039960026741,
+      "probe_h_eff_rank": 2.191859006881714,
+      "probe_h_dormant": 0.46875
+    },
+    {
+      "episode": 396,
+      "avg_cost": 0.6888617109884134,
+      "total_loss": NaN,
+      "eps": 0.13807558583895513
+    },
+    {
+      "episode": 397,
+      "avg_cost": 0.7345216823567544,
+      "total_loss": NaN,
+      "eps": 0.13738520790976036
+    },
+    {
+      "episode": 398,
+      "avg_cost": 0.7660381329242105,
+      "total_loss": NaN,
+      "eps": 0.13669828187021155
+    },
+    {
+      "episode": 399,
+      "avg_cost": 0.8317577043139095,
+      "total_loss": NaN,
+      "eps": 0.13601479046086049
+    },
+    {
+      "episode": 400,
+      "avg_cost": 0.675679726849836,
+      "total_loss": NaN,
+      "eps": 0.1353347165085562,
+      "probe_r2_gnn": 0.2261287271976471,
+      "probe_r2_gnn_per_uav": [
+        0.2938963770866394,
+        0.15836107730865479
+      ],
+      "probe_r2_rawobs": 0.04095357656478882,
+      "probe_r2_gnn_delta": 0.016563892364501953,
+      "probe_r2_raw_delta": -0.001544952392578125,
+      "probe_r2_congbase_delta": 0.15810367465019226,
+      "probe_bn_std": 0.047195762395858765,
+      "probe_dbn_std": 0.03915504366159439,
+      "probe_h_eff_rank": 2.155710220336914,
+      "probe_h_dormant": 0.5,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8348972797393799,
+      "diag_td_p95": 2.8557403087615967,
+      "diag_td_max": 17.615951538085938
+    },
+    {
+      "episode": 401,
+      "avg_cost": 0.9207570203945756,
+      "total_loss": NaN,
+      "eps": 0.1346580429260134
+    },
+    {
+      "episode": 402,
+      "avg_cost": 0.9254549834057718,
+      "total_loss": NaN,
+      "eps": 0.13398475271138335
+    },
+    {
+      "episode": 403,
+      "avg_cost": 0.7342412803028369,
+      "total_loss": NaN,
+      "eps": 0.13331482894782642
+    },
+    {
+      "episode": 404,
+      "avg_cost": 0.8360623430004205,
+      "total_loss": NaN,
+      "eps": 0.13264825480308728
+    },
+    {
+      "episode": 405,
+      "avg_cost": 1.0093057071829796,
+      "total_loss": NaN,
+      "eps": 0.13198501352907185,
+      "probe_r2_gnn": 0.21460700035095215,
+      "probe_r2_gnn_per_uav": [
+        0.19128912687301636,
+        0.23792487382888794
+      ],
+      "probe_r2_rawobs": 0.032242923974990845,
+      "probe_r2_gnn_delta": 0.019360512495040894,
+      "probe_r2_raw_delta": 0.00075531005859375,
+      "probe_r2_congbase_delta": 0.20073801279067993,
+      "probe_bn_std": 0.04015987738966942,
+      "probe_dbn_std": 0.03816095367074013,
+      "probe_h_eff_rank": 2.058652877807617,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 406,
+      "avg_cost": 0.7319004222679188,
+      "total_loss": NaN,
+      "eps": 0.1313250884614265
+    },
+    {
+      "episode": 407,
+      "avg_cost": 0.8302778334818803,
+      "total_loss": NaN,
+      "eps": 0.13066846301911936
+    },
+    {
+      "episode": 408,
+      "avg_cost": 0.7860432703819051,
+      "total_loss": NaN,
+      "eps": 0.13001512070402377
+    },
+    {
+      "episode": 409,
+      "avg_cost": 0.7548964093791303,
+      "total_loss": NaN,
+      "eps": 0.12936504510050365
+    },
+    {
+      "episode": 410,
+      "avg_cost": 0.7910635115366601,
+      "total_loss": NaN,
+      "eps": 0.12871821987500112,
+      "probe_r2_gnn": 0.16896483302116394,
+      "probe_r2_gnn_per_uav": [
+        0.14026427268981934,
+        0.19766539335250854
+      ],
+      "probe_r2_rawobs": 0.04631572961807251,
+      "probe_r2_gnn_delta": 0.0019239187240600586,
+      "probe_r2_raw_delta": -0.0007247626781463623,
+      "probe_r2_congbase_delta": 0.2065611183643341,
+      "probe_bn_std": 0.042246121913194656,
+      "probe_dbn_std": 0.03827277943491936,
+      "probe_h_eff_rank": 2.1138241291046143,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.84454345703125,
+      "diag_td_p95": 2.9360790252685547,
+      "diag_td_max": 19.154958724975586
+    },
+    {
+      "episode": 411,
+      "avg_cost": 0.9514834658423097,
+      "total_loss": NaN,
+      "eps": 0.12807462877562611
+    },
+    {
+      "episode": 412,
+      "avg_cost": 0.7705117906875476,
+      "total_loss": NaN,
+      "eps": 0.12743425563174798
+    },
+    {
+      "episode": 413,
+      "avg_cost": 0.8509573431473579,
+      "total_loss": NaN,
+      "eps": 0.12679708435358925
+    },
+    {
+      "episode": 414,
+      "avg_cost": 0.819870984750361,
+      "total_loss": NaN,
+      "eps": 0.1261630989318213
+    },
+    {
+      "episode": 415,
+      "avg_cost": 0.7438816687103889,
+      "total_loss": NaN,
+      "eps": 0.1255322834371622,
+      "probe_r2_gnn": 0.20577073097229004,
+      "probe_r2_gnn_per_uav": [
+        0.24595075845718384,
+        0.16559070348739624
+      ],
+      "probe_r2_rawobs": 0.05531224608421326,
+      "probe_r2_gnn_delta": -0.04238015413284302,
+      "probe_r2_raw_delta": -0.04011654853820801,
+      "probe_r2_congbase_delta": 0.06346514821052551,
+      "probe_bn_std": 0.04101211205124855,
+      "probe_dbn_std": 0.03850332647562027,
+      "probe_h_eff_rank": 2.109741687774658,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 416,
+      "avg_cost": 0.8357908512481897,
+      "total_loss": NaN,
+      "eps": 0.12490462201997637
+    },
+    {
+      "episode": 417,
+      "avg_cost": 0.8196985128868319,
+      "total_loss": NaN,
+      "eps": 0.1242800989098765
+    },
+    {
+      "episode": 418,
+      "avg_cost": 0.9451734119259847,
+      "total_loss": NaN,
+      "eps": 0.12365869841532712
+    },
+    {
+      "episode": 419,
+      "avg_cost": 1.032016901006849,
+      "total_loss": NaN,
+      "eps": 0.12304040492325048
+    },
+    {
+      "episode": 420,
+      "avg_cost": 0.889537610971048,
+      "total_loss": NaN,
+      "eps": 0.12242520289863423,
+      "probe_r2_gnn": 0.23023098707199097,
+      "probe_r2_gnn_per_uav": [
+        0.22151368856430054,
+        0.2389482855796814
+      ],
+      "probe_r2_rawobs": 0.060277581214904785,
+      "probe_r2_gnn_delta": -0.010361284017562866,
+      "probe_r2_raw_delta": -0.023606061935424805,
+      "probe_r2_congbase_delta": 0.08204418420791626,
+      "probe_bn_std": 0.0395207479596138,
+      "probe_dbn_std": 0.03730200231075287,
+      "probe_h_eff_rank": 2.0896732807159424,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8190791606903076,
+      "diag_td_p95": 3.2317914962768555,
+      "diag_td_max": 18.778017044067383
+    },
+    {
+      "episode": 421,
+      "avg_cost": 0.8038325207692186,
+      "total_loss": NaN,
+      "eps": 0.12181307688414106
+    },
+    {
+      "episode": 422,
+      "avg_cost": 0.8505733471847344,
+      "total_loss": NaN,
+      "eps": 0.12120401149972035
+    },
+    {
+      "episode": 423,
+      "avg_cost": 0.7516755557849681,
+      "total_loss": NaN,
+      "eps": 0.12059799144222175
+    },
+    {
+      "episode": 424,
+      "avg_cost": 0.8755610531059709,
+      "total_loss": NaN,
+      "eps": 0.11999500148501063
+    },
+    {
+      "episode": 425,
+      "avg_cost": 0.8307223313844848,
+      "total_loss": NaN,
+      "eps": 0.11939502647758558,
+      "probe_r2_gnn": 0.18558800220489502,
+      "probe_r2_gnn_per_uav": [
+        0.061421096324920654,
+        0.3097549080848694
+      ],
+      "probe_r2_rawobs": 0.053502172231674194,
+      "probe_r2_gnn_delta": 0.0008388161659240723,
+      "probe_r2_raw_delta": 0.0030303597450256348,
+      "probe_r2_congbase_delta": 0.2111099362373352,
+      "probe_bn_std": 0.03884657099843025,
+      "probe_dbn_std": 0.03720584511756897,
+      "probe_h_eff_rank": 2.1699182987213135,
+      "probe_h_dormant": 0.46875
+    },
+    {
+      "episode": 426,
+      "avg_cost": 0.9962706253831759,
+      "total_loss": NaN,
+      "eps": 0.11879805134519765
+    },
+    {
+      "episode": 427,
+      "avg_cost": 0.8540670143664886,
+      "total_loss": NaN,
+      "eps": 0.11820406108847166
+    },
+    {
+      "episode": 428,
+      "avg_cost": 0.8224911927558216,
+      "total_loss": NaN,
+      "eps": 0.1176130407830293
+    },
+    {
+      "episode": 429,
+      "avg_cost": 0.9065528042676327,
+      "total_loss": NaN,
+      "eps": 0.11702497557911415
+    },
+    {
+      "episode": 430,
+      "avg_cost": 0.8434824307361518,
+      "total_loss": NaN,
+      "eps": 0.11643985070121858,
+      "probe_r2_gnn": 0.23828861117362976,
+      "probe_r2_gnn_per_uav": [
+        0.11911892890930176,
+        0.35745829343795776
+      ],
+      "probe_r2_rawobs": 0.062344133853912354,
+      "probe_r2_gnn_delta": -0.01995912194252014,
+      "probe_r2_raw_delta": -0.01129382848739624,
+      "probe_r2_congbase_delta": 0.08724340796470642,
+      "probe_bn_std": 0.03726273775100708,
+      "probe_dbn_std": 0.03630278632044792,
+      "probe_h_eff_rank": 2.1670331954956055,
+      "probe_h_dormant": 0.5,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8328733444213867,
+      "diag_td_p95": 3.227508544921875,
+      "diag_td_max": 19.0421142578125
+    },
+    {
+      "episode": 431,
+      "avg_cost": 0.8242907897584503,
+      "total_loss": NaN,
+      "eps": 0.11585765144771248
+    },
+    {
+      "episode": 432,
+      "avg_cost": 0.8867142699226213,
+      "total_loss": NaN,
+      "eps": 0.11527836319047392
+    },
+    {
+      "episode": 433,
+      "avg_cost": 0.8524319633965444,
+      "total_loss": NaN,
+      "eps": 0.11470197137452155
+    },
+    {
+      "episode": 434,
+      "avg_cost": 0.8689216240679571,
+      "total_loss": NaN,
+      "eps": 0.11412846151764894
+    },
+    {
+      "episode": 435,
+      "avg_cost": 0.7775296862878764,
+      "total_loss": NaN,
+      "eps": 0.1135578192100607,
+      "probe_r2_gnn": 0.17554178833961487,
+      "probe_r2_gnn_per_uav": [
+        0.1534380316734314,
+        0.19764554500579834
+      ],
+      "probe_r2_rawobs": 0.038438111543655396,
+      "probe_r2_gnn_delta": -0.02066117525100708,
+      "probe_r2_raw_delta": -0.008771419525146484,
+      "probe_r2_congbase_delta": 0.1980920433998108,
+      "probe_bn_std": 0.03643285110592842,
+      "probe_dbn_std": 0.03686491400003433,
+      "probe_h_eff_rank": 2.0626766681671143,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 436,
+      "avg_cost": 0.8374499568965768,
+      "total_loss": NaN,
+      "eps": 0.11299003011401039
+    },
+    {
+      "episode": 437,
+      "avg_cost": 0.807550345666602,
+      "total_loss": NaN,
+      "eps": 0.11242507996344034
+    },
+    {
+      "episode": 438,
+      "avg_cost": 0.8006820115474751,
+      "total_loss": NaN,
+      "eps": 0.11186295456362313
+    },
+    {
+      "episode": 439,
+      "avg_cost": 0.7595301900636474,
+      "total_loss": NaN,
+      "eps": 0.11130363979080501
+    },
+    {
+      "episode": 440,
+      "avg_cost": 1.0355294122028496,
+      "total_loss": NaN,
+      "eps": 0.11074712159185099,
+      "probe_r2_gnn": 0.22144728899002075,
+      "probe_r2_gnn_per_uav": [
+        0.19302594661712646,
+        0.24986863136291504
+      ],
+      "probe_r2_rawobs": 0.059408336877822876,
+      "probe_r2_gnn_delta": 0.010763347148895264,
+      "probe_r2_raw_delta": -0.0037709474563598633,
+      "probe_r2_congbase_delta": 0.17773965001106262,
+      "probe_bn_std": 0.04048316925764084,
+      "probe_dbn_std": 0.035760726779699326,
+      "probe_h_eff_rank": 2.166473865509033,
+      "probe_h_dormant": 0.5,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8362627029418945,
+      "diag_td_p95": 3.0572898387908936,
+      "diag_td_max": 18.573760986328125
+    },
+    {
+      "episode": 441,
+      "avg_cost": 0.8802922001648094,
+      "total_loss": NaN,
+      "eps": 0.11019338598389174
+    },
+    {
+      "episode": 442,
+      "avg_cost": 0.8476156995474972,
+      "total_loss": NaN,
+      "eps": 0.10964241905397228
+    },
+    {
+      "episode": 443,
+      "avg_cost": 0.93872370951023,
+      "total_loss": NaN,
+      "eps": 0.10909420695870241
+    },
+    {
+      "episode": 444,
+      "avg_cost": 0.8565775086936308,
+      "total_loss": NaN,
+      "eps": 0.1085487359239089
+    },
+    {
+      "episode": 445,
+      "avg_cost": 0.7636487424904976,
+      "total_loss": NaN,
+      "eps": 0.10800599224428936,
+      "probe_r2_gnn": 0.04137435555458069,
+      "probe_r2_gnn_per_uav": [
+        0.0937609076499939,
+        -0.01101219654083252
+      ],
+      "probe_r2_rawobs": 0.05601412057876587,
+      "probe_r2_gnn_delta": -0.03626519441604614,
+      "probe_r2_raw_delta": -0.003059983253479004,
+      "probe_r2_congbase_delta": 0.21939820051193237,
+      "probe_bn_std": 0.037886060774326324,
+      "probe_dbn_std": 0.03633544221520424,
+      "probe_h_eff_rank": 2.1230456829071045,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 446,
+      "avg_cost": 0.9514455172498489,
+      "total_loss": NaN,
+      "eps": 0.10746596228306791
+    },
+    {
+      "episode": 447,
+      "avg_cost": 0.8484231471123305,
+      "total_loss": NaN,
+      "eps": 0.10692863247165257
+    },
+    {
+      "episode": 448,
+      "avg_cost": 0.9238852983515145,
+      "total_loss": NaN,
+      "eps": 0.1063939893092943
+    },
+    {
+      "episode": 449,
+      "avg_cost": 0.8430823930361575,
+      "total_loss": NaN,
+      "eps": 0.10586201936274783
+    },
+    {
+      "episode": 450,
+      "avg_cost": 0.8527539520640314,
+      "total_loss": NaN,
+      "eps": 0.10533270926593409,
+      "probe_r2_gnn": 0.16446679830551147,
+      "probe_r2_gnn_per_uav": [
+        0.09949201345443726,
+        0.2294415831565857
+      ],
+      "probe_r2_rawobs": 0.04211011528968811,
+      "probe_r2_gnn_delta": 0.029667824506759644,
+      "probe_r2_raw_delta": -0.008045166730880737,
+      "probe_r2_congbase_delta": 0.19686830043792725,
+      "probe_bn_std": 0.036333899945020676,
+      "probe_dbn_std": 0.03351132199168205,
+      "probe_h_eff_rank": 2.1657135486602783,
+      "probe_h_dormant": 0.5,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.9013978242874146,
+      "diag_td_p95": 3.0549187660217285,
+      "diag_td_max": 18.91879653930664
+    },
+    {
+      "episode": 451,
+      "avg_cost": 0.8345951138655882,
+      "total_loss": NaN,
+      "eps": 0.10480604571960442
+    },
+    {
+      "episode": 452,
+      "avg_cost": 0.7888673484390558,
+      "total_loss": NaN,
+      "eps": 0.1042820154910064
+    },
+    {
+      "episode": 453,
+      "avg_cost": 0.7911206050739765,
+      "total_loss": NaN,
+      "eps": 0.10376060541355137
+    },
+    {
+      "episode": 454,
+      "avg_cost": 0.8781119280892861,
+      "total_loss": NaN,
+      "eps": 0.1032418023864836
+    },
+    {
+      "episode": 455,
+      "avg_cost": 0.7949244100988426,
+      "total_loss": NaN,
+      "eps": 0.10272559337455119,
+      "probe_r2_gnn": 0.11355844140052795,
+      "probe_r2_gnn_per_uav": [
+        0.04243344068527222,
+        0.1846834421157837
+      ],
+      "probe_r2_rawobs": 0.022948861122131348,
+      "probe_r2_gnn_delta": 0.022240400314331055,
+      "probe_r2_raw_delta": -0.002890288829803467,
+      "probe_r2_congbase_delta": 0.19186905026435852,
+      "probe_bn_std": 0.03568420931696892,
+      "probe_dbn_std": 0.03657705709338188,
+      "probe_h_eff_rank": 2.103749990463257,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 456,
+      "avg_cost": 0.8578666926556627,
+      "total_loss": NaN,
+      "eps": 0.10221196540767843
+    },
+    {
+      "episode": 457,
+      "avg_cost": 0.8370694773860534,
+      "total_loss": NaN,
+      "eps": 0.10170090558064004
+    },
+    {
+      "episode": 458,
+      "avg_cost": 0.7882068300351055,
+      "total_loss": NaN,
+      "eps": 0.10119240105273684
+    },
+    {
+      "episode": 459,
+      "avg_cost": 0.821638211437306,
+      "total_loss": NaN,
+      "eps": 0.10068643904747315
+    },
+    {
+      "episode": 460,
+      "avg_cost": 1.0059476740694417,
+      "total_loss": NaN,
+      "eps": 0.10018300685223579,
+      "probe_r2_gnn": 0.1966596245765686,
+      "probe_r2_gnn_per_uav": [
+        0.15910494327545166,
+        0.23421430587768555
+      ],
+      "probe_r2_rawobs": 0.038416892290115356,
+      "probe_r2_gnn_delta": 0.015211790800094604,
+      "probe_r2_raw_delta": 0.003480881452560425,
+      "probe_r2_congbase_delta": 0.22065585851669312,
+      "probe_bn_std": 0.035726409405469894,
+      "probe_dbn_std": 0.03520599380135536,
+      "probe_h_eff_rank": 2.0837745666503906,
+      "probe_h_dormant": 0.53125,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8898468017578125,
+      "diag_td_p95": 3.730736494064331,
+      "diag_td_max": 18.808425903320312
+    },
+    {
+      "episode": 461,
+      "avg_cost": 0.7655386232769872,
+      "total_loss": NaN,
+      "eps": 0.0996820918179746
+    },
+    {
+      "episode": 462,
+      "avg_cost": 0.9187422275203988,
+      "total_loss": NaN,
+      "eps": 0.09918368135888474
+    },
+    {
+      "episode": 463,
+      "avg_cost": 0.9319054811909563,
+      "total_loss": NaN,
+      "eps": 0.09868776295209031
+    },
+    {
+      "episode": 464,
+      "avg_cost": 0.8373889860410993,
+      "total_loss": NaN,
+      "eps": 0.09819432413732986
+    },
+    {
+      "episode": 465,
+      "avg_cost": 0.9166124251359186,
+      "total_loss": NaN,
+      "eps": 0.09770335251664321,
+      "probe_r2_gnn": 0.2117057740688324,
+      "probe_r2_gnn_per_uav": [
+        0.10773217678070068,
+        0.3156793713569641
+      ],
+      "probe_r2_rawobs": 0.05125170946121216,
+      "probe_r2_gnn_delta": 0.04066619277000427,
+      "probe_r2_raw_delta": -0.004151046276092529,
+      "probe_r2_congbase_delta": 0.23823308944702148,
+      "probe_bn_std": 0.033902861177921295,
+      "probe_dbn_std": 0.03602784499526024,
+      "probe_h_eff_rank": 2.056795358657837,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 466,
+      "avg_cost": 0.870277172552029,
+      "total_loss": NaN,
+      "eps": 0.09721483575406
+    },
+    {
+      "episode": 467,
+      "avg_cost": 0.8067669720848428,
+      "total_loss": NaN,
+      "eps": 0.09672876157528969
+    },
+    {
+      "episode": 468,
+      "avg_cost": 0.8846558542375016,
+      "total_loss": NaN,
+      "eps": 0.09624511776741324
+    },
+    {
+      "episode": 469,
+      "avg_cost": 1.0281718222134832,
+      "total_loss": NaN,
+      "eps": 0.09576389217857617
+    },
+    {
+      "episode": 470,
+      "avg_cost": 0.7595253226311525,
+      "total_loss": NaN,
+      "eps": 0.09528507271768329,
+      "probe_r2_gnn": 0.17867454886436462,
+      "probe_r2_gnn_per_uav": [
+        0.19281262159347534,
+        0.1645364761352539
+      ],
+      "probe_r2_rawobs": 0.043072402477264404,
+      "probe_r2_gnn_delta": 0.034204721450805664,
+      "probe_r2_raw_delta": -0.005864739418029785,
+      "probe_r2_congbase_delta": 0.3427240252494812,
+      "probe_bn_std": 0.033546023070812225,
+      "probe_dbn_std": 0.032945021986961365,
+      "probe_h_eff_rank": 2.0408921241760254,
+      "probe_h_dormant": 0.5625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8540263175964355,
+      "diag_td_p95": 3.591048240661621,
+      "diag_td_max": 18.497255325317383
+    },
+    {
+      "episode": 471,
+      "avg_cost": 0.9229083556042726,
+      "total_loss": NaN,
+      "eps": 0.09480864735409487
+    },
+    {
+      "episode": 472,
+      "avg_cost": 1.0763811834870138,
+      "total_loss": NaN,
+      "eps": 0.0943346041173244
+    },
+    {
+      "episode": 473,
+      "avg_cost": 0.8358534559348301,
+      "total_loss": NaN,
+      "eps": 0.09386293109673778
+    },
+    {
+      "episode": 474,
+      "avg_cost": 0.7269506768179532,
+      "total_loss": NaN,
+      "eps": 0.09339361644125409
+    },
+    {
+      "episode": 475,
+      "avg_cost": 0.7714326579521292,
+      "total_loss": NaN,
+      "eps": 0.09292664835904782,
+      "probe_r2_gnn": 0.18569067120552063,
+      "probe_r2_gnn_per_uav": [
+        0.17174535989761353,
+        0.19963598251342773
+      ],
+      "probe_r2_rawobs": 0.05485996603965759,
+      "probe_r2_gnn_delta": 0.031493306159973145,
+      "probe_r2_raw_delta": 0.0019841790199279785,
+      "probe_r2_congbase_delta": 0.2607280910015106,
+      "probe_bn_std": 0.03331495448946953,
+      "probe_dbn_std": 0.034874871373176575,
+      "probe_h_eff_rank": 2.055590867996216,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 476,
+      "avg_cost": 0.955511793006573,
+      "total_loss": NaN,
+      "eps": 0.09246201511725258
+    },
+    {
+      "episode": 477,
+      "avg_cost": 0.8286031853765559,
+      "total_loss": NaN,
+      "eps": 0.09199970504166631
+    },
+    {
+      "episode": 478,
+      "avg_cost": 0.8874329125129782,
+      "total_loss": NaN,
+      "eps": 0.09153970651645797
+    },
+    {
+      "episode": 479,
+      "avg_cost": 0.769860690765277,
+      "total_loss": NaN,
+      "eps": 0.09108200798387568
+    },
+    {
+      "episode": 480,
+      "avg_cost": 0.8676416262149103,
+      "total_loss": NaN,
+      "eps": 0.0906265979439563,
+      "probe_r2_gnn": 0.08827510476112366,
+      "probe_r2_gnn_per_uav": [
+        0.04657334089279175,
+        0.12997686862945557
+      ],
+      "probe_r2_rawobs": 0.05330744385719299,
+      "probe_r2_gnn_delta": -0.0037110447883605957,
+      "probe_r2_raw_delta": -0.0014402270317077637,
+      "probe_r2_congbase_delta": 0.18618661165237427,
+      "probe_bn_std": 0.03500533849000931,
+      "probe_dbn_std": 0.03299668803811073,
+      "probe_h_eff_rank": 2.0916800498962402,
+      "probe_h_dormant": 0.5625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8406038284301758,
+      "diag_td_p95": 3.2743606567382812,
+      "diag_td_max": 19.24011993408203
+    },
+    {
+      "episode": 481,
+      "avg_cost": 0.8213619016001205,
+      "total_loss": NaN,
+      "eps": 0.09017346495423652
+    },
+    {
+      "episode": 482,
+      "avg_cost": 0.7235779484881079,
+      "total_loss": NaN,
+      "eps": 0.08972259762946533
+    },
+    {
+      "episode": 483,
+      "avg_cost": 0.8310543322549832,
+      "total_loss": NaN,
+      "eps": 0.089273984641318
+    },
+    {
+      "episode": 484,
+      "avg_cost": 0.9040185028308426,
+      "total_loss": NaN,
+      "eps": 0.0888276147181114
+    },
+    {
+      "episode": 485,
+      "avg_cost": 0.9101150158991094,
+      "total_loss": NaN,
+      "eps": 0.08838347664452084,
+      "probe_r2_gnn": 0.20389726758003235,
+      "probe_r2_gnn_per_uav": [
+        0.27062296867370605,
+        0.13717156648635864
+      ],
+      "probe_r2_rawobs": 0.039240360260009766,
+      "probe_r2_gnn_delta": 0.008099406957626343,
+      "probe_r2_raw_delta": -0.0022615790367126465,
+      "probe_r2_congbase_delta": 0.14427489042282104,
+      "probe_bn_std": 0.0312783308327198,
+      "probe_dbn_std": 0.0317915715277195,
+      "probe_h_eff_rank": 2.0575506687164307,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 486,
+      "avg_cost": 0.8503815904075195,
+      "total_loss": NaN,
+      "eps": 0.08794155926129824
+    },
+    {
+      "episode": 487,
+      "avg_cost": 0.8638170459409387,
+      "total_loss": NaN,
+      "eps": 0.08750185146499175
+    },
+    {
+      "episode": 488,
+      "avg_cost": 0.9851295240522383,
+      "total_loss": NaN,
+      "eps": 0.08706434220766679
+    },
+    {
+      "episode": 489,
+      "avg_cost": 1.0562567364868378,
+      "total_loss": NaN,
+      "eps": 0.08662902049662846
+    },
+    {
+      "episode": 490,
+      "avg_cost": 1.0007174033722839,
+      "total_loss": NaN,
+      "eps": 0.08619587539414532,
+      "probe_r2_gnn": 0.20654165744781494,
+      "probe_r2_gnn_per_uav": [
+        0.1933368444442749,
+        0.21974647045135498
+      ],
+      "probe_r2_rawobs": 0.049872249364852905,
+      "probe_r2_gnn_delta": 0.00038254261016845703,
+      "probe_r2_raw_delta": -0.008159458637237549,
+      "probe_r2_congbase_delta": 0.18698596954345703,
+      "probe_bn_std": 0.033062662929296494,
+      "probe_dbn_std": 0.03337240591645241,
+      "probe_h_eff_rank": 2.0816595554351807,
+      "probe_h_dormant": 0.5625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8971047401428223,
+      "diag_td_p95": 3.1436638832092285,
+      "diag_td_max": 18.821306228637695
+    },
+    {
+      "episode": 491,
+      "avg_cost": 1.0123989044727277,
+      "total_loss": NaN,
+      "eps": 0.08576489601717459
+    },
+    {
+      "episode": 492,
+      "avg_cost": 0.9645240581643941,
+      "total_loss": NaN,
+      "eps": 0.08533607153708872
+    },
+    {
+      "episode": 493,
+      "avg_cost": 0.9631406843332857,
+      "total_loss": NaN,
+      "eps": 0.08490939117940327
+    },
+    {
+      "episode": 494,
+      "avg_cost": 1.000076096390949,
+      "total_loss": NaN,
+      "eps": 0.08448484422350626
+    },
+    {
+      "episode": 495,
+      "avg_cost": 0.8006819603777663,
+      "total_loss": NaN,
+      "eps": 0.08406242000238873,
+      "probe_r2_gnn": 0.14308124780654907,
+      "probe_r2_gnn_per_uav": [
+        0.22229313850402832,
+        0.06386935710906982
+      ],
+      "probe_r2_rawobs": 0.0492800772190094,
+      "probe_r2_gnn_delta": 0.05019789934158325,
+      "probe_r2_raw_delta": 0.004644632339477539,
+      "probe_r2_congbase_delta": 0.13980385661125183,
+      "probe_bn_std": 0.03284035623073578,
+      "probe_dbn_std": 0.03213554993271828,
+      "probe_h_eff_rank": 2.080498456954956,
+      "probe_h_dormant": 0.5625
+    },
+    {
+      "episode": 496,
+      "avg_cost": 0.9032267513089722,
+      "total_loss": NaN,
+      "eps": 0.08364210790237678
+    },
+    {
+      "episode": 497,
+      "avg_cost": 1.0029160801308712,
+      "total_loss": NaN,
+      "eps": 0.0832238973628649
+    },
+    {
+      "episode": 498,
+      "avg_cost": 0.8441558043629215,
+      "total_loss": NaN,
+      "eps": 0.08280777787605056
+    },
+    {
+      "episode": 499,
+      "avg_cost": 0.8150596818884046,
+      "total_loss": NaN,
+      "eps": 0.08239373898667031
+    },
+    {
+      "episode": 500,
+      "avg_cost": 0.8028584658522964,
+      "total_loss": NaN,
+      "eps": 0.08198177029173696,
+      "probe_r2_gnn": 0.17020303010940552,
+      "probe_r2_gnn_per_uav": [
+        0.11762773990631104,
+        0.2227783203125
+      ],
+      "probe_r2_rawobs": 0.052143871784210205,
+      "probe_r2_gnn_delta": 0.026563405990600586,
+      "probe_r2_raw_delta": -0.01117253303527832,
+      "probe_r2_congbase_delta": 0.10714632272720337,
+      "probe_bn_std": 0.031214427202939987,
+      "probe_dbn_std": 0.031050965189933777,
+      "probe_h_eff_rank": 2.0833282470703125,
+      "probe_h_dormant": 0.5625,
+      "diag_eval_cost": 0.8807275125035872,
+      "diag_eval_std": 0.10030388023953549,
+      "diag_cong_mean": 0.001437500053725671,
+      "diag_cong_max": 0.20000000298023224,
+      "diag_q_mean_abs": 18.164531707763672,
+      "diag_q_max_abs": 30.660621643066406,
+      "diag_act_frac": [
+        0.976171875,
+        0.0236328125,
+        0.0001953125
+      ],
+      "diag_act_entropy": 0.11371779874275181,
+      "diag_td_p50": 0.8607079982757568,
+      "diag_td_p95": 3.0244359970092773,
+      "diag_td_max": 18.905759811401367
+    }
+  ],
+  "eval_mean": 0.9533296818110211,
+  "eval_std": 0.10367465164649942,
+  "best_train": 0.6409326214608119,
+  "final_probe": {
+    "r2_gnn": 0.08343631029129028,
+    "r2_gnn_per_uav": [
+      0.0933370590209961,
+      0.07353556156158447
+    ],
+    "r2_rawobs": -0.022379666566848755,
+    "r2_gnn_delta": 0.014296561479568481,
+    "r2_gnn_delta_per_uav": [
+      0.05221611261367798,
+      -0.023622989654541016
+    ],
+    "r2_rawobs_delta": -0.005746215581893921,
+    "r2_congbase_delta": 0.19851431250572205,
+    "target_std": 0.030354879796504974,
+    "delta_std": 0.03127802908420563,
+    "n_snapshots": 512,
+    "h_eff_rank": 2.07206654548645,
+    "h_dormant_frac": 0.5625
+  },
+  "snapshot_eps": [
+    25,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    200,
+    225,
+    250,
+    275,
+    300,
+    325,
+    350,
+    375,
+    400,
+    425,
+    450,
+    475,
+    500
+  ],
+  "arm": "freeze_learn",
+  "trigger_ep": 10,
+  "diag_best_eval": 0.8807275125035872,
+  "diag_best_eval_ep": 10
+}

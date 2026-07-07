@@ -1,0 +1,57 @@
+{
+  "out_dir": "probe_runs/ue30/n2/eps0.99",
+  "rows": [
+    {
+      "seed": 42,
+      "eval_mean": 1.2615107917775297,
+      "status": "COLLAPSED",
+      "phi_final": -0.12758880853652954,
+      "phi_gnn_d": 0.11886745691299438,
+      "phi_base_d": 0.24645626544952393,
+      "r2_static": 0.8094873130321503,
+      "encoder": "STALLED"
+    },
+    {
+      "seed": 52,
+      "eval_mean": 0.6255766401443865,
+      "status": "CONVERGED",
+      "phi_final": -0.1232096254825592,
+      "phi_gnn_d": 0.09658706188201904,
+      "phi_base_d": 0.21979668736457825,
+      "r2_static": 0.7898886799812317,
+      "encoder": "STALLED"
+    },
+    {
+      "seed": 62,
+      "eval_mean": 0.9456191987643946,
+      "status": "COLLAPSED",
+      "phi_final": -0.06975090503692627,
+      "phi_gnn_d": 0.10209739208221436,
+      "phi_base_d": 0.17184829711914062,
+      "r2_static": 0.815114825963974,
+      "encoder": "STALLED"
+    },
+    {
+      "seed": 72,
+      "eval_mean": 1.0410119874803658,
+      "status": "COLLAPSED",
+      "phi_final": -0.17043372988700867,
+      "phi_gnn_d": 0.1120714545249939,
+      "phi_base_d": 0.28250518441200256,
+      "r2_static": 0.6813530921936035,
+      "encoder": "STALLED"
+    },
+    {
+      "seed": 82,
+      "eval_mean": 0.6002242285854713,
+      "status": "CONVERGED",
+      "phi_final": -0.18513354659080505,
+      "phi_gnn_d": 0.11741593480110168,
+      "phi_base_d": 0.30254948139190674,
+      "r2_static": 0.7087684273719788,
+      "encoder": "STALLED"
+    }
+  ],
+  "cost_threshold": 0.9,
+  "phi_threshold": 0.05
+}

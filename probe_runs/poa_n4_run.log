@@ -1,0 +1,6 @@
+   M  opt_est  PNE best  PNE worst  PoA_est  PoS_est   local  random    time
+------------------------------------------------------------------------------
+  10   0.6811    0.7018     0.7682    1.128    1.030  0.8876  1.4415     41s
+  20   0.8743    0.8990     0.9594    1.097    1.028  1.0331  3.4823    233s
+
+JSONs in probe_runs/poa/  - compare PNE band vs learned costs (collapsed GNN-IL ~1.37 at M=20 should sit FAR above PNE worst).

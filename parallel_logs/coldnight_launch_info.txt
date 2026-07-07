@@ -1,0 +1,6 @@
+[Tue Jul  7 12:00:13 PM IST 2026] conda env: gnn_il
+[Tue Jul  7 12:00:13 PM IST 2026] coldnight launch: GPUs=1 procs_per_gpu=8 (total 8 procs)
+index, memory.used [MiB], utilization.gpu [%]
+0, 2653 MiB, 15 %
+1, 18 MiB, 0 %
+[Tue Jul  7 12:00:22 PM IST 2026] coldnight pool exited rc=1 — see parallel_logs/STATUS.txt / coldnight.out.

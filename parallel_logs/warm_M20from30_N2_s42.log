@@ -1,0 +1,33 @@
+Device: cuda
+/home/samy/yuvaraj/GNN-IL-NTN-MEC/probe_gnn.py:256: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(init_encoder, map_location=agent.device)
+Warm-started encoder from probe_runs/ue30/n2/seed42/gnn_il_probe_final.pt (policy net remains randomly initialised)
+
+GNN-IL + Bₙ probe — 20 UEs, 2 UAVs, 500 episodes, seed 42
+   Ep    AvgCost       Loss     Eps   R2_gnn   R2_raw   R2Δgnn   R2Δraw    Bstd
+--------------------------------------------------------------------------------
+   25     2.9164     1.2780   0.887    0.753    0.081    0.031    0.002   0.149
+   50     2.7838     1.3870   0.782    0.728    0.095    0.031    0.001   0.142
+   75     2.6307     1.3633   0.690    0.729    0.083    0.028   -0.002   0.136
+  100     2.2056     1.5351   0.609    0.716    0.050    0.063   -0.009   0.126
+  125     1.9391     1.4922   0.537    0.774    0.070    0.101    0.009   0.123
+  150     2.1770     1.5119   0.474    0.723    0.017   -0.058   -0.012   0.113
+  175     1.8227     1.5269   0.418    0.700    0.044    0.028   -0.008   0.107
+  200     1.3939     1.6971   0.369    0.708    0.038   -0.023   -0.025   0.105
+  225     1.3134     1.5769   0.325    0.699    0.038    0.049   -0.001   0.094
+  250     1.0081     1.3632   0.287    0.787    0.042    0.138    0.003   0.087
+  275     1.0653     1.2847   0.253    0.729    0.044   -0.002   -0.005   0.087
+  300     0.8642     1.2561   0.223    0.709    0.047    0.091   -0.006   0.076
+  325     1.0571     1.2114   0.197    0.703    0.033    0.097   -0.010   0.082
+  350     1.3640     5.6190   0.174    0.704    0.037    0.120   -0.002   0.085
+  375     3.0685     7.4269   0.153    0.811    0.096    0.022   -0.038   0.136
+  400     3.0088     8.6956   0.135    0.738    0.082   -1.401    0.001   0.170
+  425     3.1781    10.2687   0.119    0.831    0.135    0.134    0.003   0.176
+  450     1.1257     3.4407   0.105    0.801    0.112    0.037    0.004   0.170
+  475     0.9965     1.3572   0.093    0.818    0.079    0.108   -0.006   0.155
+  500     1.0691     1.4104   0.082    0.676    0.028    0.085   -0.010   0.117
+
+Eval (20 eps): mean=1.0196 std=0.0563  |  final R2_gnn=0.730  R2_raw=0.054  R2Δgnn=0.154  R2Δraw=0.005
+Saved to probe_runs/ue20/n2/warmstart/seed42/  (results.json, 20 snapshots, probe_dataset.npz, final.pt)
+
+GNN-IL+probe — eval 1.0196 ± 0.0563  |  final φ (R2Δgnn) 0.154  (static R2_gnn 0.730)

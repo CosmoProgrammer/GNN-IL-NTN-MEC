@@ -1,0 +1,33 @@
+Device: cuda
+Env: env.py (plain obs, information-matched)
+Diagnostics ON: every 10 eps, arm=none, trigger=raw<= 0.9 from ep 0
+
+CTDE-plain + diagnostics — 20 UEs, 2 UAVs, 500 episodes, seed 42
+
+ Episode     AvgCost        Loss     Eps
+------------------------------------------
+    [diag ep 10] eval=0.8836  |Q|max=28.38  td95=13.664  gradmax=36.6  cong=0.000
+    [diag ep 20] eval=0.8836  |Q|max=22.27  td95=12.999  gradmax=29.6  cong=0.000
+    [diag ep 30] eval=0.8836  |Q|max=23.42  td95=12.763  gradmax=19.9  cong=0.000
+    [diag ep 40] eval=0.8836  |Q|max=23.90  td95=13.769  gradmax=22.3  cong=0.000
+    [diag ep 50] eval=0.8836  |Q|max=22.95  td95=15.326  gradmax=19.5  cong=0.000
+      50      2.3452      2.1462   0.782
+    [diag ep 60] eval=0.8836  |Q|max=22.73  td95=15.129  gradmax=20.8  cong=0.000
+    [diag ep 70] eval=0.8836  |Q|max=22.79  td95=14.874  gradmax=21.0  cong=0.000
+    [diag ep 80] eval=0.8807  |Q|max=23.02  td95=16.105  gradmax=21.3  cong=0.000
+    [diag ep 90] eval=0.8351  |Q|max=24.17  td95=13.431  gradmax=19.3  cong=0.001
+    [diag ep 100] eval=0.8078  |Q|max=24.22  td95=15.720  gradmax=21.1  cong=0.002
+     100      1.7138      2.5493   0.609
+    [diag ep 110] eval=0.7643  |Q|max=23.26  td95=15.432  gradmax=20.5  cong=0.005
+    [diag ep 120] eval=0.7333  |Q|max=23.28  td95=14.874  gradmax=21.2  cong=0.006
+    [diag ep 130] eval=0.7286  |Q|max=24.04  td95=14.571  gradmax=18.3  cong=0.008
+    [diag ep 140] eval=0.7136  |Q|max=24.32  td95=13.767  gradmax=20.0  cong=0.011
+    [diag ep 150] eval=0.6559  |Q|max=24.87  td95=14.387  gradmax=22.8  cong=0.017
+     150      1.1750      2.5604   0.474
+    [diag ep 160] eval=0.6236  |Q|max=26.15  td95=15.114  gradmax=19.0  cong=0.022
+    [diag ep 170] eval=0.6179  |Q|max=22.52  td95=15.640  gradmax=18.4  cong=0.048
+    [diag ep 180] eval=0.7844  |Q|max=25.04  td95=13.458  gradmax=21.3  cong=0.126
+    [diag ep 190] eval=0.7076  |Q|max=22.03  td95=13.278  gradmax=19.2  cong=0.112
+    [diag ep 200] eval=0.6153  |Q|max=24.22  td95=12.793  gradmax=19.2  cong=0.064
+     200      1.0277      2.2961   0.369
+    [diag ep 210] eval=0.6214  |Q|max=23.78  td95=11.794  gradmax=16.8  cong=0.061

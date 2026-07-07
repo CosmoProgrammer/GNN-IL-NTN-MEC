@@ -1,0 +1,81 @@
+Device: cuda
+Diagnostics ON: every 10 eps, arm=none, trigger_cost=0.9
+
+GNN-IL + Bₙ probe — 30 UEs, 2 UAVs, 500 episodes, seed 62
+   Ep    AvgCost       Loss     Eps   R2_gnn   R2_raw   R2Δgnn   R2Δraw    Bstd
+--------------------------------------------------------------------------------
+    [diag ep 10] eval=1.0095  |Q|max=35.37  td95=2.659  gradmax=48.4  cong=0.000
+    [diag ep 20] eval=1.3267  |Q|max=30.76  td95=4.464  gradmax=41.3  cong=0.167
+   25     3.6212     1.1474   0.887    0.750    0.025    0.156   -0.000   0.120
+    [diag ep 30] eval=0.7852  |Q|max=31.47  td95=4.780  gradmax=26.9  cong=0.133
+    [diag ep 40] eval=1.1052  |Q|max=32.84  td95=4.745  gradmax=23.1  cong=0.143
+    [diag ep 50] eval=0.8990  |Q|max=36.32  td95=6.449  gradmax=15.8  cong=0.128
+   50     3.1131     1.2159   0.782    0.634    0.045    0.084    0.003   0.125
+    [diag ep 60] eval=0.8454  |Q|max=30.98  td95=4.925  gradmax=16.4  cong=0.106
+    [diag ep 70] eval=0.9348  |Q|max=31.00  td95=5.360  gradmax=17.2  cong=0.113
+   75     2.6256     1.2586   0.690    0.612    0.050    0.069    0.002   0.128
+    [diag ep 80] eval=1.0235  |Q|max=30.04  td95=4.520  gradmax=19.1  cong=0.131
+    [diag ep 90] eval=0.6956  |Q|max=27.20  td95=5.341  gradmax=15.6  cong=0.097
+    [diag ep 100] eval=1.2941  |Q|max=26.94  td95=6.515  gradmax=17.2  cong=0.153
+  100     2.4986     1.3778   0.609    0.644    0.067    0.029   -0.014   0.122
+    [diag ep 110] eval=0.8821  |Q|max=27.79  td95=6.416  gradmax=15.5  cong=0.141
+    [diag ep 120] eval=0.7310  |Q|max=26.65  td95=7.120  gradmax=18.1  cong=0.111
+  125     2.0497     1.7428   0.537    0.622    0.056    0.003   -0.014   0.112
+    [diag ep 130] eval=1.0632  |Q|max=25.36  td95=8.327  gradmax=17.2  cong=0.129
+    [diag ep 140] eval=0.8244  |Q|max=26.35  td95=6.492  gradmax=17.6  cong=0.189
+    [diag ep 150] eval=0.8760  |Q|max=27.77  td95=7.046  gradmax=15.0  cong=0.198
+  150     1.9835     1.6355   0.474    0.704    0.042   -0.020   -0.011   0.109
+    [diag ep 160] eval=1.0297  |Q|max=28.71  td95=6.607  gradmax=18.3  cong=0.251
+    [diag ep 170] eval=0.9743  |Q|max=27.37  td95=6.222  gradmax=19.7  cong=0.224
+  175     1.9044     1.3920   0.418    0.768    0.038    0.065   -0.032   0.093
+    [diag ep 180] eval=0.9291  |Q|max=29.71  td95=5.812  gradmax=17.3  cong=0.217
+    [diag ep 190] eval=0.7920  |Q|max=30.97  td95=6.546  gradmax=19.7  cong=0.182
+    [diag ep 200] eval=0.8868  |Q|max=32.65  td95=5.997  gradmax=20.0  cong=0.215
+  200     1.7112     1.3659   0.369    0.837    0.044    0.173   -0.006   0.086
+    [diag ep 210] eval=0.7054  |Q|max=33.38  td95=5.548  gradmax=20.9  cong=0.149
+    [diag ep 220] eval=0.8006  |Q|max=32.32  td95=4.466  gradmax=18.6  cong=0.185
+  225     1.2649     1.2582   0.325    0.830    0.039    0.084    0.001   0.089
+    [diag ep 230] eval=0.7672  |Q|max=31.79  td95=6.037  gradmax=21.3  cong=0.159
+    [diag ep 240] eval=0.9477  |Q|max=35.48  td95=4.897  gradmax=20.6  cong=0.214
+    [diag ep 250] eval=0.7910  |Q|max=36.83  td95=4.472  gradmax=18.8  cong=0.165
+  250     1.2853     1.3079   0.300    0.767    0.021    0.068   -0.016   0.086
+    [diag ep 260] eval=0.8360  |Q|max=33.77  td95=5.354  gradmax=19.7  cong=0.200
+    [diag ep 270] eval=0.8620  |Q|max=31.44  td95=4.792  gradmax=17.5  cong=0.190
+  275     1.6393     1.1963   0.300    0.800    0.032    0.089    0.001   0.090
+    [diag ep 280] eval=0.9299  |Q|max=30.62  td95=4.757  gradmax=18.1  cong=0.233
+    [diag ep 290] eval=1.0024  |Q|max=30.54  td95=4.901  gradmax=18.4  cong=0.256
+    [diag ep 300] eval=0.9212  |Q|max=31.63  td95=6.565  gradmax=18.7  cong=0.232
+  300     1.6261     1.4209   0.300    0.747    0.030    0.029   -0.008   0.096
+    [diag ep 310] eval=0.9132  |Q|max=36.24  td95=5.907  gradmax=19.8  cong=0.222
+    [diag ep 320] eval=0.9494  |Q|max=32.58  td95=5.572  gradmax=19.3  cong=0.231
+  325     1.5269     1.2462   0.300    0.775    0.025    0.076   -0.005   0.088
+    [diag ep 330] eval=0.9298  |Q|max=37.19  td95=5.329  gradmax=20.7  cong=0.233
+    [diag ep 340] eval=0.8221  |Q|max=31.86  td95=4.755  gradmax=19.9  cong=0.183
+    [diag ep 350] eval=0.8365  |Q|max=34.09  td95=7.252  gradmax=18.9  cong=0.196
+  350     1.3033     1.2882   0.300    0.832    0.041    0.150    0.004   0.091
+    [diag ep 360] eval=0.8670  |Q|max=33.48  td95=7.025  gradmax=18.2  cong=0.202
+    [diag ep 370] eval=0.8978  |Q|max=33.76  td95=6.232  gradmax=19.6  cong=0.208
+  375     1.2418     1.2611   0.300    0.803    0.031    0.154    0.006   0.088
+    [diag ep 380] eval=0.8607  |Q|max=34.87  td95=8.022  gradmax=19.3  cong=0.195
+    [diag ep 390] eval=0.7859  |Q|max=35.26  td95=5.472  gradmax=18.0  cong=0.181
+    [diag ep 400] eval=0.7906  |Q|max=34.60  td95=3.727  gradmax=16.9  cong=0.173
+  400     1.4385     1.0346   0.300    0.798    0.038    0.117   -0.001   0.091
+    [diag ep 410] eval=0.7952  |Q|max=36.11  td95=3.319  gradmax=17.4  cong=0.173
+    [diag ep 420] eval=0.9034  |Q|max=35.91  td95=3.560  gradmax=22.5  cong=0.211
+  425     1.3918     0.9723   0.300    0.775    0.024    0.048   -0.017   0.089
+    [diag ep 430] eval=0.7261  |Q|max=34.26  td95=3.451  gradmax=18.8  cong=0.136
+    [diag ep 440] eval=0.7323  |Q|max=37.26  td95=3.796  gradmax=15.0  cong=0.121
+    [diag ep 450] eval=0.7595  |Q|max=37.62  td95=3.150  gradmax=16.4  cong=0.150
+  450     1.3543     0.9624   0.300    0.759    0.040    0.096   -0.003   0.089
+    [diag ep 460] eval=0.7539  |Q|max=39.49  td95=3.437  gradmax=22.4  cong=0.148
+    [diag ep 470] eval=0.7781  |Q|max=38.58  td95=2.752  gradmax=21.5  cong=0.164
+  475     1.2165     0.8985   0.300    0.772    0.033    0.072    0.004   0.090
+    [diag ep 480] eval=0.8282  |Q|max=35.73  td95=3.478  gradmax=17.7  cong=0.175
+    [diag ep 490] eval=0.8651  |Q|max=36.78  td95=2.815  gradmax=17.0  cong=0.173
+    [diag ep 500] eval=1.0487  |Q|max=40.40  td95=4.504  gradmax=20.5  cong=0.217
+  500     1.6413     0.9557   0.300    0.844    0.045    0.127    0.002   0.094
+
+Eval (20 eps): mean=1.0124 std=0.0445  |  final R2_gnn=0.804  R2_raw=0.051  R2Δgnn=0.121  R2Δraw=-0.005
+Saved to probe_runs/diag/ue30/n2/floor0.3/seed62/  (results.json, 20 snapshots, probe_dataset.npz, final.pt)
+
+GNN-IL+probe — eval 1.0124 ± 0.0445  |  final φ (R2Δgnn) 0.121  (static R2_gnn 0.804)

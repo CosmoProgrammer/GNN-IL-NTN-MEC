@@ -1,0 +1,28 @@
+Device: cuda
+Env: env.py (plain obs, information-matched)
+Diagnostics ON: every 10 eps, arm=none, trigger=raw<= 0.9 from ep 0
+
+CTDE-plain + diagnostics — 30 UEs, 2 UAVs, 500 episodes, seed 52
+
+ Episode     AvgCost        Loss     Eps
+------------------------------------------
+    [diag ep 10] eval=1.0095  |Q|max=30.08  td95=8.776  gradmax=40.0  cong=0.000
+    [diag ep 20] eval=1.0095  |Q|max=30.34  td95=4.615  gradmax=37.1  cong=0.000
+    [diag ep 30] eval=0.7988  |Q|max=31.63  td95=11.315  gradmax=27.6  cong=0.010
+    [diag ep 40] eval=0.7959  |Q|max=30.17  td95=6.253  gradmax=27.8  cong=0.011
+    [diag ep 50] eval=0.7696  |Q|max=31.32  td95=14.661  gradmax=27.1  cong=0.015
+      50      3.1882      1.6346   0.782
+    [diag ep 60] eval=0.8209  |Q|max=27.69  td95=8.300  gradmax=22.3  cong=0.009
+    [diag ep 70] eval=0.9350  |Q|max=27.77  td95=13.633  gradmax=26.3  cong=0.004
+    [diag ep 80] eval=0.9915  |Q|max=28.94  td95=4.798  gradmax=26.8  cong=0.001
+    [diag ep 90] eval=0.7735  |Q|max=27.92  td95=14.569  gradmax=25.6  cong=0.012
+    [diag ep 100] eval=0.8002  |Q|max=28.15  td95=14.262  gradmax=24.3  cong=0.012
+     100      2.1609      1.7437   0.609
+    [diag ep 110] eval=0.7830  |Q|max=27.29  td95=12.323  gradmax=24.1  cong=0.012
+    [diag ep 120] eval=0.8584  |Q|max=27.94  td95=15.388  gradmax=25.4  cong=0.008
+    [diag ep 130] eval=0.8112  |Q|max=29.02  td95=15.848  gradmax=31.6  cong=0.010
+    [diag ep 140] eval=0.8898  |Q|max=28.19  td95=9.733  gradmax=23.1  cong=0.006
+    [diag ep 150] eval=0.8430  |Q|max=26.51  td95=11.414  gradmax=27.7  cong=0.009
+     150      1.4021      2.0611   0.474
+    [diag ep 160] eval=0.7810  |Q|max=28.91  td95=14.851  gradmax=21.2  cong=0.012
+    [diag ep 170] eval=0.9178  |Q|max=26.55  td95=14.985  gradmax=23.9  cong=0.005
